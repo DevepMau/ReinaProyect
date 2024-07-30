@@ -8,14 +8,15 @@ public class Personaje {
 	
 	PanelDeJuego pdj;
 	Graphics2D g2;
-	public Point pos;
 	public int ancho, alto;
 	boolean boo;
+	public int x, y;
 	
-	public Personaje(boolean jugador, PanelDeJuego pdj) {
+	public Personaje(Zona zona, boolean jugador, PanelDeJuego pdj) {
 		this.pdj = pdj;
+		this.x = (int)zona.getPos().getX()+pdj.tamañoDeBaldosa/2;
+		this.y = (int)zona.getPos().getY()+pdj.tamañoDeBaldosa/2;
 		ancho = alto = pdj.tamañoDeBaldosa;
-		pos = new Point(0,0);
 		boo = jugador;
 	}
 	
@@ -27,12 +28,8 @@ public class Personaje {
 		else {
 			g2.setColor(Color.red);
 		}
-		g2.fillRect((int)pos.getX(), (int)pos.getY(), ancho, alto);
+		g2.fillRect(x, y, ancho, alto);
 		
 	}
 	
-	public void setPos(Point pos) {
-		this.pos.setLocation(pos.getX()+pdj.tamañoDeBaldosa/2, pos.getY()+pdj.tamañoDeBaldosa/2);
-	}
-
 }

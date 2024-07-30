@@ -9,10 +9,13 @@ public class Zona {
 	PanelDeJuego pdj;
 	Graphics2D g2;
 	public Point pos;
+	public int x, y;
 	
 	public Zona(Point pos, PanelDeJuego pdj) {
 		this.pdj = pdj;
 		this.pos = pos;
+		this.x = (int)pos.getX();
+		this.y = (int)pos.getY();
 	}
 	
 	public void dibujar(Graphics2D g2) {
@@ -28,6 +31,11 @@ public class Zona {
 	
 	public Point getPos() {
 		return pos;
+	}
+	
+	public void setPos(int x, int y) {
+		pos.setLocation(x, y);
+		
 	}
 
 }

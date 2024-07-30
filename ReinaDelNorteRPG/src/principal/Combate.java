@@ -21,26 +21,6 @@ public class Combate {
 	
 	public void actualizar() {
 		
-		int id = 34;
-		for(int i = 0; i < pj.length; i++) {
-			pj[i].setPos(zona.get(id).getPos());
-			if(i == 3) {
-				id += 5;
-			}
-			else {
-				id++;
-			}
-		}
-		id = 2;
-		for(int i = 0; i < pj.length; i++) {
-			en[i].setPos(zona.get(id).getPos());
-			if(i == 3) {
-				id += 5;
-			}
-			else {
-				id++;
-			}
-		}
 	}
 	
 	public void dinujar(Graphics2D g2) {
@@ -59,6 +39,7 @@ public class Combate {
 		//RETRATOS
 		retratoProv(zona.get(32).getPos(), true);
 		retratoProv(zona.get(6).getPos(), false);
+		
 		
 	}
 	
@@ -105,11 +86,25 @@ public class Combate {
 	}
 	
 	public void cargarGrupos() {
+		int id = 34;
 		for(int i = 0; i < 8; i++) {
-			pj[i] = new Personaje(true, pdj);
+			en[i] = new Personaje(zona.get(id), false, pdj);
+			if(i == 3) {
+				id += 5;
+			}
+			else {
+				id++;
+			}
 		}
+		id = 2;
 		for(int i = 0; i < 8; i++) {
-			en[i] = new Personaje(false, pdj);
+			pj[i] = new Personaje(zona.get(id),true, pdj);
+			if(i == 3) {
+				id += 5;
+			}
+			else {
+				id++;
+			}
 		}
 	}
 	
