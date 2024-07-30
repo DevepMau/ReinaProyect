@@ -31,6 +31,7 @@ public class PanelDeJuego extends JPanel implements Runnable {
 	Sonido musica = new Sonido();
 	Sonido se = new Sonido();
 	Thread hiloDeJuego;
+	Combate combate = new Combate(this);
 	
 	// FPS
 	int FPS = 60;
@@ -101,13 +102,17 @@ public class PanelDeJuego extends JPanel implements Runnable {
 	}
 
 	public void actualizar() {
-
+		combate.actualizar();
+		
 	}
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
 		Graphics2D g2 = (Graphics2D) g;
+		
+		//COMBATE
+		combate.dinujar(g2);
 		
 		//DEBUG
 		long drawStart = 0;
