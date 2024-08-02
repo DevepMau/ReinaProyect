@@ -3,6 +3,7 @@ package principal;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.util.Random;
 
 public class Personaje {
 	
@@ -16,6 +17,7 @@ public class Personaje {
 	public boolean enTurno = true;
 	public boolean enSacudida = false;
 	public int contador = 15;
+	public int velocidad;
 	
 	public Personaje(Zona zona, boolean jugador, PanelDeJuego pdj) {
 		this.pdj = pdj;
@@ -24,6 +26,8 @@ public class Personaje {
 		zonaInicio = zona;
 		ancho = alto = pdj.tamañoDeBaldosa;
 		boo = jugador;
+		Random rand = new Random();
+		velocidad = rand.nextInt(20);
 	}
 	
 	public void dibujar(Graphics2D g2) {
@@ -49,35 +53,27 @@ public class Personaje {
 	public void moverHaciaDestino(Personaje e) {
 		int destinoX = e.zonaInicio.getX() + pdj.tamañoDeBaldosa / 2;
 		int destinoY = e.zonaInicio.getY() + pdj.tamañoDeBaldosa / 2;
-		
 		// DIFERENCIAS ENTRE LAS COORDENADAS ACTUALES Y LAS DEL DESTINO
         int deltaX = destinoX - this.x;
         int deltaY = destinoY - this.y;
-
         // CALCULAR LA DISTANCIA A RECORRER
         double distancia = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-
         // CALCULAR LA VELOCIDAD SEGÚN LA DISTANCIA (CUANTO MÁS CERCA, MÁS LENTO)
         double velocidad = Math.max(1, distancia / 10); // AJUSTAR EL DIVISOR PARA CAMBIAR LA DESACELERACIÓN
-
         // SI LA DISTANCIA ES MAYOR QUE CERO, CALCULAR LOS INCREMENTOS
         if (distancia > 0) {
             double incrementoX = (deltaX / distancia) * velocidad;
             double incrementoY = (deltaY / distancia) * velocidad;
-
             // ACTUALIZAR LAS COORDENADAS
             this.x += incrementoX;
             this.y += incrementoY;
-
             // REDONDEAR A ENTEROS PARA EVITAR PROBLEMAS DE PRECISIÓN ACUMULATIVA
             this.x = Math.round(this.x);
             this.y = Math.round(this.y);
-
             // COMPROBAR SI HEMOS ALCANZADO EL DESTINO
-            if (Math.abs(deltaX) <= Math.abs(incrementoX) && Math.abs(deltaY) <= Math.abs(incrementoY)) {
+            if (distancia < 20 || Math.abs(deltaX) <= Math.abs(incrementoX) && Math.abs(deltaY) <= Math.abs(incrementoY)) {
                 this.x = destinoX;
-                this.y = destinoY;
-                
+                this.y = destinoY;   
                 enSacudida = true;
                 enMovimiento = false;
             }
@@ -87,35 +83,27 @@ public class Personaje {
 	public void moverHaciaPosInicial() {
 		int destinoX = zonaInicio.getX() + pdj.tamañoDeBaldosa / 2;
 		int destinoY = zonaInicio.getY() + pdj.tamañoDeBaldosa / 2;
-
 		// DIFERENCIAS ENTRE LAS COORDENADAS ACTUALES Y LAS DEL DESTINO
         int deltaX = destinoX - this.x;
         int deltaY = destinoY - this.y;   
-
         // CALCULAR LA DISTANCIA A RECORRER
         double distancia = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-
         // CALCULAR LA VELOCIDAD SEGÚN LA DISTANCIA (CUANTO MÁS CERCA, MÁS LENTO)
         double velocidad = Math.max(1, distancia / 10); // AJUSTAR EL DIVISOR PARA CAMBIAR LA DESACELERACIÓN
-
         // SI LA DISTANCIA ES MAYOR QUE CERO, CALCULAR LOS INCREMENTOS
         if (distancia > 0) {
             double incrementoX = (deltaX / distancia) * velocidad;
             double incrementoY = (deltaY / distancia) * velocidad;
-
             // ACTUALIZAR LAS COORDENADAS
             this.x += incrementoX;
             this.y += incrementoY;
-
             // REDONDEAR A ENTEROS PARA EVITAR PROBLEMAS DE PRECISIÓN ACUMULATIVA
             this.x = Math.round(this.x);
             this.y = Math.round(this.y);
-
             // COMPROBAR SI HEMOS ALCANZADO EL DESTINO
-            if (Math.abs(deltaX) <= Math.abs(incrementoX) && Math.abs(deltaY) <= Math.abs(incrementoY)) {
+            if (distancia < 20 || (Math.abs(deltaX) <= Math.abs(incrementoX) && Math.abs(deltaY) <= Math.abs(incrementoY))) {
                 this.x = destinoX;
-                this.y = destinoY;
-                
+                this.y = destinoY;  
                 enTurno = false;
                 enMovimiento = true;
             }
@@ -124,10 +112,8 @@ public class Personaje {
 
 	public void sacudir(Personaje e) {
 		int shakeAmount = 5; // LA CANTIDAD DE PÍXELES QUE SE MUEVE PARA SACUDIR
-
 		setX(zonaInicio.getX() + (int)(Math.random() * shakeAmount * 2 - shakeAmount) + pdj.tamañoDeBaldosa/2);
-	    setY(zonaInicio.getY() + (int)(Math.random() * shakeAmount * 2 - shakeAmount) + pdj.tamañoDeBaldosa/2);
-	    
+	    setY(zonaInicio.getY() + (int)(Math.random() * shakeAmount * 2 - shakeAmount) + pdj.tamañoDeBaldosa/2); 
 	    if(contador == 0) {
 	    	e.enSacudida = false;
 	    	contador = 20; 	

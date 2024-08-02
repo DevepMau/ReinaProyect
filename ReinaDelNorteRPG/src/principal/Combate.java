@@ -10,8 +10,7 @@ public class Combate {
 	PanelDeJuego pdj;
 	Graphics2D g2;
 	HashMap<Integer, Zona> zona = new HashMap<>();
-	Personaje[] pj = new Personaje[8];
-	Personaje[] en = new Personaje[8];
+	Personaje[] pj = new Personaje[16];
 	public int numeroOpcion = 0;
 	public int opcionElegida = -1;
 	public boolean FinTurno = false;
@@ -19,33 +18,26 @@ public class Combate {
 	public Combate(PanelDeJuego pdj) {
 		this.pdj = pdj;
 		cargarZonas();
-		cargarGrupos();
+		cargarGrupo();
 	}
 	
 	public void actualizar() {
 		if(opcionElegida != -1) {
 			pj[opcionElegida].reset();
-			pj[opcionElegida].accionAtaque(en[3]);
+			pj[opcionElegida].accionAtaque(pj[3]);
 			if(!pj[opcionElegida].enTurno) {
 				opcionElegida = -1;
 			}
 		}
-		//if(opcionElegida )
-
 	}
 	
 	public void dinujar(Graphics2D g2) {
 		this.g2 = g2;
-		//ZONAS
-		//for(Zona num : zona.values()) {
-		//	num.dibujar(g2);
-		//}
 		//UNIDADES
 		for(int i = 0; i < pj.length; i++) {
-			pj[i].dibujar(g2);
-		}
-		for(int i = 0; i < en.length; i++) {
-			en[i].dibujar(g2);
+			if(pj[i] != null) {
+				pj[i].dibujar(g2);
+			}
 		}
 		//RETRATOS
 		retratoProv(zona.get(32).getPos(), true);
@@ -54,6 +46,7 @@ public class Combate {
 		if(opcionElegida == -1) {
 			cuadroDeSeleccion(pj[numeroOpcion]);
 		}
+		//System.out.println(zona.get(36).getPos());
 		
 	}
 	
@@ -117,7 +110,33 @@ public class Combate {
 		}
 		id = 2;
 		for(int i = 0; i < 8; i++) {
-			en[i] = new Personaje(zona.get(id), false, pdj);
+			//en[i] = new Personaje(zona.get(id), false, pdj);
+			if(i == 3) {
+				id += 5;
+			}
+			else {
+				id++;
+			}
+		}
+	}
+	
+	public void cargarGrupo() {
+		int cantPJ = 3;
+		int cantEn = 5;
+		
+		int id = 34;
+		for(int i = 0; i < cantPJ; i++) {
+			pj[i] = new Personaje(zona.get(id), true, pdj);
+			if(i == 3) {
+				id += 5;
+			}
+			else {
+				id++;
+			}
+		}
+		id = 2;
+		for(int i = 0; i < cantEn; i++) {
+			pj[i+cantPJ] = new Personaje(zona.get(id), false, pdj);
 			if(i == 3) {
 				id += 5;
 			}
