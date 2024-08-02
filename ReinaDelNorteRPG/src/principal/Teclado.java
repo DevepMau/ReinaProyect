@@ -6,7 +6,7 @@ import java.awt.event.KeyListener;
 public class Teclado implements KeyListener {
 
 	PanelDeJuego pdj;
-	public boolean W, S, A, D, ENTER, ESCAPE;
+	public boolean UP, DOWN, RIGHT, LEFT, ENTER, ESCAPE;
 	//DEBUG
 	boolean comprobarTiempoDeDibujado = false;
 	
@@ -23,17 +23,41 @@ public class Teclado implements KeyListener {
 		
 		int codigo = e.getKeyCode();
 		
-		if(codigo == KeyEvent.VK_W) {
-			W = true;
+		//MODO COMBATE
+		if(pdj.estadoDeJuego == pdj.COMBATE) {
+			if(codigo == KeyEvent.VK_RIGHT) {
+				pdj.combate.numeroOpcion++;
+				if(pdj.combate.numeroOpcion > 7) {
+					pdj.combate.numeroOpcion = 0;
+				}
+			}
+			if(codigo == KeyEvent.VK_LEFT) {
+				pdj.combate.numeroOpcion--;
+				if(pdj.combate.numeroOpcion < 0) {
+					pdj.combate.numeroOpcion = 7;
+				}
+			}
+			if(codigo == KeyEvent.VK_ENTER) {
+				if(pdj.combate.opcionElegida == -1) {
+					pdj.combate.opcionElegida = pdj.combate.numeroOpcion;
+				}
+			}
+			if(codigo == KeyEvent.VK_ESCAPE) {
+				pdj.combate.opcionElegida = -1;
+			}
 		}
-		if(codigo == KeyEvent.VK_S) {
-			S = true;
+		
+		if(codigo == KeyEvent.VK_UP) {
+			UP = true;
 		}
-		if(codigo == KeyEvent.VK_A) {
-			A = true;
+		if(codigo == KeyEvent.VK_DOWN) {
+			DOWN = true;
 		}
-		if(codigo == KeyEvent.VK_D) {
-			D = true;
+		if(codigo == KeyEvent.VK_LEFT) {
+			LEFT = true;
+		}
+		if(codigo == KeyEvent.VK_RIGHT) {
+			RIGHT = true;
 		}
 		if(codigo == KeyEvent.VK_ENTER) {
 			ENTER = true;
@@ -57,17 +81,17 @@ public class Teclado implements KeyListener {
 	public void keyReleased(KeyEvent e) {
 		int codigo = e.getKeyCode();
 
-		if(codigo == KeyEvent.VK_W) {
-			W = false;
+		if(codigo == KeyEvent.VK_UP) {
+			UP = false;
 		}
-		if(codigo == KeyEvent.VK_S) {
-			S = false;
+		if(codigo == KeyEvent.VK_DOWN) {
+			DOWN = false;
 		}
-		if(codigo == KeyEvent.VK_A) {
-			A = false;
+		if(codigo == KeyEvent.VK_RIGHT) {
+			RIGHT = false;
 		}
-		if(codigo == KeyEvent.VK_D) {
-			D = false;
+		if(codigo == KeyEvent.VK_LEFT) {
+			LEFT = false;
 		}
 		if(codigo == KeyEvent.VK_ENTER) {
 			ENTER = false;

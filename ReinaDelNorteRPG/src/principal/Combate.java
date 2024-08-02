@@ -12,6 +12,9 @@ public class Combate {
 	HashMap<Integer, Zona> zona = new HashMap<>();
 	Personaje[] pj = new Personaje[8];
 	Personaje[] en = new Personaje[8];
+	public int numeroOpcion = 0;
+	public int opcionElegida = -1;
+	public boolean FinTurno = false;
 	
 	public Combate(PanelDeJuego pdj) {
 		this.pdj = pdj;
@@ -20,15 +23,23 @@ public class Combate {
 	}
 	
 	public void actualizar() {
-		
+		if(opcionElegida != -1) {
+			pj[opcionElegida].reset();
+			pj[opcionElegida].accionAtaque(en[3]);
+			if(!pj[opcionElegida].enTurno) {
+				opcionElegida = -1;
+			}
+		}
+		//if(opcionElegida )
+
 	}
 	
 	public void dinujar(Graphics2D g2) {
 		this.g2 = g2;
 		//ZONAS
-		for(Zona num : zona.values()) {
-			num.dibujar(g2);
-		}
+		//for(Zona num : zona.values()) {
+		//	num.dibujar(g2);
+		//}
 		//UNIDADES
 		for(int i = 0; i < pj.length; i++) {
 			pj[i].dibujar(g2);
@@ -40,6 +51,9 @@ public class Combate {
 		retratoProv(zona.get(32).getPos(), true);
 		retratoProv(zona.get(6).getPos(), false);
 		
+		if(opcionElegida == -1) {
+			cuadroDeSeleccion(pj[numeroOpcion]);
+		}
 		
 	}
 	
@@ -85,10 +99,15 @@ public class Combate {
 		g2.fillRect((int)pos.getX()+pdj.tamañoDeBaldosa, (int)pos.getY()+pdj.tamañoDeBaldosa, pdj.tamañoDeBaldosa*2, pdj.tamañoDeBaldosa*2);
 	}
 	
+	public void cuadroDeSeleccion(Personaje e) {
+		g2.setColor(Color.yellow);
+		g2.drawRect(e.zonaInicio.getX(), e.zonaInicio.getY(), pdj.tamañoDeBaldosa*2, pdj.tamañoDeBaldosa*2);
+	}
+	
 	public void cargarGrupos() {
 		int id = 34;
 		for(int i = 0; i < 8; i++) {
-			en[i] = new Personaje(zona.get(id), false, pdj);
+			pj[i] = new Personaje(zona.get(id), true, pdj);
 			if(i == 3) {
 				id += 5;
 			}
@@ -98,7 +117,7 @@ public class Combate {
 		}
 		id = 2;
 		for(int i = 0; i < 8; i++) {
-			pj[i] = new Personaje(zona.get(id),true, pdj);
+			en[i] = new Personaje(zona.get(id), false, pdj);
 			if(i == 3) {
 				id += 5;
 			}

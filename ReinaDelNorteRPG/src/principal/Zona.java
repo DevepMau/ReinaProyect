@@ -33,9 +33,16 @@ public class Zona {
 		return pos;
 	}
 	
+	public int getX() {
+		return (int)pos.getX();
+	}
+	
+	public int getY() {
+		return (int)pos.getY();
+	}
+	
 	public void setPos(int x, int y) {
 		pos.setLocation(x, y);
-		
 	}
-
+	
 }
