@@ -30,6 +30,7 @@ public class PanelDeJuego extends JPanel implements Runnable {
 	public Teclado teclado = new Teclado(this);
 	Sonido musica = new Sonido();
 	Sonido se = new Sonido();
+	Combate combate = new Combate(this);
 	Thread hiloDeJuego;
 	
 	// FPS
@@ -101,7 +102,7 @@ public class PanelDeJuego extends JPanel implements Runnable {
 	}
 
 	public void actualizar() {
-
+		combate.actualizar();
 	}
 
 	public void paintComponent(Graphics g) {
@@ -114,7 +115,6 @@ public class PanelDeJuego extends JPanel implements Runnable {
 		if(teclado.comprobarTiempoDeDibujado == true) {
 			drawStart = System.nanoTime();
 		}
-
 		//DEBUG
 		if(teclado.comprobarTiempoDeDibujado == true) {
 			long drawEnd = System.nanoTime();
@@ -122,6 +122,7 @@ public class PanelDeJuego extends JPanel implements Runnable {
 			g2.setColor(Color.white);
 			g2.drawString("Draw Time: " + passed, 10, 400);
 		}
+		combate.dibujar(g2);
 
 		g2.dispose();
 
