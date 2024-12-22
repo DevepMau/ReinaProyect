@@ -35,6 +35,11 @@ public class PanelDeJuego extends JPanel implements Runnable {
 	
 	// FPS
 	int FPS = 60;
+	
+	//ESTADOS
+	public int estadoDeJuego;
+	public final int JUEGO = 0;
+	public final int COMBATE = 1;
 
 	public PanelDeJuego() {
 
@@ -43,6 +48,7 @@ public class PanelDeJuego extends JPanel implements Runnable {
 		this.setDoubleBuffered(true);
 		this.addKeyListener(teclado);
 		this.setFocusable(true);
+		this.estadoDeJuego = COMBATE;
 
 	}
 	
@@ -109,6 +115,11 @@ public class PanelDeJuego extends JPanel implements Runnable {
 		super.paintComponent(g);
 
 		Graphics2D g2 = (Graphics2D) g;
+		
+		//COMBATE
+		if(estadoDeJuego == COMBATE) {
+			combate.dibujar(g2);
+		}
 		
 		//DEBUG
 		long drawStart = 0;
