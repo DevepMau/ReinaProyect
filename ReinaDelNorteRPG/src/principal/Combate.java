@@ -2,25 +2,34 @@ package principal;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import unidades.Elite;
+import unidades.Especialista;
+import unidades.Recluta;
+import unidades.Soldado;
+import unidades.Unidad;
 
 public class Combate {
 	PanelDeJuego pdj;
 	Graphics2D g2;
 	HashMap<Integer, Zona> zonas = new HashMap<>();
 	ArrayList<Unidad> unidades = new ArrayList<>();
+	boolean dañar = false;
 	
 	public Combate(PanelDeJuego pdj) {
 		this.pdj = pdj;
 		crearTablero();
-		unidades.add(new Unidad(zonas.get(0), true, pdj));
-		unidades.add(new Unidad(zonas.get(0), false, pdj));
-		unidades.add(new Unidad(zonas.get(0), true, pdj));
-		unidades.add(new Unidad(zonas.get(0), true, pdj));
-		unidades.add(new Unidad(zonas.get(0), false, pdj));
-		unidades.add(new Unidad(zonas.get(0), false, pdj));
+		unidades.add(new Recluta(zonas.get(0), true, pdj));
+		unidades.add(new Recluta(zonas.get(0), false, pdj));
+		unidades.add(new Soldado(zonas.get(0), true, pdj));
+		unidades.add(new Elite(zonas.get(0), true, pdj));
+		unidades.add(new Soldado(zonas.get(0), false, pdj));
+		unidades.add(new Elite(zonas.get(0), false, pdj));
+		unidades.add(new Especialista(zonas.get(0), false, pdj));
 		
 	}
 	/////////////////////////////////////////////////////////
@@ -28,14 +37,17 @@ public class Combate {
 		int idAli = 5;
 		int idEne = 1;
 		for (Unidad unidad : unidades) {
-		    if(unidad.aliado) {
+		    if(unidad.aliado && idAli <= 8) {
 		    	unidad.posicionar(zonas.get(idAli));
 		    	idAli++;
 		    }
-		    else {
+		    else if(!unidad.aliado && idEne <= 4) {
 		    	unidad.posicionar(zonas.get(idEne));
 		    	idEne++;
 		    }
+		}
+		if(dañar) {
+			unidades.get(0).recibirDaño();
 		}
 	}
 	
@@ -45,7 +57,8 @@ public class Combate {
 			zona.dibujar(g2);
 		}
 		for (Unidad unidad : unidades) {
-		    unidad.dibujar(g2);;
+		    unidad.dibujar(g2);
+		    unidad.dibujarVida();
 		}
 		//dibujarRetrato(zonas.get(32).x, zonas.get(32).y, pdj.tamañoDeBaldosa*4, pdj.tamañoDeBaldosa*4);
 	}
