@@ -22,7 +22,7 @@ public class Zona {
 		this.g2 = g2;
 		g2.setColor(Color.white);
 		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
-		if(id == 0) {
+		if(id == 9) {
 			g2.drawRect(x, y, pdj.tamañoDeBaldosa*3, pdj.tamañoDeBaldosa*4);
 			g2.drawString("portrait", x+pdj.tamañoDeBaldosa-6, y+pdj.tamañoDeBaldosa*2+8);
 		}
