@@ -19,16 +19,5 @@ public class Soldado extends Unidad {
 		this.def = 5;
 		this.pcrt = 0.5;
 	}
-	
-	public void dibujar(Graphics2D g2) {
-		this.g2 = g2;
-		if(aliado) {
-			g2.setColor(Color.orange);
-		}
-		else {
-			g2.setColor(Color.PINK);
-		}
-		g2.fillRect(posX+24, posY-24, pdj.tamañoDeBaldosa, pdj.tamañoDeBaldosa*2);
-	}
 
 }

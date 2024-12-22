@@ -19,16 +19,5 @@ public class Recluta extends Unidad{
 		this.def = 2;
 		this.pcrt = 0;
 	}
-	
-	public void dibujar(Graphics2D g2) {
-		this.g2 = g2;
-		if(aliado) {
-			g2.setColor(Color.cyan);
-		}
-		else {
-			g2.setColor(Color.MAGENTA);
-		}
-		g2.fillRect(posX+24, posY-24, pdj.tamañoDeBaldosa, pdj.tamañoDeBaldosa*2);
-	}
 
 }

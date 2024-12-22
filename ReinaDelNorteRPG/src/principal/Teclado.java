@@ -26,7 +26,7 @@ public class Teclado implements KeyListener {
 		//MODO COMBATE
 		if(pdj.estadoDeJuego == 1) {
 			if(codigo == KeyEvent.VK_W) {
-				pdj.combate.dañar = true;
+				//pdj.combate.dañar = true;
 			}
 		}
 		if(codigo == KeyEvent.VK_UP) {

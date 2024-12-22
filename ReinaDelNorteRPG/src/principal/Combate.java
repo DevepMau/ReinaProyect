@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import unidades.Elite;
 import unidades.Especialista;
@@ -18,7 +19,9 @@ public class Combate {
 	Graphics2D g2;
 	HashMap<Integer, Zona> zonas = new HashMap<>();
 	ArrayList<Unidad> unidades = new ArrayList<>();
-	boolean dañar = false;
+	int id = 0;
+	boolean habilitar = true;
+	boolean turnoJugador = true;
 	
 	public Combate(PanelDeJuego pdj) {
 		this.pdj = pdj;
@@ -46,9 +49,11 @@ public class Combate {
 		    	idEne++;
 		    }
 		}
-		if(dañar) {
-			unidades.get(0).recibirDaño();
+		for (Unidad unidad : unidades) {
+			unidad.actualizar();
 		}
+		realizarTurno();
+		
 	}
 	
 	public void dibujar(Graphics2D g2) {
@@ -113,5 +118,88 @@ public class Combate {
 		}
 		return false;
 	}
+	
+	////////////////////////////////////////
+	public void realizarTurno() {
+	    for (Unidad unidad : unidades) {
+	        if (unidad.aliado && turnoJugador) {
+	            // Unidad aliada: Permitir elegir un objetivo enemigo
+	            Unidad objetivo = elegirObjetivoEnemigo();
+	            if (objetivo != null) {
+	                unidad.atacar(objetivo);
+	                turnoJugador = false;
+	            }
+	        } else if(!turnoJugador) {
+	            // Unidad enemiga: Seleccionar automáticamente un objetivo aliado
+	            Unidad objetivo = elegirObjetivoAliado();
+	            if (objetivo != null) {
+	                unidad.atacar(objetivo);
+	                turnoJugador = true;
+	            }
+	        }
+	    }
+	}
+
+	private Unidad elegirObjetivoEnemigo() {
+	    // Lista de enemigos en zonas 1 a 4
+	    ArrayList<Unidad> enemigos = new ArrayList<>();
+	    for (Unidad unidad : unidades) {
+	    	if(unidad.hp > 0) {
+	    		if (!unidad.aliado) {
+		            enemigos.add(unidad);
+		        }
+	    	}
+	    }
+	    // Aquí puedes implementar la lógica para elegir al enemigo (manual o automática)
+	    if (!enemigos.isEmpty()) {
+	    	if(pdj.teclado.RIGHT == true && habilitar) {
+	    		if(id >= enemigos.size()-1) {
+	    			id = 0;
+	    		}
+	    		else {
+	    			id++;
+	    		}
+	    		habilitar = false;
+	    		System.out.println(id);
+	    	}
+	    	if(pdj.teclado.LEFT == true && habilitar) {
+	    		if(id <= 0) {
+	    			id = enemigos.size()-1;
+	    		}
+	    		else {
+	    			id--;
+	    		}
+	    		habilitar = false;
+	    		System.out.println(id);
+	    	}
+	    	if(!pdj.teclado.RIGHT && !pdj.teclado.LEFT && !pdj.teclado.ENTER) {
+	    		habilitar = true;
+	    	}
+	    	if(pdj.teclado.ENTER == true && habilitar) {
+	    		habilitar = false;
+	    		return enemigos.get(id);
+	    	}
+	    }
+	    return null;
+	}
+
+	private Unidad elegirObjetivoAliado() {
+	    // Lista de aliados en zonas 5 a 8
+	    ArrayList<Unidad> aliados = new ArrayList<>();
+	    for (Unidad unidad : unidades) {
+	    	if(unidad.hp > 0) {
+	    		if (unidad.aliado) {
+		            aliados.add(unidad);
+		        }
+	    	}
+	    }
+
+	    // Elegir un objetivo al azar (puedes personalizar esto)
+	    if (!aliados.isEmpty()) {
+	        return aliados.get((int) (Math.random() * aliados.size()));
+	    }
+	    return null;
+	}
+
 
 }
