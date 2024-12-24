@@ -20,6 +20,9 @@ public class Combate {
 	HashMap<Integer, Zona> zonas = new HashMap<>();
 	ArrayList<Unidad> unidades = new ArrayList<>();
 	int id = 0;
+	int pos = 0;
+	int timer = 100;
+	int tamañoLista = 0;
 	boolean habilitar = true;
 	boolean turnoJugador = true;
 	
@@ -28,6 +31,7 @@ public class Combate {
 		crearTablero();
 		unidades.add(new Recluta(zonas.get(0), true, pdj));
 		unidades.add(new Recluta(zonas.get(0), false, pdj));
+		unidades.add(new Soldado(zonas.get(0), true, pdj));
 		unidades.add(new Soldado(zonas.get(0), true, pdj));
 		unidades.add(new Elite(zonas.get(0), true, pdj));
 		unidades.add(new Soldado(zonas.get(0), false, pdj));
@@ -64,6 +68,25 @@ public class Combate {
 		for (Unidad unidad : unidades) {
 		    unidad.dibujar(g2);
 		    unidad.dibujarVida();
+		}
+		g2.setColor(Color.YELLOW);
+		g2.fillRect(zonas.get(pos+1).x, zonas.get(pos+1).y+pdj.tamañoDeBaldosa*2-8, pdj.tamañoDeBaldosa*2, pdj.tamañoDeBaldosa/8);
+		//Cartel de turno///////////////////
+		g2.setColor(Color.white);
+		g2.drawRect(pdj.tamañoDeBaldosa*4, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*8, pdj.tamañoDeBaldosa);
+		if(turnoJugador) {
+			g2.setColor(Color.BLUE);
+			g2.fillRect(pdj.tamañoDeBaldosa*4, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*8, pdj.tamañoDeBaldosa);
+			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 30f));
+			g2.setColor(Color.white);
+			g2.drawString("Turno: "+unidades.get(id).nombre, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*5+32);
+		}
+		else {
+			g2.setColor(Color.RED);
+			g2.fillRect(pdj.tamañoDeBaldosa*4, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*8, pdj.tamañoDeBaldosa);
+			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 30f));
+			g2.setColor(Color.white);
+			g2.drawString("Turno: "+unidades.get(id).nombre, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*5+32);
 		}
 		//dibujarRetrato(zonas.get(32).x, zonas.get(32).y, pdj.tamañoDeBaldosa*4, pdj.tamañoDeBaldosa*4);
 	}
@@ -121,85 +144,88 @@ public class Combate {
 	
 	////////////////////////////////////////
 	public void realizarTurno() {
+		ArrayList<Unidad> enemigos = new ArrayList<>();
+	    ArrayList<Unidad> aliados = new ArrayList<>();
 	    for (Unidad unidad : unidades) {
-	        if (unidad.aliado && turnoJugador) {
-	            // Unidad aliada: Permitir elegir un objetivo enemigo
-	            Unidad objetivo = elegirObjetivoEnemigo();
-	            if (objetivo != null) {
-	                unidad.atacar(objetivo);
-	                turnoJugador = false;
-	            }
-	        } else if(!turnoJugador) {
-	            // Unidad enemiga: Seleccionar automáticamente un objetivo aliado
-	            Unidad objetivo = elegirObjetivoAliado();
-	            if (objetivo != null) {
-	                unidad.atacar(objetivo);
-	                turnoJugador = true;
+	        if (unidad.hp > 0) {
+	            if (!unidad.aliado) {
+	                enemigos.add(unidad);
+	            } else {
+	                aliados.add(unidad);
 	            }
 	        }
 	    }
-	}
-
-	private Unidad elegirObjetivoEnemigo() {
-	    // Lista de enemigos en zonas 1 a 4
-	    ArrayList<Unidad> enemigos = new ArrayList<>();
-	    for (Unidad unidad : unidades) {
-	    	if(unidad.hp > 0) {
-	    		if (!unidad.aliado) {
-		            enemigos.add(unidad);
-		        }
-	    	}
+	    System.out.println("enemigos: "+enemigos.size()+" / "+"aliados: "+aliados.size());
+	    if(unidades.get(id).vivo) {
+	    	if(unidades.get(id).aliado) {
+		    	turnoJugador = true;
+		    	Unidad unidadSeleccionada = elegirUnidad(enemigos);
+		    	if(unidadSeleccionada != null) {
+		    		unidades.get(id).atacar(unidadSeleccionada);
+		    		if(id >= unidades.size()-1) {
+		    			id = 0;
+		    		}
+		    		else {
+		    			id++;
+		    		}
+		    	}
+		    }
+		    else {
+		    	turnoJugador = false;
+		    	if(timer == 0) {
+		    		unidades.get(id).atacar(elegirObjetivoAleatorio(aliados));
+			    	if(id >= unidades.size()-1) {
+		    			id = 0;
+		    		}
+		    		else {
+		    			id++;
+		    		}
+			    	timer = 100;
+		    	}
+		    	timer--;
+		    }
 	    }
-	    // Aquí puedes implementar la lógica para elegir al enemigo (manual o automática)
-	    if (!enemigos.isEmpty()) {
+	    else {
+	    	id++;
+	    }
+	}
+	
+	///////////////////////////////////////
+	private Unidad elegirUnidad(ArrayList<Unidad> unidades) {
+	    if (!unidades.isEmpty()) {
 	    	if(pdj.teclado.RIGHT == true && habilitar) {
-	    		if(id >= enemigos.size()-1) {
-	    			id = 0;
+	    		if(pos >= unidades.size()-1) {
+	    			pos = 0;
 	    		}
 	    		else {
-	    			id++;
+	    			pos++;
 	    		}
 	    		habilitar = false;
-	    		System.out.println(id);
 	    	}
 	    	if(pdj.teclado.LEFT == true && habilitar) {
-	    		if(id <= 0) {
-	    			id = enemigos.size()-1;
+	    		if(pos <= 0) {
+	    			pos = unidades.size()-1;
 	    		}
 	    		else {
-	    			id--;
+	    			pos--;
 	    		}
 	    		habilitar = false;
-	    		System.out.println(id);
 	    	}
 	    	if(!pdj.teclado.RIGHT && !pdj.teclado.LEFT && !pdj.teclado.ENTER) {
 	    		habilitar = true;
 	    	}
 	    	if(pdj.teclado.ENTER == true && habilitar) {
 	    		habilitar = false;
-	    		return enemigos.get(id);
+	    		return unidades.get(pos);
 	    	}
 	    }
 	    return null;
 	}
 
-	private Unidad elegirObjetivoAliado() {
-	    // Lista de aliados en zonas 5 a 8
-	    ArrayList<Unidad> aliados = new ArrayList<>();
-	    for (Unidad unidad : unidades) {
-	    	if(unidad.hp > 0) {
-	    		if (unidad.aliado) {
-		            aliados.add(unidad);
-		        }
-	    	}
-	    }
-
-	    // Elegir un objetivo al azar (puedes personalizar esto)
-	    if (!aliados.isEmpty()) {
-	        return aliados.get((int) (Math.random() * aliados.size()));
+	private Unidad elegirObjetivoAleatorio(ArrayList<Unidad> unidades) {
+	    if (!unidades.isEmpty()) {
+	        return unidades.get((int) (Math.random() * unidades.size()));
 	    }
 	    return null;
 	}
-
-
 }

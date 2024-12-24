@@ -15,8 +15,10 @@ public class Unidad {
 	int posX = 0;
 	int posY = 0;
 	public boolean aliado = false;
+	public boolean activo = true;
 	public Zona zona;
 	int barraHP = 72; 
+	public boolean vivo = true;
 	// Variables adicionales para la sacudida
     boolean enSacudida = false;
     int duracionSacudida = 0; // Duración en frames
@@ -54,6 +56,9 @@ public class Unidad {
                 desplazamientoSacudidaY = 0;
             }
         }
+        if(hp == 0) {
+        	vivo = false;
+        }
     }
 	
 	public void dibujar(Graphics2D g2) {
@@ -62,6 +67,10 @@ public class Unidad {
             g2.setColor(Color.BLUE);
         } else {
             g2.setColor(Color.RED);
+        }
+        
+        if(!activo) {
+        	g2.setColor(Color.YELLOW);
         }
 
         // Aplicar el desplazamiento de la sacudida
@@ -108,10 +117,21 @@ public class Unidad {
 
 	        // Activar la sacudida
 	        enSacudida = true;
-	        duracionSacudida = 10; // Duración de 10 frames (ajustable)
+	        duracionSacudida = 20; // Duración de 10 frames (ajustable)
 	    }
 
 	    public void atacar(Unidad unidad) {
-	        unidad.recibirDaño(this.atq);
+	    	 boolean esCritico = Math.random() <= this.pcrt;
+	    	 // Calcular el daño base considerando la defensa
+	    	 int daño = Math.max(1, this.atq - unidad.def);
+	    	 // Si es crítico, duplicar el daño
+	    	 if (esCritico) {
+	    	     daño *= 2;
+	    	     //System.out.print("¡Golpe crítico! ");
+	    	 }
+
+	    	 // Infligir el daño al objetivo
+	    	 unidad.recibirDaño(daño);
+	    	 //System.out.println("Daño: " + daño);
 	    }
 }
