@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -25,10 +26,12 @@ public class Combate {
 	int tamañoLista = 0;
 	boolean habilitar = true;
 	boolean turnoJugador = true;
+	Rectangle selector;
 	
 	public Combate(PanelDeJuego pdj) {
 		this.pdj = pdj;
 		crearTablero();
+		selector = new Rectangle(0, 0, pdj.tamañoDeBaldosa*2, pdj.tamañoDeBaldosa/8);
 		unidades.add(new Recluta(zonas.get(0), true, pdj));
 		unidades.add(new Recluta(zonas.get(0), false, pdj));
 		unidades.add(new Soldado(zonas.get(0), true, pdj));
@@ -69,9 +72,12 @@ public class Combate {
 		    unidad.dibujar(g2);
 		    unidad.dibujarVida();
 		}
-		g2.setColor(Color.YELLOW);
-		g2.fillRect(zonas.get(pos+1).x, zonas.get(pos+1).y+pdj.tamañoDeBaldosa*2-8, pdj.tamañoDeBaldosa*2, pdj.tamañoDeBaldosa/8);
-		//Cartel de turno///////////////////
+		if(turnoJugador) {
+			g2.setColor(Color.YELLOW);
+			g2.fillRect(selector.x, selector.y, selector.width, selector.height);
+		}
+		
+		//CARTEL DE TURNO///////////////////////////////////////////////
 		g2.setColor(Color.white);
 		g2.drawRect(pdj.tamañoDeBaldosa*4, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*8, pdj.tamañoDeBaldosa);
 		if(turnoJugador) {
@@ -88,9 +94,111 @@ public class Combate {
 			g2.setColor(Color.white);
 			g2.drawString("Turno: "+unidades.get(id).nombre, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*5+32);
 		}
-		//dibujarRetrato(zonas.get(32).x, zonas.get(32).y, pdj.tamañoDeBaldosa*4, pdj.tamañoDeBaldosa*4);
+		
 	}
-	//////////////////////////////////////////////////////////
+	
+	//METODOS PARA JUGAR////////////////////////////////////////////////////
+	public void realizarTurno() {
+		ArrayList<Unidad> enemigos = new ArrayList<>();
+	    ArrayList<Unidad> aliados = new ArrayList<>();
+	    for (Unidad unidad : unidades) {
+	        if (unidad.hp > 0) {
+	            if (!unidad.aliado) {
+	                enemigos.add(unidad);
+	            } else {
+	                aliados.add(unidad);
+	            }
+	        }
+	    }
+	    //System.out.println("enemigos: "+enemigos.size()+" / "+"aliados: "+aliados.size());
+	    if(unidades.get(id).vivo) {
+	    	if(unidades.get(id).aliado) {
+		    	turnoJugador = true;
+		    	Unidad unidadSeleccionada = elegirUnidad(enemigos);
+		    	if(unidadSeleccionada != null) {
+		    		unidades.get(id).atacar(unidadSeleccionada);
+		    		if(unidadSeleccionada.hp <= 0) {
+		    			//System.out.println("murio");
+		    			pos = 0;
+		    		}
+		    		if(id >= unidades.size()-1) {
+		    			id = 0;
+		    		}
+		    		else {
+		    			id++;
+		    		}
+		    	}
+		    }
+		    else {
+		    	turnoJugador = false;
+		    	if(timer == 0) {
+		    		unidades.get(id).atacar(elegirObjetivoAleatorio(aliados));
+			    	if(id >= unidades.size()-1) {
+		    			id = 0;
+		    		}
+		    		else {
+		    			id++;
+		    		}
+			    	timer = 100;
+		    	}
+		    	timer--;
+		    }
+	    }
+	    else {
+	    	if(id >= unidades.size()-1) {
+	    		id = 0;
+	    	}
+	    	else {
+		    	id++;
+	    	}
+	    }
+	}
+	
+	//METODOS PARA ELEGIR UNIDADES//////////////////////////////////////////
+	private Unidad elegirUnidad(ArrayList<Unidad> unidades) {
+	    if (!unidades.isEmpty()) {
+	    	actualizarSelector(unidades.get(pos));
+	    	if(pdj.teclado.RIGHT == true && habilitar) {
+	    		if(pos >= unidades.size()-1) {
+	    			pos = 0;
+	    		}
+	    		else {
+	    			pos++;
+	    		}
+	    		habilitar = false;
+	    		//actualizarSelector(unidades.get(pos));
+	    		//System.out.println("posi: "+pos);
+	    	}
+	    	if(pdj.teclado.LEFT == true && habilitar) {
+	    		if(pos <= 0) {
+	    			pos = unidades.size()-1;
+	    		}
+	    		else {
+	    			pos--;
+	    		}
+	    		habilitar = false;
+	    		//actualizarSelector(unidades.get(pos));
+	    		//System.out.println("posi: "+pos);
+	    	}
+	    	if(!pdj.teclado.RIGHT && !pdj.teclado.LEFT && !pdj.teclado.ENTER) {
+	    		habilitar = true;
+	    	}
+	    	if(pdj.teclado.ENTER == true && habilitar) {
+	    		habilitar = false;
+	    		return unidades.get(pos);
+	    	}
+	    }
+	    return null;
+	}
+	
+	private Unidad elegirObjetivoAleatorio(ArrayList<Unidad> unidades) {
+	    if (!unidades.isEmpty()) {
+	        return unidades.get((int) (Math.random() * unidades.size()));
+	    }
+	    return null;
+	}
+	
+	//METODOS DE TABLERO////////////////////////////////////////////////////////
 	public void crearTablero() {
 		int x = 0;
 		int y = 0;
@@ -142,90 +250,10 @@ public class Combate {
 		return false;
 	}
 	
-	////////////////////////////////////////
-	public void realizarTurno() {
-		ArrayList<Unidad> enemigos = new ArrayList<>();
-	    ArrayList<Unidad> aliados = new ArrayList<>();
-	    for (Unidad unidad : unidades) {
-	        if (unidad.hp > 0) {
-	            if (!unidad.aliado) {
-	                enemigos.add(unidad);
-	            } else {
-	                aliados.add(unidad);
-	            }
-	        }
-	    }
-	    System.out.println("enemigos: "+enemigos.size()+" / "+"aliados: "+aliados.size());
-	    if(unidades.get(id).vivo) {
-	    	if(unidades.get(id).aliado) {
-		    	turnoJugador = true;
-		    	Unidad unidadSeleccionada = elegirUnidad(enemigos);
-		    	if(unidadSeleccionada != null) {
-		    		unidades.get(id).atacar(unidadSeleccionada);
-		    		if(id >= unidades.size()-1) {
-		    			id = 0;
-		    		}
-		    		else {
-		    			id++;
-		    		}
-		    	}
-		    }
-		    else {
-		    	turnoJugador = false;
-		    	if(timer == 0) {
-		    		unidades.get(id).atacar(elegirObjetivoAleatorio(aliados));
-			    	if(id >= unidades.size()-1) {
-		    			id = 0;
-		    		}
-		    		else {
-		    			id++;
-		    		}
-			    	timer = 100;
-		    	}
-		    	timer--;
-		    }
-	    }
-	    else {
-	    	id++;
-	    }
-	}
-	
-	///////////////////////////////////////
-	private Unidad elegirUnidad(ArrayList<Unidad> unidades) {
-	    if (!unidades.isEmpty()) {
-	    	if(pdj.teclado.RIGHT == true && habilitar) {
-	    		if(pos >= unidades.size()-1) {
-	    			pos = 0;
-	    		}
-	    		else {
-	    			pos++;
-	    		}
-	    		habilitar = false;
-	    	}
-	    	if(pdj.teclado.LEFT == true && habilitar) {
-	    		if(pos <= 0) {
-	    			pos = unidades.size()-1;
-	    		}
-	    		else {
-	    			pos--;
-	    		}
-	    		habilitar = false;
-	    	}
-	    	if(!pdj.teclado.RIGHT && !pdj.teclado.LEFT && !pdj.teclado.ENTER) {
-	    		habilitar = true;
-	    	}
-	    	if(pdj.teclado.ENTER == true && habilitar) {
-	    		habilitar = false;
-	    		return unidades.get(pos);
-	    	}
-	    }
-	    return null;
-	}
-
-	private Unidad elegirObjetivoAleatorio(ArrayList<Unidad> unidades) {
-	    if (!unidades.isEmpty()) {
-	        return unidades.get((int) (Math.random() * unidades.size()));
-	    }
-	    return null;
+	public void actualizarSelector(Unidad unidad) {
+		if(unidad != null) {
+			selector.setLocation(unidad.posX, unidad.posY);
+		}
+		//System.out.println("Unidad: "+unidad.nombre+"/ x: "+unidad.zona.x+" / "+"y: "+unidad.zona.y);
 	}
 }

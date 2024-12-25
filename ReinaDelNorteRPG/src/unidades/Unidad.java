@@ -12,8 +12,8 @@ public class Unidad {
 	/////////////////////////////////////////////
 	PanelDeJuego pdj;
 	Graphics2D g2;
-	int posX = 0;
-	int posY = 0;
+	public int posX = 0;
+	public int posY = 0;
 	public boolean aliado = false;
 	public boolean activo = true;
 	public Zona zona;
@@ -56,7 +56,7 @@ public class Unidad {
                 desplazamientoSacudidaY = 0;
             }
         }
-        if(hp == 0) {
+        if(hp <= 0) {
         	vivo = false;
         }
     }
