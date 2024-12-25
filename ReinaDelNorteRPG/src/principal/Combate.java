@@ -252,7 +252,7 @@ public class Combate {
 	
 	public void actualizarSelector(Unidad unidad) {
 		if(unidad != null) {
-			selector.setLocation(unidad.posX, unidad.posY);
+			selector.setLocation(unidad.posX, unidad.posY+pdj.tamañoDeBaldosa*2);
 		}
 		//System.out.println("Unidad: "+unidad.nombre+"/ x: "+unidad.zona.x+" / "+"y: "+unidad.zona.y);
 	}

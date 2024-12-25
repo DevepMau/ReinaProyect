@@ -11,8 +11,8 @@ public class Especialista extends Unidad {
 	public Especialista(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
 		this.nombre = "Especialista";
-		this.hp = 50;
-		this.hpMax = 50;
+		this.hp = 45;
+		this.hpMax = 45;
 		this.sp = 80;
 		this.spMax = 80;
 		this.atq = 8;

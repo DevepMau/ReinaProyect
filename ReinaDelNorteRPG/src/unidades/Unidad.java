@@ -16,6 +16,7 @@ public class Unidad {
 	public int posY = 0;
 	public boolean aliado = false;
 	public boolean activo = true;
+	public boolean esCritico = false;
 	public Zona zona;
 	int barraHP = 72; 
 	public boolean vivo = true;
@@ -24,6 +25,7 @@ public class Unidad {
     int duracionSacudida = 0; // Duración en frames
     int desplazamientoSacudidaX = 0;
     int desplazamientoSacudidaY = 0;
+    int desplazarDañoRecibido;
     /////////////////////////////////////////////
 	public int hp;
 	int hpMax;
@@ -33,6 +35,7 @@ public class Unidad {
 	int def;
 	double pcrt;
 	public String nombre;
+	public String dañoRecibido;
 	
 	public Unidad(Zona zona,boolean aliado, PanelDeJuego pdj) {
 		this.zona = zona;
@@ -40,20 +43,29 @@ public class Unidad {
 		posY = zona.y;
 		this.pdj = pdj;
 		this.aliado = aliado;
+		dañoRecibido = "";
+		if(aliado) {
+			desplazarDañoRecibido = 384;
+		}
+		else {
+			desplazarDañoRecibido = 96;
+		}
 	}
 	
 	public void actualizar() {
         if (enSacudida) {
             if (duracionSacudida > 0) {
-                // Generar un pequeño desplazamiento aleatorio
                 desplazamientoSacudidaX = (int) (Math.random() * 10 - 5);
                 desplazamientoSacudidaY = (int) (Math.random() * 10 - 5);
                 duracionSacudida--;
+                desplazarDañoRecibido--;
+                
             } else {
-                // Termina la sacudida
                 enSacudida = false;
                 desplazamientoSacudidaX = 0;
                 desplazamientoSacudidaY = 0;
+                desplazarDañoRecibido = posY;
+                dañoRecibido = "";
             }
         }
         if(hp <= 0) {
@@ -68,16 +80,18 @@ public class Unidad {
         } else {
             g2.setColor(Color.RED);
         }
-        
-        if(!activo) {
+        if(!vivo) {
         	g2.setColor(Color.YELLOW);
         }
-
-        // Aplicar el desplazamiento de la sacudida
         int dibujarX = posX + desplazamientoSacudidaX;
         int dibujarY = posY + desplazamientoSacudidaY;
-
         g2.fillRect(dibujarX + 24, dibujarY - 24, pdj.tamañoDeBaldosa, pdj.tamañoDeBaldosa * 2);
+        
+        //MOSTRAR DAÑO RECIBIDO////////////////////////////
+
+        g2.setColor(Color.WHITE);
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+        g2.drawString(dañoRecibido, posX+84, desplazarDañoRecibido-48);
     }
 	
 	public void posicionar(Zona zona) {
@@ -95,9 +109,6 @@ public class Unidad {
 		g2.setColor(Color.white);
 		int hp = calcularBarraHP();
 		int altura = -pdj.tamañoDeBaldosa-(pdj.tamañoDeBaldosa/8);
-		//if(aliado) {
-			//altura = pdj.tamañoDeBaldosa*2+(pdj.tamañoDeBaldosa/4);
-		//}
 		
 		g2.drawString(nombre, posX+10, posY-5+altura);
 		Color c = new Color(0,0,0, 200);
@@ -112,26 +123,22 @@ public class Unidad {
 		g2.drawRoundRect(posX+10, posY+altura, barraHP, pdj.tamañoDeBaldosa/5, 5, 5);
 	}
 	
-	 public void recibirDaño(int daño) {
-	        this.hp -= daño;
+	public void recibirDaño(int daño) {
+		this.hp -= daño;
+		dañoRecibido = "" + daño;
 
-	        // Activar la sacudida
-	        enSacudida = true;
-	        duracionSacudida = 20; // Duración de 10 frames (ajustable)
-	    }
+	    enSacudida = true;
+	    duracionSacudida = 20;
+	}
 
-	    public void atacar(Unidad unidad) {
-	    	 boolean esCritico = Math.random() <= this.pcrt;
-	    	 // Calcular el daño base considerando la defensa
-	    	 int daño = Math.max(1, this.atq - unidad.def);
-	    	 // Si es crítico, duplicar el daño
-	    	 if (esCritico) {
-	    	     daño *= 2;
-	    	     //System.out.print("¡Golpe crítico! ");
-	    	 }
-
-	    	 // Infligir el daño al objetivo
-	    	 unidad.recibirDaño(daño);
-	    	 //System.out.println("Daño: " + daño);
-	    }
+	public void atacar(Unidad unidad) {
+		esCritico = Math.random() <= this.pcrt;
+	    	 
+		int daño = Math.max(1, this.atq - unidad.def);
+	    	 
+		if (esCritico) {
+			daño *= 2;
+		}
+		unidad.recibirDaño(daño);
+	}
 }
