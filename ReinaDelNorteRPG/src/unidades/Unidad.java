@@ -105,12 +105,12 @@ public class Unidad {
 	
 	public void dibujarVida() {
 		
-		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 12f));
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
 		g2.setColor(Color.white);
 		int hp = calcularBarraHP();
 		int altura = -pdj.tamañoDeBaldosa-(pdj.tamañoDeBaldosa/8);
 		
-		g2.drawString(nombre, posX+10, posY-5+altura);
+		g2.drawString(nombre, posX+10, posY-10+altura);
 		Color c = new Color(0,0,0, 200);
 		g2.setColor(c);
 		g2.fillRoundRect(posX+10, posY+altura, barraHP, pdj.tamañoDeBaldosa/5, 5, 5);

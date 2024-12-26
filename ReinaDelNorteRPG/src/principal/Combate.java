@@ -20,10 +20,13 @@ public class Combate {
 	Graphics2D g2;
 	HashMap<Integer, Zona> zonas = new HashMap<>();
 	ArrayList<Unidad> unidades = new ArrayList<>();
+	String[] acciones = new String[4];
 	int id = 0;
 	int pos = 0;
 	int timer = 100;
 	int tamañoLista = 0;
+	int numeroDeInstruccion = 0;
+	int instruccionElegida = -1;
 	boolean habilitar = true;
 	boolean turnoJugador = true;
 	Rectangle selector;
@@ -31,6 +34,10 @@ public class Combate {
 	public Combate(PanelDeJuego pdj) {
 		this.pdj = pdj;
 		crearTablero();
+		acciones[0] = "ATACAR";
+		acciones[1] = "DEFENDER";
+		acciones[2] = "HABILIDAD";
+		acciones[3] = "USAR OBJETO";
 		selector = new Rectangle(0, 0, pdj.tamañoDeBaldosa*2, pdj.tamañoDeBaldosa/8);
 		unidades.add(new Recluta(zonas.get(0), true, pdj));
 		unidades.add(new Recluta(zonas.get(0), false, pdj));
@@ -73,8 +80,11 @@ public class Combate {
 		    unidad.dibujarVida();
 		}
 		if(turnoJugador) {
-			g2.setColor(Color.YELLOW);
-			g2.fillRect(selector.x, selector.y, selector.width, selector.height);
+			menuDeOpciones(acciones, pdj.tamañoDeBaldosa*3 , pdj.altoDePantalla - pdj.tamañoDeBaldosa*(acciones.length-1), 160);
+			if(instruccionElegida == 0) {
+				g2.setColor(Color.YELLOW);
+				g2.fillRect(selector.x, selector.y, selector.width, selector.height);
+			}
 		}
 		
 		//CARTEL DE TURNO///////////////////////////////////////////////
@@ -110,23 +120,27 @@ public class Combate {
 	            }
 	        }
 	    }
-	    //System.out.println("enemigos: "+enemigos.size()+" / "+"aliados: "+aliados.size());
 	    if(unidades.get(id).vivo) {
 	    	if(unidades.get(id).aliado) {
 		    	turnoJugador = true;
-		    	Unidad unidadSeleccionada = elegirUnidad(enemigos);
-		    	if(unidadSeleccionada != null) {
-		    		unidades.get(id).atacar(unidadSeleccionada);
-		    		if(unidadSeleccionada.hp <= 0) {
-		    			//System.out.println("murio");
-		    			pos = 0;
-		    		}
-		    		if(id >= unidades.size()-1) {
-		    			id = 0;
-		    		}
-		    		else {
-		    			id++;
-		    		}
+		    	if(instruccionElegida == -1) {
+		    		instruccionElegida = elegirAccion();
+		    	}
+		    	else if(instruccionElegida == 0) {
+		    		Unidad unidadSeleccionada = elegirUnidad(enemigos);
+			    	if(unidadSeleccionada != null) {
+			    		unidades.get(id).atacar(unidadSeleccionada);
+			    		if(unidadSeleccionada.hp <= 0) {
+			    			pos = 0;
+			    		}
+			    		if(id >= unidades.size()-1) {
+			    			id = 0;
+			    		}
+			    		else {
+			    			id++;
+			    		}
+			    		instruccionElegida = -1;
+			    	}
 		    	}
 		    }
 		    else {
@@ -166,8 +180,6 @@ public class Combate {
 	    			pos++;
 	    		}
 	    		habilitar = false;
-	    		//actualizarSelector(unidades.get(pos));
-	    		//System.out.println("posi: "+pos);
 	    	}
 	    	if(pdj.teclado.LEFT == true && habilitar) {
 	    		if(pos <= 0) {
@@ -177,8 +189,6 @@ public class Combate {
 	    			pos--;
 	    		}
 	    		habilitar = false;
-	    		//actualizarSelector(unidades.get(pos));
-	    		//System.out.println("posi: "+pos);
 	    	}
 	    	if(!pdj.teclado.RIGHT && !pdj.teclado.LEFT && !pdj.teclado.ENTER) {
 	    		habilitar = true;
@@ -196,6 +206,59 @@ public class Combate {
 	        return unidades.get((int) (Math.random() * unidades.size()));
 	    }
 	    return null;
+	}
+	
+	//SUBMENUS//////////////////////////////////////////////////////////////////
+	public void menuDeOpciones(String[] opciones, int posX, int posY, int anchoVentana) {
+		dibujarVentana(posX, posY-8, anchoVentana, pdj.tamañoDeBaldosa*(opciones.length-1)+8);
+		//OPCIONES Y RECUADRO DE SELECCION
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 24f));
+		for (int i = 0; i < opciones.length; i++) {
+			g2.setColor(Color.white);
+			g2.drawString(opciones[i], posX+pdj.tamañoDeBaldosa/4, posY+24);
+			if(numeroDeInstruccion == i) {
+				if(instruccionElegida == -1) {
+					g2.setColor(Color.WHITE);
+					g2.fillRoundRect(posX+5, posY, anchoVentana-10 , 32, 5, 5);
+					g2.setColor(Color.BLACK);
+					g2.drawString(opciones[i], posX+pdj.tamañoDeBaldosa/4, posY+24);
+				}
+				else {
+					g2.setColor(Color.white);
+					g2.drawRoundRect(posX+5, posY, anchoVentana-10 , 32, 5, 5);
+				}
+			}
+			posY += (pdj.tamañoDeBaldosa/2)+(pdj.tamañoDeBaldosa/4);
+		}
+	}
+	
+	public int elegirAccion() {
+		if(pdj.teclado.RIGHT == true && habilitar) {
+    		if(numeroDeInstruccion >= acciones.length-1) {
+    			numeroDeInstruccion = 0;
+    		}
+    		else {
+    			numeroDeInstruccion++;
+    		}
+    		habilitar = false;
+    	}
+    	if(pdj.teclado.LEFT == true && habilitar) {
+    		if(numeroDeInstruccion <= 0) {
+    			numeroDeInstruccion = acciones.length-1;
+    		}
+    		else {
+    			numeroDeInstruccion--;
+    		}
+    		habilitar = false;
+    	}
+    	if(!pdj.teclado.RIGHT && !pdj.teclado.LEFT && !pdj.teclado.ENTER) {
+    		habilitar = true;
+    	}
+    	if(pdj.teclado.ENTER == true && habilitar) {
+    		habilitar = false;
+    		return instruccionElegida = numeroDeInstruccion;
+    	}
+    return -1;
 	}
 	
 	//METODOS DE TABLERO////////////////////////////////////////////////////////
@@ -226,12 +289,12 @@ public class Combate {
 	public void dibujarVentana(int x, int y, int width, int height) {
 		Color c = new Color(0,0,0, 200);
 		g2.setColor(c);
-		g2.fillRoundRect(x+5, y+5, width, height, 35, 35);
+		g2.fillRoundRect(x+5, y+5, width, height, 10, 10);
 		
 		c = new Color(255, 255, 255);
 		g2.setColor(c);
-		g2.setStroke(new BasicStroke(5));
-		g2.drawRoundRect(x+5, y+5, width-10, height-10, 25, 25);
+		//g2.setStroke(new BasicStroke(5));
+		g2.drawRoundRect(x+5, y+5, width-10, height-10, 10, 10);
 	}
 	
 	public void dibujarRetrato(int x, int y, int width, int height) {
@@ -254,6 +317,5 @@ public class Combate {
 		if(unidad != null) {
 			selector.setLocation(unidad.posX, unidad.posY+pdj.tamañoDeBaldosa*2);
 		}
-		//System.out.println("Unidad: "+unidad.nombre+"/ x: "+unidad.zona.x+" / "+"y: "+unidad.zona.y);
 	}
 }

@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.io.IOException;
+
 import javax.swing.JPanel;
 
 public class PanelDeJuego extends JPanel implements Runnable {
@@ -30,7 +32,9 @@ public class PanelDeJuego extends JPanel implements Runnable {
 	public Teclado teclado = new Teclado(this);
 	Sonido musica = new Sonido();
 	Sonido se = new Sonido();
+	public UI ui = new UI(this);
 	Combate combate = new Combate(this);
+
 	Thread hiloDeJuego;
 	
 	// FPS
@@ -53,7 +57,6 @@ public class PanelDeJuego extends JPanel implements Runnable {
 	}
 	
 	public void configuracionDeJuego() {
-		
 	}
 
 	public void iniciarHiloDeJuego() {
@@ -115,6 +118,7 @@ public class PanelDeJuego extends JPanel implements Runnable {
 		super.paintComponent(g);
 
 		Graphics2D g2 = (Graphics2D) g;
+		g2.setFont(ui.getMaruMonica());
 		
 		//COMBATE
 		if(estadoDeJuego == COMBATE) {
