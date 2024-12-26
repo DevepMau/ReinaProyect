@@ -39,14 +39,14 @@ public class Combate {
 		acciones[2] = "HABILIDAD";
 		acciones[3] = "USAR OBJETO";
 		selector = new Rectangle(0, 0, pdj.tamañoDeBaldosa*2, pdj.tamañoDeBaldosa/8);
-		unidades.add(new Recluta(zonas.get(0), true, pdj));
-		unidades.add(new Recluta(zonas.get(0), false, pdj));
 		unidades.add(new Soldado(zonas.get(0), true, pdj));
+		unidades.add(new Recluta(zonas.get(0), false, pdj));
 		unidades.add(new Soldado(zonas.get(0), true, pdj));
 		unidades.add(new Elite(zonas.get(0), true, pdj));
 		unidades.add(new Soldado(zonas.get(0), false, pdj));
 		unidades.add(new Elite(zonas.get(0), false, pdj));
 		unidades.add(new Especialista(zonas.get(0), false, pdj));
+		unidades.add(new Recluta(zonas.get(0), true, pdj));
 		
 	}
 	/////////////////////////////////////////////////////////
@@ -146,7 +146,8 @@ public class Combate {
 		    else {
 		    	turnoJugador = false;
 		    	if(timer == 0) {
-		    		unidades.get(id).atacar(elegirObjetivoAleatorio(aliados));
+		    		numeroDeInstruccion = 0;
+		    		unidades.get(id).realizarAccion(aliados, enemigos);
 			    	if(id >= unidades.size()-1) {
 		    			id = 0;
 		    		}

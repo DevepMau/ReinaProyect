@@ -4,6 +4,9 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Random;
 
 import principal.PanelDeJuego;
 import principal.Zona;
@@ -16,7 +19,8 @@ public class Unidad {
 	public int posY = 0;
 	public boolean aliado = false;
 	public boolean activo = true;
-	public boolean esCritico = false;
+	public boolean esCritico;
+	public boolean esCurar;
 	public Zona zona;
 	int barraHP = 72; 
 	public boolean vivo = true;
@@ -36,6 +40,7 @@ public class Unidad {
 	double pcrt;
 	public String nombre;
 	public String dañoRecibido;
+	public String curaRecibida;
 	
 	public Unidad(Zona zona,boolean aliado, PanelDeJuego pdj) {
 		this.zona = zona;
@@ -44,6 +49,7 @@ public class Unidad {
 		this.pdj = pdj;
 		this.aliado = aliado;
 		dañoRecibido = "";
+		curaRecibida = "";
 		if(aliado) {
 			desplazarDañoRecibido = 384;
 		}
@@ -62,10 +68,12 @@ public class Unidad {
                 
             } else {
                 enSacudida = false;
+                esCurar = false;
                 desplazamientoSacudidaX = 0;
                 desplazamientoSacudidaY = 0;
                 desplazarDañoRecibido = posY;
                 dañoRecibido = "";
+                esCritico = false;
             }
         }
         if(hp <= 0) {
@@ -88,10 +96,23 @@ public class Unidad {
         g2.fillRect(dibujarX + 24, dibujarY - 24, pdj.tamañoDeBaldosa, pdj.tamañoDeBaldosa * 2);
         
         //MOSTRAR DAÑO RECIBIDO////////////////////////////
+        if(this.esCurar) {
+            g2.setColor(Color.green);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+            g2.drawString(curaRecibida , posX+84, desplazarDañoRecibido-48);
+        }
+        else if(this.esCritico) {
+        	g2.setColor(Color.YELLOW);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
+            g2.drawString(dañoRecibido, posX+84, desplazarDañoRecibido-48);
+        }
+        else {
+        	g2.setColor(Color.WHITE);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+            g2.drawString(dañoRecibido, posX+84, desplazarDañoRecibido-48);
+        }
 
-        g2.setColor(Color.WHITE);
-        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
-        g2.drawString(dañoRecibido, posX+84, desplazarDañoRecibido-48);
+        
     }
 	
 	public void posicionar(Zona zona) {
@@ -123,22 +144,89 @@ public class Unidad {
 		g2.drawRoundRect(posX+10, posY+altura, barraHP, pdj.tamañoDeBaldosa/5, 5, 5);
 	}
 	
-	public void recibirDaño(int daño) {
+	public void recibirDaño(int daño, boolean isCritical) {
 		this.hp -= daño;
-		dañoRecibido = "" + daño;
+		if(isCritical) {
+			dañoRecibido = "CRITICAL " + daño +"!";
+			this.esCritico = true;
+		}
+		else {
+			dañoRecibido = "" + daño;
+		}
 
 	    enSacudida = true;
 	    duracionSacudida = 20;
+	    
 	}
-
+	
 	public void atacar(Unidad unidad) {
-		esCritico = Math.random() <= this.pcrt;
+		boolean isCritical = Math.random() <= this.pcrt;
 	    	 
 		int daño = Math.max(1, this.atq - unidad.def);
 	    	 
-		if (esCritico) {
+		if (isCritical) {
 			daño *= 2;
 		}
-		unidad.recibirDaño(daño);
+		unidad.recibirDaño(daño, isCritical);
 	}
+	
+	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
+		int accion = elegirAleatorio();
+		if(accion == 0 && puedeUsarHabilidad()) {
+			usarHabilidad(aliados);
+		}
+		else {
+			ataqueEnemigo(enemigos);
+		}
+	}
+
+	public void ataqueEnemigo(ArrayList<Unidad> unidades) {
+		Unidad objetivo = elegirObjetivo(unidades);
+		boolean isCritical = Math.random() <= this.pcrt;
+	    
+		if(objetivo != null) {
+			int daño = Math.max(1, this.atq - objetivo.def);
+	    	 
+			if (isCritical) {
+				daño *= 2;
+			}
+			objetivo.recibirDaño(daño, isCritical);
+		}
+	}
+	
+	public void usarHabilidad(ArrayList<Unidad> unidades) {}
+	
+	public Unidad elegirObjetivo(ArrayList<Unidad> unidades) {
+	    if (!unidades.isEmpty()) {
+	        return unidades.get((int) (Math.random() * unidades.size()));
+	    }
+	    return null;
+	}
+	
+	public void restaurarHP(int curacion) {
+		if((this.hp + curacion) > this.hpMax) {
+			this.hp = this.hpMax;
+		}
+		else {
+			this.hp += curacion;
+		}
+		curaRecibida = "+" + curacion;
+		esCurar = true;
+		enSacudida = true;
+	    duracionSacudida = 20;
+	}
+	
+	public boolean puedeUsarHabilidad() {
+		return false;
+	}
+	
+	public int elegirAleatorio() {
+	    Random random = new Random();
+	    return random.nextInt(4);
+	}
+	
+	//GETTERS & SETTERS//////////////////////////////////////
+	public int getHp() {
+        return this.hp;
+    }
 }
