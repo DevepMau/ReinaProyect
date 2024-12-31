@@ -1,10 +1,6 @@
 package unidades;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.util.ArrayList;
-import java.util.Comparator;
-
 import principal.PanelDeJuego;
 import principal.Zona;
 
@@ -12,14 +8,14 @@ public class Elite extends Unidad{
 
 	public Elite(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
-		this.nombre = "Elite";
-		this.hp = 70;
-		this.hpMax = 70;
-		this.sp = 20;
-		this.spMax = 20;
-		this.atq = 15;
-		this.def = 10;
-		this.pcrt = 0.5;
+		this.setNombre("Elite");
+		this.setHP(70);
+		this.setHPMax(70);
+		this.setSP(20);
+		this.setSPMax(20);
+		this.setAtq(15);
+		this.setDef(10);
+		this.setPCRT(0.5);
 	}
 	
 	public Unidad elegirObjetivo(ArrayList<Unidad> unidades) {
@@ -27,8 +23,8 @@ public class Elite extends Unidad{
 	    int menorHp = Integer.MAX_VALUE;
 
 	    for (Unidad unidad : unidades) {
-	        if (unidad.getHp() < menorHp) {
-	            menorHp = unidad.getHp();
+	        if (unidad.getHP() < menorHp) {
+	            menorHp = unidad.getHP();
 	            unidadSeleccionada = unidad;
 	        }
 	    }

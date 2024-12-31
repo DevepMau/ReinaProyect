@@ -10,14 +10,14 @@ public class Soldado extends Unidad {
 
 	public Soldado(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
-		this.nombre = "Soldado";
-		this.hp = 45;
-		this.hpMax = 45;
-		this.sp = 0;
-		this.spMax = 0;
-		this.atq = 10;
-		this.def = 5;
-		this.pcrt = 0.3;
+		this.setNombre("Soldado");
+		this.setHP(45);
+		this.setHPMax(45);
+		this.setSP(0);
+		this.setSPMax(0);
+		this.setAtq(10);
+		this.setDef(5);
+		this.setPCRT(0.3);
 	}
 
 }

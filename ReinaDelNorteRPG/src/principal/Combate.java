@@ -54,11 +54,11 @@ public class Combate {
 		int idAli = 5;
 		int idEne = 1;
 		for (Unidad unidad : unidades) {
-		    if(unidad.aliado && idAli <= 8) {
+		    if(unidad.isAliado() && idAli <= 8) {
 		    	unidad.posicionar(zonas.get(idAli));
 		    	idAli++;
 		    }
-		    else if(!unidad.aliado && idEne <= 4) {
+		    else if(!unidad.isAliado() && idEne <= 4) {
 		    	unidad.posicionar(zonas.get(idEne));
 		    	idEne++;
 		    }
@@ -95,14 +95,14 @@ public class Combate {
 			g2.fillRect(pdj.tamañoDeBaldosa*4, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*8, pdj.tamañoDeBaldosa);
 			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 30f));
 			g2.setColor(Color.white);
-			g2.drawString("Turno: "+unidades.get(id).nombre, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*5+32);
+			g2.drawString("Turno: "+unidades.get(id).getNombre(), pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*5+32);
 		}
 		else {
 			g2.setColor(Color.RED);
 			g2.fillRect(pdj.tamañoDeBaldosa*4, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*8, pdj.tamañoDeBaldosa);
 			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 30f));
 			g2.setColor(Color.white);
-			g2.drawString("Turno: "+unidades.get(id).nombre, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*5+32);
+			g2.drawString("Turno: "+unidades.get(id).getNombre(), pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*5+32);
 		}
 		
 	}
@@ -112,16 +112,16 @@ public class Combate {
 		ArrayList<Unidad> enemigos = new ArrayList<>();
 	    ArrayList<Unidad> aliados = new ArrayList<>();
 	    for (Unidad unidad : unidades) {
-	        if (unidad.hp > 0) {
-	            if (!unidad.aliado) {
+	        if (unidad.getHP() > 0) {
+	            if (!unidad.isAliado()) {
 	                enemigos.add(unidad);
 	            } else {
 	                aliados.add(unidad);
 	            }
 	        }
 	    }
-	    if(unidades.get(id).vivo) {
-	    	if(unidades.get(id).aliado) {
+	    if(unidades.get(id).isAlive()) {
+	    	if(unidades.get(id).isAliado()) {
 		    	turnoJugador = true;
 		    	if(instruccionElegida == -1) {
 		    		instruccionElegida = elegirAccion();
@@ -130,7 +130,7 @@ public class Combate {
 		    		Unidad unidadSeleccionada = elegirUnidad(enemigos);
 			    	if(unidadSeleccionada != null) {
 			    		unidades.get(id).atacar(unidadSeleccionada);
-			    		if(unidadSeleccionada.hp <= 0) {
+			    		if(unidadSeleccionada.getHP() <= 0) {
 			    			pos = 0;
 			    		}
 			    		if(id >= unidades.size()-1) {
@@ -198,13 +198,6 @@ public class Combate {
 	    		habilitar = false;
 	    		return unidades.get(pos);
 	    	}
-	    }
-	    return null;
-	}
-	
-	private Unidad elegirObjetivoAleatorio(ArrayList<Unidad> unidades) {
-	    if (!unidades.isEmpty()) {
-	        return unidades.get((int) (Math.random() * unidades.size()));
 	    }
 	    return null;
 	}
@@ -316,7 +309,7 @@ public class Combate {
 	
 	public void actualizarSelector(Unidad unidad) {
 		if(unidad != null) {
-			selector.setLocation(unidad.posX, unidad.posY+pdj.tamañoDeBaldosa*2);
+			selector.setLocation(unidad.getPosX(), unidad.getPosY()+pdj.tamañoDeBaldosa*2);
 		}
 	}
 }

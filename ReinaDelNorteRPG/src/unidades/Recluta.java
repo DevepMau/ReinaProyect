@@ -10,14 +10,14 @@ public class Recluta extends Unidad{
 
 	public Recluta(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
-		this.nombre = "Recluta";
-		this.hp = 30;
-		this.hpMax = 30;
-		this.sp = 0;
-		this.spMax = 0;
-		this.atq = 7;
-		this.def = 2;
-		this.pcrt = 0;
+		this.setNombre("Recluta");
+		this.setHP(30);
+		this.setHPMax(30);
+		this.setSP(0);
+		this.setSPMax(0);
+		this.setAtq(7);
+		this.setDef(2);
+		this.setPCRT(0);
 	}
 
 }

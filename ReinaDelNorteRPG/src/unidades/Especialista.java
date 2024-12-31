@@ -9,18 +9,18 @@ import principal.Zona;
 
 public class Especialista extends Unidad {
 	
-	int spHabilidad1;
+	private int spHabilidad1;
 
 	public Especialista(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
-		this.nombre = "Especialista";
-		this.hp = 45;
-		this.hpMax = 45;
-		this.sp = 80;
-		this.spMax = 80;
-		this.atq = 8;
-		this.def = 4;
-		this.pcrt = 0;
+		this.setNombre("Especialista");
+		this.setHP(45);
+		this.setHPMax(45);
+		this.setSP(80);
+		this.setSPMax(80);
+		this.setAtq(8);
+		this.setDef(4);
+		this.setPCRT(0);
 		this.spHabilidad1 = 10;
 	}
 	
@@ -35,7 +35,7 @@ public class Especialista extends Unidad {
 			}
 			if(accion == 0 && puedeUsarHabilidad()) {
 				usarHabilidad(aliados);
-				this.sp -= this.spHabilidad1;
+				this.setSP(this.getSP() - this.spHabilidad1);
 			}
 			else {
 				ataqueEnemigo(enemigos);
@@ -51,8 +51,8 @@ public class Especialista extends Unidad {
 	    int menorHp = Integer.MAX_VALUE;
 
 	    for (Unidad unidad : unidades) {
-	        if (unidad.getHp() < menorHp) {
-	            menorHp = unidad.getHp();
+	        if (unidad.getHP() < menorHp) {
+	            menorHp = unidad.getHP();
 	            unidadSeleccionada = unidad;
 	        }
 	    }
@@ -62,13 +62,13 @@ public class Especialista extends Unidad {
 	public void usarHabilidad(ArrayList<Unidad> unidades) {
 		if(unidades.size() > 1) {
 			Unidad objetivo = elegirObjetivo(unidades);
-			objetivo.restaurarHP(objetivo.hpMax/3);
+			objetivo.restaurarHP(objetivo.getHPMax()/3);
 		}
 	}
 	
 	public boolean puedeUsarHabilidad() {
-		if(this.sp > 0) {
-			if(this.sp >= this.spHabilidad1) {
+		if(this.getSP() > 0) {
+			if(this.getSP() >= this.spHabilidad1) {
 				return true;
 			}
 		}
@@ -77,7 +77,7 @@ public class Especialista extends Unidad {
 	
 	public boolean aliadoBajoDeHP(ArrayList<Unidad> unidades) {
 		for (Unidad unidad : unidades) {
-			if(unidad.hp <= unidad.hpMax/2) {
+			if(unidad.getHP() <= unidad.getHPMax()/2) {
 				return true;
 			}
 		}
@@ -86,7 +86,7 @@ public class Especialista extends Unidad {
 	
 	public boolean aliadosHeridos(ArrayList<Unidad> unidades) {
 		for (Unidad unidad : unidades) {
-			if(unidad.hp < unidad.hpMax) {
+			if(unidad.getHP() < unidad.getHPMax()) {
 				return true;
 			}
 		}
