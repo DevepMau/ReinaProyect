@@ -235,6 +235,7 @@ public class Combate {
     			numeroDeInstruccion++;
     		}
     		habilitar = false;
+    		pdj.ReproducirSE(0);
     	}
     	if(pdj.teclado.LEFT == true && habilitar) {
     		if(numeroDeInstruccion <= 0) {
@@ -244,12 +245,14 @@ public class Combate {
     			numeroDeInstruccion--;
     		}
     		habilitar = false;
+    		pdj.ReproducirSE(0);
     	}
     	if(!pdj.teclado.RIGHT && !pdj.teclado.LEFT && !pdj.teclado.ENTER) {
     		habilitar = true;
     	}
     	if(pdj.teclado.ENTER == true && habilitar) {
     		habilitar = false;
+    		pdj.ReproducirSE(1);
     		return instruccionElegida = numeroDeInstruccion;
     	}
     return -1;

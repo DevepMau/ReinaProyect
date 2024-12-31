@@ -140,10 +140,12 @@ public class Unidad {
 	}
 	
 	public void recibirDaño(int daño, boolean isCritical) {
+		int SEId = 2;
 		this.setHP(this.getHP() - daño);
 		if(isCritical) {
 			dañoRecibido = "CRITICAL " + daño +"!";
 			this.esCritico = true;
+			SEId = 3;
 		}
 		else {
 			dañoRecibido = "" + daño;
@@ -151,6 +153,7 @@ public class Unidad {
 
 	    enSacudida = true;
 	    duracionSacudida = 20;
+	    pdj.ReproducirSE(SEId);
 	    
 	}
 	
@@ -179,6 +182,7 @@ public class Unidad {
 		esCurar = true;
 		enSacudida = true;
 	    duracionSacudida = 20;
+	    pdj.ReproducirSE(4);
 	}
 	
 	public void usarHabilidad(ArrayList<Unidad> unidades) {}

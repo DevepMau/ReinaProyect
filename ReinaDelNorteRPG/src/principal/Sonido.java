@@ -13,7 +13,11 @@ public class Sonido {
 
 	public Sonido() {
 
-		urlSonidos[0] = getClass().getResource("/sonidos/key_sound.wav");
+		urlSonidos[0] = getClass().getResource("/sonidos/menu-scroll.wav");
+		urlSonidos[1] = getClass().getResource("/sonidos/menu-select.wav");
+		urlSonidos[2] = getClass().getResource("/sonidos/attack-normal.wav");
+		urlSonidos[3] = getClass().getResource("/sonidos/attack-critical.wav");
+		urlSonidos[4] = getClass().getResource("/sonidos/skill-heal.wav");
 
 	}
 
