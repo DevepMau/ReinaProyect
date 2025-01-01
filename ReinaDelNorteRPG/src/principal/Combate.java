@@ -16,29 +16,34 @@ import unidades.Soldado;
 import unidades.Unidad;
 
 public class Combate {
+	//RECURSOS Y ESTRUCTURAS/////////////////////////////////////////////////
 	PanelDeJuego pdj;
 	Graphics2D g2;
-	HashMap<Integer, Zona> zonas = new HashMap<>();
-	ArrayList<Unidad> unidades = new ArrayList<>();
-	String[] acciones = new String[4];
-	int id = 0;
-	int pos = 0;
-	int timer = 100;
-	int tamañoLista = 0;
-	int numeroDeInstruccion = 0;
-	int instruccionElegida = -1;
-	boolean habilitar = true;
-	boolean turnoJugador = true;
-	Rectangle selector;
+	private HashMap<Integer, Zona> zonas = new HashMap<>();
+	private ArrayList<Unidad> unidades = new ArrayList<>();
+	//CONFIGURACION GENERAL//////////////////////////////////////////////////
+	private String[] acciones = new String[3];
+	private int id = 0;
+	private int tamañoLista = 0;
+	private int pos = 0;
+	private int timer = 100;
+	//CONTROL DE TURNO Y BOTONES/////////////////////////////////////////////
+	private boolean habilitar = true;
+	private boolean turnoJugador = true;
+	//CONTROL DE INSTRUCCIONES///////////////////////////////////////////////
+	private int numeroDeInstruccion = 0;
+	private int instruccionElegida = -1;
+	private Rectangle selector;
+	private Rectangle resaltador;
 	
 	public Combate(PanelDeJuego pdj) {
 		this.pdj = pdj;
 		crearTablero();
-		acciones[0] = "ATACAR";
-		acciones[1] = "DEFENDER";
-		acciones[2] = "HABILIDAD";
-		acciones[3] = "USAR OBJETO";
 		selector = new Rectangle(0, 0, pdj.tamañoDeBaldosa*2, pdj.tamañoDeBaldosa/8);
+		resaltador = new Rectangle(0, 0, pdj.tamañoDeBaldosa*2, pdj.tamañoDeBaldosa/8);
+		acciones[0] = "ATACAR";
+		acciones[1] = "HABILIDAD";
+		acciones[2] = "USAR OBJETO";
 		unidades.add(new Soldado(zonas.get(0), true, pdj));
 		unidades.add(new Recluta(zonas.get(0), false, pdj));
 		unidades.add(new Soldado(zonas.get(0), true, pdj));
@@ -49,7 +54,7 @@ public class Combate {
 		unidades.add(new Recluta(zonas.get(0), true, pdj));
 		
 	}
-	/////////////////////////////////////////////////////////
+	//METODOS PRINCIPALES///////////////////////////////////////////////////////
 	public void actualizar() {
 		int idAli = 5;
 		int idEne = 1;
@@ -75,6 +80,9 @@ public class Combate {
 		for (Zona zona : zonas.values()) {
 			zona.dibujar(g2);
 		}
+		
+		dibujarResaltadorDeUnidad();
+		
 		for (Unidad unidad : unidades) {
 		    unidad.dibujar(g2);
 		    unidad.dibujarVida();
@@ -87,27 +95,12 @@ public class Combate {
 			}
 		}
 		
-		//CARTEL DE TURNO///////////////////////////////////////////////
-		g2.setColor(Color.white);
-		g2.drawRect(pdj.tamañoDeBaldosa*4, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*8, pdj.tamañoDeBaldosa);
-		if(turnoJugador) {
-			g2.setColor(Color.BLUE);
-			g2.fillRect(pdj.tamañoDeBaldosa*4, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*8, pdj.tamañoDeBaldosa);
-			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 30f));
-			g2.setColor(Color.white);
-			g2.drawString("Turno: "+unidades.get(id).getNombre(), pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*5+32);
-		}
-		else {
-			g2.setColor(Color.RED);
-			g2.fillRect(pdj.tamañoDeBaldosa*4, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*8, pdj.tamañoDeBaldosa);
-			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 30f));
-			g2.setColor(Color.white);
-			g2.drawString("Turno: "+unidades.get(id).getNombre(), pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*5+32);
-		}
+		//dibujarCartelDeTurno();
+		
 		
 	}
 	
-	//METODOS PARA JUGAR////////////////////////////////////////////////////
+	//METODOS PARA JUGAR//////////////////////////////////////////////////////
 	public void realizarTurno() {
 		ArrayList<Unidad> enemigos = new ArrayList<>();
 	    ArrayList<Unidad> aliados = new ArrayList<>();
@@ -121,6 +114,7 @@ public class Combate {
 	        }
 	    }
 	    if(unidades.get(id).isAlive()) {
+	    	actualizarSelector(unidades.get(id), resaltador);
 	    	if(unidades.get(id).isAliado()) {
 		    	turnoJugador = true;
 		    	if(instruccionElegida == -1) {
@@ -169,10 +163,10 @@ public class Combate {
 	    }
 	}
 	
-	//METODOS PARA ELEGIR UNIDADES//////////////////////////////////////////
+	//METODOS DE ELECCION////////////////////////////////////////////////////
 	private Unidad elegirUnidad(ArrayList<Unidad> unidades) {
 	    if (!unidades.isEmpty()) {
-	    	actualizarSelector(unidades.get(pos));
+	    	actualizarSelector(unidades.get(pos), selector);
 	    	if(pdj.teclado.RIGHT == true && habilitar) {
 	    		if(pos >= unidades.size()-1) {
 	    			pos = 0;
@@ -200,30 +194,6 @@ public class Combate {
 	    	}
 	    }
 	    return null;
-	}
-	
-	//SUBMENUS//////////////////////////////////////////////////////////////////
-	public void menuDeOpciones(String[] opciones, int posX, int posY, int anchoVentana) {
-		dibujarVentana(posX, posY-8, anchoVentana, pdj.tamañoDeBaldosa*(opciones.length-1)+8);
-		//OPCIONES Y RECUADRO DE SELECCION
-		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 24f));
-		for (int i = 0; i < opciones.length; i++) {
-			g2.setColor(Color.white);
-			g2.drawString(opciones[i], posX+pdj.tamañoDeBaldosa/4, posY+24);
-			if(numeroDeInstruccion == i) {
-				if(instruccionElegida == -1) {
-					g2.setColor(Color.WHITE);
-					g2.fillRoundRect(posX+5, posY, anchoVentana-10 , 32, 5, 5);
-					g2.setColor(Color.BLACK);
-					g2.drawString(opciones[i], posX+pdj.tamañoDeBaldosa/4, posY+24);
-				}
-				else {
-					g2.setColor(Color.white);
-					g2.drawRoundRect(posX+5, posY, anchoVentana-10 , 32, 5, 5);
-				}
-			}
-			posY += (pdj.tamañoDeBaldosa/2)+(pdj.tamañoDeBaldosa/4);
-		}
 	}
 	
 	public int elegirAccion() {
@@ -258,7 +228,31 @@ public class Combate {
     return -1;
 	}
 	
-	//METODOS DE TABLERO////////////////////////////////////////////////////////
+	//METODOS DE MENU/////////////////////////////////////////////////////////
+	public void menuDeOpciones(String[] opciones, int posX, int posY, int anchoVentana) {
+		dibujarVentana(posX, posY-24, anchoVentana, pdj.tamañoDeBaldosa*(opciones.length-1)+24);
+		//OPCIONES Y RECUADRO DE SELECCION
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 24f));
+		for (int i = 0; i < opciones.length; i++) {
+			g2.setColor(Color.white);
+			g2.drawString(opciones[i], posX+pdj.tamañoDeBaldosa/4, posY+8);
+			if(numeroDeInstruccion == i) {
+				if(instruccionElegida == -1) {
+					g2.setColor(Color.WHITE);
+					g2.fillRoundRect(posX+5, posY-16, anchoVentana-10 , 32, 5, 5);
+					g2.setColor(Color.BLACK);
+					g2.drawString(opciones[i], posX+pdj.tamañoDeBaldosa/4, posY+8);
+				}
+				else {
+					g2.setColor(Color.white);
+					g2.drawRoundRect(posX+5, posY-16, anchoVentana-10 , 32, 5, 5);
+				}
+			}
+			posY += (pdj.tamañoDeBaldosa/2)+(pdj.tamañoDeBaldosa/4);
+		}
+	}
+		
+	//METODOS GRAFICOS////////////////////////////////////////////////////////
 	public void crearTablero() {
 		int x = 0;
 		int y = 0;
@@ -303,6 +297,33 @@ public class Combate {
 		g2.drawRoundRect(x+5, y+5, width-10, height-10, 25, 25);
 	}
 	
+	public void dibujarCartelDeTurno() {
+		g2.setColor(Color.white);
+		g2.drawRect(pdj.tamañoDeBaldosa*4, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*8, pdj.tamañoDeBaldosa);
+		if(turnoJugador) {
+			g2.setColor(Color.BLUE);
+			g2.fillRect(pdj.tamañoDeBaldosa*4, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*8, pdj.tamañoDeBaldosa);
+			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 30f));
+			g2.setColor(Color.white);
+			g2.drawString("Turno: "+unidades.get(id).getNombre(), pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*5+32);
+		}
+		else {
+			g2.setColor(Color.RED);
+			g2.fillRect(pdj.tamañoDeBaldosa*4, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*8, pdj.tamañoDeBaldosa);
+			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 30f));
+			g2.setColor(Color.white);
+			g2.drawString("Turno: "+unidades.get(id).getNombre(), pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*5+32);
+		}
+	}
+	
+	public void dibujarResaltadorDeUnidad() {
+		g2.setColor(Color.orange);
+		g2.fillRect(resaltador.x, resaltador.y-20, pdj.tamañoDeBaldosa*2, 20);
+		g2.fillRect(resaltador.x, resaltador.y-96, 20, pdj.tamañoDeBaldosa*2);
+		g2.fillRect(resaltador.x+pdj.tamañoDeBaldosa*2-20, resaltador.y-96, 20, pdj.tamañoDeBaldosa*2);
+	}
+	
+	//VERIFICACION Y ACTUALIZACION///////////////////////////////////////////
 	public boolean verificar(int n) {
 		if(n == 0 || (10 <= n && n <= 13) || (34 <= n && n <= 37) || n == 32) {
 			return true;
@@ -310,9 +331,10 @@ public class Combate {
 		return false;
 	}
 	
-	public void actualizarSelector(Unidad unidad) {
+	public void actualizarSelector(Unidad unidad, Rectangle resaltador) {
 		if(unidad != null) {
-			selector.setLocation(unidad.getPosX(), unidad.getPosY()+pdj.tamañoDeBaldosa*2);
+			resaltador.setLocation(unidad.getPosX(), unidad.getPosY()+pdj.tamañoDeBaldosa*2);
 		}
 	}
+	
 }
