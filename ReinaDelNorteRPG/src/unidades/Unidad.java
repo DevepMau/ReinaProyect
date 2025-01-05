@@ -3,11 +3,13 @@ package unidades;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Random;
 
+import principal.GeneradorDeNombres;
 import principal.PanelDeJuego;
 import principal.Zona;
 
@@ -19,8 +21,8 @@ public class Unidad {
 	private Zona zona;
 	private int posX = 0;
 	private int posY = 0;
-	//INDICADORES DE SALUD///////////////////////////////////////////
-	int barraHP = 72; 
+	//INDICADORES DE SALUD Y NOMBRE//////////////////////////////////
+	int barraHP = 72;
 	private String dañoRecibido;
 	private String curaRecibida;
 	//ESTADOS Y COMPORTAMIENTOS//////////////////////////////////////
@@ -189,23 +191,43 @@ public class Unidad {
 	
 	//METODOS VISUALES/////////////////////////////////////////////////////////
 	public void dibujarVida() {
-		
-		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
-		g2.setColor(Color.white);
-		int hp = calcularBarraHP();
-		int altura = -pdj.tamañoDeBaldosa-(pdj.tamañoDeBaldosa/8);
-		
-		g2.drawString(getNombre(), getPosX()+10, getPosY()-10+altura);
-		Color c = new Color(0,0,0, 200);
-		g2.setColor(c);
-		g2.fillRoundRect(getPosX()+10, getPosY()+altura, barraHP, pdj.tamañoDeBaldosa/5, 5, 5);
-		g2.setColor(Color.red);
-		g2.fillRoundRect(getPosX()+10, getPosY()+altura, hp, pdj.tamañoDeBaldosa/5, 5, 5);
-		
-		c = new Color(255, 255, 255);
-		g2.setColor(c);
-		g2.setStroke(new BasicStroke(2));
-		g2.drawRoundRect(getPosX()+10, getPosY()+altura, barraHP, pdj.tamañoDeBaldosa/5, 5, 5);
+	    g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+	    g2.setColor(Color.white);
+	    
+	    String nombreCompleto = getNombre();
+	    int hp = calcularBarraHP();
+	    int altura = -pdj.tamañoDeBaldosa - (pdj.tamañoDeBaldosa / 8);
+	    int posX = getPosX() + 10;
+	    int posY = getPosY() - 10 + altura;
+
+	    //MEDIR ANCHO DE TEXTO
+	    FontMetrics metrics = g2.getFontMetrics();
+	    int anchoTexto = metrics.stringWidth(nombreCompleto);
+	    int anchoBarraHP = barraHP;
+
+	    if (anchoTexto > anchoBarraHP+8) {
+	        String[] partes = nombreCompleto.split(" ", 2);
+	        String primeraParte = partes[0];
+	        String segundaParte = (partes.length > 1) ? partes[1] : "";
+
+	        g2.drawString(primeraParte, posX, posY-16);
+	        g2.drawString(segundaParte, posX, posY -16 + metrics.getHeight());
+	    } else {
+	        g2.drawString(nombreCompleto, posX, posY);
+	    }
+
+	    // Dibujar la barra de vida
+	    Color c = new Color(0, 0, 0, 200);
+	    g2.setColor(c);
+	    g2.fillRoundRect(posX, getPosY() + altura, barraHP, pdj.tamañoDeBaldosa / 5, 5, 5);
+
+	    g2.setColor(Color.red);
+	    g2.fillRoundRect(posX, getPosY() + altura, hp, pdj.tamañoDeBaldosa / 5, 5, 5);
+
+	    c = new Color(255, 255, 255);
+	    g2.setColor(c);
+	    g2.setStroke(new BasicStroke(2));
+	    g2.drawRoundRect(posX, getPosY() + altura, barraHP, pdj.tamañoDeBaldosa / 5, 5, 5);
 	}
 	
 	//METODOS DE ELECCION/////////////////////////////////////////////////////
@@ -233,6 +255,12 @@ public class Unidad {
 	
 	public boolean puedeUsarHabilidad() {
 		return false;
+	}
+	
+	public String generarNombre() {
+		String name = pdj.gdn.generarNombreCompleto();
+		System.out.println(name);
+		return name;
 	}
 	
 	//GETTERS & SETTERS//////////////////////////////////////

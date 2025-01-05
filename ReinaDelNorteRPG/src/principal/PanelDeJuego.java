@@ -34,6 +34,7 @@ public class PanelDeJuego extends JPanel implements Runnable {
 	Sonido se = new Sonido();
 	public UI ui = new UI(this);
 	Combate combate = new Combate(this);
+	public GeneradorDeNombres gdn = new GeneradorDeNombres(this);
 
 	Thread hiloDeJuego;
 	
@@ -94,7 +95,7 @@ public class PanelDeJuego extends JPanel implements Runnable {
 		double delta = 0;
 		long ultimoTiempo = System.nanoTime();
 		long tiempoActual;
-
+		configuracionDeJuego();
 		while(hiloDeJuego != null) {
 
 			tiempoActual = System.nanoTime();

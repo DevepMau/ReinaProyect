@@ -27,6 +27,7 @@ public class Combate {
 	private int tamañoLista = 0;
 	private int pos = 0;
 	private int timer = 100;
+	private boolean unidadesSinNombre = true;
 	//CONTROL DE TURNO Y BOTONES/////////////////////////////////////////////
 	private boolean habilitar = true;
 	private boolean turnoJugador = true;
@@ -56,6 +57,11 @@ public class Combate {
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////////////////
 	public void actualizar() {
+		if(unidadesSinNombre) {
+			nombrarUnidades(unidades);
+			unidadesSinNombre = false;
+		}
+		
 		int idAli = 5;
 		int idEne = 1;
 		for (Unidad unidad : unidades) {
@@ -334,6 +340,12 @@ public class Combate {
 	public void actualizarSelector(Unidad unidad, Rectangle resaltador) {
 		if(unidad != null) {
 			resaltador.setLocation(unidad.getPosX(), unidad.getPosY()+pdj.tamañoDeBaldosa*2);
+		}
+	}
+	
+	public void nombrarUnidades(ArrayList<Unidad> unidades) {
+		for(Unidad unidad: unidades) {
+			unidad.setNombre(pdj.gdn.generarNombreCompleto());
 		}
 	}
 	
