@@ -39,6 +39,9 @@ public class Unidad {
 	private int desplazarDañoRecibido;
     //ESTADISTICAS DE LA UNIDAD//////////////////////////////////////
 	private String nombre;
+	private String clase;
+	private int idFaccion;
+	private int genero;
 	private int hp;
 	private int hpMax;
 	private int sp;
@@ -47,14 +50,15 @@ public class Unidad {
 	private int def;
 	private double pcrt;
 	////////////////////////////////////////////////////////////////
-	public Unidad(Zona zona,boolean aliado, PanelDeJuego pdj) {
-		this.zona = zona;
-		setPosX(zona.x);
-		setPosY(zona.y);
+	public Unidad(Zona zona,boolean aliado,int idFaccion, PanelDeJuego pdj) {
 		this.pdj = pdj;
+		this.zona = zona;
+		this.dañoRecibido = "";
+		this.curaRecibida = "";
+		this.setPosX(zona.x);
+		this.setPosY(zona.y);
 		this.setAliado(aliado);
-		dañoRecibido = "";
-		curaRecibida = "";
+		this.genero = elegirAleatorio(2);
 		if(aliado) {
 			desplazarDañoRecibido = 384;
 		}
@@ -121,7 +125,7 @@ public class Unidad {
     }
 	//METODOS DE ACCION///////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
-		int accion = elegirAleatorio();
+		int accion = elegirAleatorio(4);
 		if(accion == 0 && puedeUsarHabilidad()) {
 			usarHabilidad(aliados);
 		}
@@ -191,10 +195,10 @@ public class Unidad {
 	
 	//METODOS VISUALES/////////////////////////////////////////////////////////
 	public void dibujarVida() {
-	    g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+	    g2.setFont(g2.getFont().deriveFont(Font.BOLD, 15f));
 	    g2.setColor(Color.white);
 	    
-	    String nombreCompleto = getNombre();
+	    String nombreCompleto = getClase();
 	    int hp = calcularBarraHP();
 	    int altura = -pdj.tamañoDeBaldosa - (pdj.tamañoDeBaldosa / 8);
 	    int posX = getPosX() + 10;
@@ -205,15 +209,17 @@ public class Unidad {
 	    int anchoTexto = metrics.stringWidth(nombreCompleto);
 	    int anchoBarraHP = barraHP;
 
-	    if (anchoTexto > anchoBarraHP+8) {
+	    if (anchoTexto > anchoBarraHP) {
 	        String[] partes = nombreCompleto.split(" ", 2);
 	        String primeraParte = partes[0];
 	        String segundaParte = (partes.length > 1) ? partes[1] : "";
+	        int anchoTexto1 = metrics.stringWidth(primeraParte);
+	        int anchoTexto2 = metrics.stringWidth(segundaParte);
 
-	        g2.drawString(primeraParte, posX, posY-16);
-	        g2.drawString(segundaParte, posX, posY -16 + metrics.getHeight());
+	        g2.drawString(primeraParte, posX+((anchoBarraHP-anchoTexto1)/2), posY-16);
+	        g2.drawString(segundaParte, posX+((anchoBarraHP-anchoTexto2)/2), posY -16 + metrics.getHeight());
 	    } else {
-	        g2.drawString(nombreCompleto, posX, posY);
+	        g2.drawString(nombreCompleto, posX+((anchoBarraHP-anchoTexto)/2), posY);
 	    }
 
 	    // Dibujar la barra de vida
@@ -238,9 +244,9 @@ public class Unidad {
 	    return null;
 	}
 	
-	public int elegirAleatorio() {
+	public int elegirAleatorio(int i) {
 	    Random random = new Random();
-	    return random.nextInt(4);
+	    return random.nextInt(i);
 	}
 	
 	//METODOS AUXILIARES//////////////////////////////////////////////////////
@@ -255,12 +261,6 @@ public class Unidad {
 	
 	public boolean puedeUsarHabilidad() {
 		return false;
-	}
-	
-	public String generarNombre() {
-		String name = pdj.gdn.generarNombreCompleto();
-		System.out.println(name);
-		return name;
 	}
 	
 	//GETTERS & SETTERS//////////////////////////////////////
@@ -359,4 +359,21 @@ public class Unidad {
 	public void setPosY(int posY) {
 		this.posY = posY;
 	}
+	
+	public int getGenero() {
+		return genero;
+	}
+	public int getIdFaccion() {
+		return idFaccion;
+	}
+	public void setIdFaccion(int idFaccion) {
+		this.idFaccion = idFaccion;
+	}
+	public String getClase() {
+		return clase;
+	}
+	public void setClase(String clase) {
+		this.clase = clase;
+	}
+
 }

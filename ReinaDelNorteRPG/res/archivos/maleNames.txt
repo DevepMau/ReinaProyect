@@ -1,100 +1,100 @@
 Santiago
-Li Wei
+Li-Wei
 Mateo
-Zhang Wei
+Zhang-Wei
 Benjamin
-Wang Wei
+Wang-Wei
 Sebastian
-Liu Wei
+Liu-Wei
 Nicolas
-Chen Wei
+Chen-Wei
 Lucas
-Zhao Wei
+Zhao-Wei
 Joaquin
-Huang Wei
+Huang-Wei
 Francisco
-Sun Wei
+Sun-Wei
 Juan
-Zhou Wei
+Zhou-Wei
 Emilio
-Xu Wei
+Xu-Wei
 Diego
-Guo Wei
+Guo-Wei
 Agustin
-Peng Wei
+Peng-Wei
 Gonzalo
-Deng Wei
+Deng-Wei
 Leonardo
-Wu Wei
+Wu-Wei
 Julian
-Cao Wei
+Cao-Wei
 Tomas
-Xie Wei
+Xie-Wei
 Pedro
-Zheng Wei
+Zheng-Wei
 Carlos
-Ma Wei
+Ma-Wei
 Martin
-Qian Wei
+Qian-Wei
 Victor
-Yao Wei
+Yao-Wei
 Alejandro
-Feng Wei
+Feng-Wei
 Gabriel
-Yang Wei
+Yang-Wei
 Manuel
-Lin Wei
+Lin-Wei
 Andres
-Liang Wei
+Liang-Wei
 Jorge
-Qin Wei
+Qin-Wei
 Ricardo
-Zhao Ming
+Zhao-Ming
 Pablo
-Wang Ming
+Wang-Ming
 Hernan
-Liu Ming
+Liu-Ming
 Daniel
-Chen Ming
+Chen-Ming
 Federico
-Zhang Ming
+Zhang-Ming
 Hugo
-Huang Ming
+Huang-Ming
 Mario
-Sun Ming
+Sun-Ming
 Ruben
-Zhou Ming
+Zhou-Ming
 Cristian
-Xu Ming
+Xu-Ming
 Eduardo
-Guo Ming
+Guo-Ming
 Leandro
-Peng Ming
+Peng-Ming
 Raul
-Deng Ming
+Deng-Ming
 Enrique
-Wu Ming
+Wu-Ming
 Fernando
-Cao Ming
+Cao-Ming
 Oscar
-Xie Ming
+Xie-Ming
 Adrian
-Zheng Ming
+Zheng-Ming
 Mariano
-Ma Ming
+Ma-Ming
 Cesar
-Qian Ming
+Qian-Ming
 Ernesto
-Yao Ming
+Yao-Ming
 Ezequiel
-Feng Ming
+Feng-Ming
 Ramiro
-Yang Ming
-Fabián
-Lin Ming
+Yang-Ming
+Fabian
+Lin-Ming
 Matias
-Liang Ming
+Liang-Ming
 Esteban
-Qin Ming
+Qin-Ming
 Sergio
-Zhao Jun
+Zhao-Jun

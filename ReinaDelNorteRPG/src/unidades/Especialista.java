@@ -11,9 +11,10 @@ public class Especialista extends Unidad {
 	
 	private int spHabilidad1;
 
-	public Especialista(Zona zona, boolean aliado, PanelDeJuego pdj) {
-		super(zona, aliado, pdj);
+	public Especialista(Zona zona, boolean aliado,int idFaccion, PanelDeJuego pdj) {
+		super(zona, aliado,idFaccion, pdj);
 		this.setNombre("Especialista");
+		this.setClase(nombrarClase(idFaccion));
 		this.setHP(45);
 		this.setHPMax(45);
 		this.setSP(80);
@@ -31,7 +32,7 @@ public class Especialista extends Unidad {
 				accion = 0;
 			}
 			else{
-				accion = elegirAleatorio();
+				accion = elegirAleatorio(4);
 			}
 			if(accion == 0 && puedeUsarHabilidad()) {
 				usarHabilidad(aliados);
@@ -91,6 +92,32 @@ public class Especialista extends Unidad {
 			}
 		}
 		return false;
+	}
+	
+	public String nombrarClase(int id) {
+		String clase;
+		if(id == 0) {
+			clase = "Ave De Presa";
+		}
+		else if(id == 1) {
+			clase = "Payador Embriagado";
+		}
+		else if(id == 2) {
+			clase = "Medichino Tradicional";
+		}
+		else if(id == 3) {
+			clase = "Puño Astuto";
+		}
+		else if(id == 4) {
+			clase = "Influencer Digital";
+		}
+		else if(id == 5) {
+			clase = "Ballena De Los Gacha";
+		}
+		else {
+			clase = "Estafador novato";
+		}
+		return clase;
 	}
 
 }

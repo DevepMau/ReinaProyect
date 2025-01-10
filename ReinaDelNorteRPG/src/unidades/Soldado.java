@@ -8,9 +8,10 @@ import principal.Zona;
 
 public class Soldado extends Unidad {
 
-	public Soldado(Zona zona, boolean aliado, PanelDeJuego pdj) {
-		super(zona, aliado, pdj);
+	public Soldado(Zona zona, boolean aliado,int idFaccion, PanelDeJuego pdj) {
+		super(zona, aliado,idFaccion, pdj);
 		this.setNombre("Soldado");
+		this.setClase(nombrarClase(idFaccion));
 		this.setHP(45);
 		this.setHPMax(45);
 		this.setSP(0);
@@ -18,6 +19,32 @@ public class Soldado extends Unidad {
 		this.setAtq(10);
 		this.setDef(5);
 		this.setPCRT(0.3);
+	}
+	
+	public String nombrarClase(int id) {
+		String clase;
+		if(id == 0) {
+			clase = "Pichon Rebelde";
+		}
+		else if(id == 1) {
+			clase = "Gaucho Moderno";
+		}
+		else if(id == 2) {
+			clase = "Wushu Warrior";
+		}
+		else if(id == 3) {
+			clase = "Puño Furioso";
+		}
+		else if(id == 4) {
+			clase = "Hermana Confiable";
+		}
+		else if(id == 5) {
+			clase = "Estudiante VIP";
+		}
+		else {
+			clase = "Buscapleitos";
+		}
+		return clase;
 	}
 
 }
