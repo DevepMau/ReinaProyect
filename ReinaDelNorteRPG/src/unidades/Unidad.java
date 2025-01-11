@@ -48,7 +48,10 @@ public class Unidad {
 	private int spMax;
 	private int atq;
 	private int def;
+	private int vel;
+	private double eva;
 	private double pcrt;
+	private double dcrt;
 	////////////////////////////////////////////////////////////////
 	public Unidad(Zona zona,boolean aliado,int idFaccion, PanelDeJuego pdj) {
 		this.pdj = pdj;
@@ -140,7 +143,7 @@ public class Unidad {
 		int daño = Math.max(1, this.getAtq() - unidad.getDef());
 	    	 
 		if (isCritical) {
-			daño *= 2;
+			daño *= this.dcrt;
 		}
 		unidad.recibirDaño(daño, isCritical);
 	}
@@ -316,6 +319,12 @@ public class Unidad {
 		return def;
 	}
 
+	public int getVel() {
+		return vel;
+	}
+	public void setVel(int vel) {
+		this.vel = vel;
+	}
 	public void setDef(int def) {
 		this.def = def;
 	}
@@ -327,7 +336,21 @@ public class Unidad {
 	public void setPCRT(double pcrt) {
 		this.pcrt = pcrt;
 	}
+	
+	public double getDCRT() {
+		return pcrt;
+	}
 
+	public void setDCRT(double dcrt) {
+		this.dcrt = dcrt;
+	}
+
+	public double getEva() {
+		return eva;
+	}
+	public void setEva(double eva) {
+		this.eva = eva;
+	}
 	public boolean isAliado() {
 		return aliado;
 	}

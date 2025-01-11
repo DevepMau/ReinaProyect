@@ -17,6 +17,7 @@ public class Elite extends Unidad{
 		this.setAtq(15);
 		this.setDef(10);
 		this.setPCRT(0.5);
+		this.setDCRT(2);
 	}
 	
 	public Unidad elegirObjetivo(ArrayList<Unidad> unidades) {
@@ -38,7 +39,7 @@ public class Elite extends Unidad{
 			clase = "Guardian Del Halcon";
 		}
 		else if(id == 1) {
-			clase = "Gran Caudillo";
+			clase = "Heroe Federal";
 		}
 		else if(id == 2) {
 			clase = "Dragon Supremo";

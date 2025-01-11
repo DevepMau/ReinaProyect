@@ -13,7 +13,7 @@ import java.util.Random;
 import unidades.Elite;
 import unidades.Especialista;
 import unidades.Recluta;
-import unidades.Soldado;
+import unidades.Combatiente;
 import unidades.Unidad;
 
 public class Combate {
@@ -46,11 +46,11 @@ public class Combate {
 		acciones[0] = "ATACAR";
 		acciones[1] = "HABILIDAD";
 		acciones[2] = "USAR OBJETO";
-		unidades.add(new Soldado(zonas.get(0), true,0, pdj));
+		unidades.add(new Combatiente(zonas.get(0), true,0, pdj));
 		unidades.add(new Recluta(zonas.get(0), false,2, pdj));
-		unidades.add(new Soldado(zonas.get(0), true,0, pdj));
+		unidades.add(new Combatiente(zonas.get(0), true,0, pdj));
 		unidades.add(new Elite(zonas.get(0), true,0, pdj));
-		unidades.add(new Soldado(zonas.get(0), false,2, pdj));
+		unidades.add(new Combatiente(zonas.get(0), false,2, pdj));
 		unidades.add(new Elite(zonas.get(0), false,2, pdj));
 		unidades.add(new Especialista(zonas.get(0), false,2, pdj));
 		unidades.add(new Recluta(zonas.get(0), true,0, pdj));

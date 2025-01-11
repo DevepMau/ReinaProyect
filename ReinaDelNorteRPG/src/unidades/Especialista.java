@@ -100,7 +100,7 @@ public class Especialista extends Unidad {
 			clase = "Ave De Presa";
 		}
 		else if(id == 1) {
-			clase = "Payador Embriagado";
+			clase = "Payador Tartamudo";
 		}
 		else if(id == 2) {
 			clase = "Medichino Tradicional";

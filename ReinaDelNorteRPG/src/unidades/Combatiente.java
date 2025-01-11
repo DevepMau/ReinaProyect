@@ -6,9 +6,9 @@ import java.awt.Graphics2D;
 import principal.PanelDeJuego;
 import principal.Zona;
 
-public class Soldado extends Unidad {
+public class Combatiente extends Unidad {
 
-	public Soldado(Zona zona, boolean aliado,int idFaccion, PanelDeJuego pdj) {
+	public Combatiente(Zona zona, boolean aliado,int idFaccion, PanelDeJuego pdj) {
 		super(zona, aliado,idFaccion, pdj);
 		this.setNombre("Soldado");
 		this.setClase(nombrarClase(idFaccion));
@@ -19,6 +19,7 @@ public class Soldado extends Unidad {
 		this.setAtq(10);
 		this.setDef(5);
 		this.setPCRT(0.3);
+		this.setDCRT(2);
 	}
 	
 	public String nombrarClase(int id) {
