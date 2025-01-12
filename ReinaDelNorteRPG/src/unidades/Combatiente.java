@@ -10,14 +10,14 @@ public class Combatiente extends Unidad {
 
 	public Combatiente(Zona zona, boolean aliado,int idFaccion, PanelDeJuego pdj) {
 		super(zona, aliado,idFaccion, pdj);
-		this.setNombre("Soldado");
+		this.setNombre("Combatiente");
 		this.setClase(nombrarClase(idFaccion));
-		this.setHP(45);
-		this.setHPMax(45);
+		this.setHPMax(obtenerValorEntre(60,90));
+		this.setHP(this.getHPMax());
 		this.setSP(0);
 		this.setSPMax(0);
-		this.setAtq(10);
-		this.setDef(5);
+		this.setAtq(obtenerValorEntre(13,17));
+		this.setDef(obtenerValorEntre(5,9));
 		this.setPCRT(0.3);
 		this.setDCRT(2);
 	}

@@ -252,6 +252,13 @@ public class Unidad {
 	    return random.nextInt(i);
 	}
 	
+	public int obtenerValorEntre(int min, int max) {
+	    if (min > max) {
+	        throw new IllegalArgumentException("El valor mínimo no puede ser mayor que el máximo.");
+	    }
+	    return (int) (Math.random() * (max - min + 1) + min);
+	}
+	
 	//METODOS AUXILIARES//////////////////////////////////////////////////////
 	public void posicionar(Zona zona) {
 		setPosX(zona.x);

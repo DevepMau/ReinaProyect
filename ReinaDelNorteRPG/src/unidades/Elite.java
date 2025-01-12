@@ -10,12 +10,12 @@ public class Elite extends Unidad{
 		super(zona, aliado, idFaccion, pdj);
 		this.setNombre("Elite");
 		this.setClase(nombrarClase(idFaccion));
-		this.setHP(70);
-		this.setHPMax(70);
-		this.setSP(20);
-		this.setSPMax(20);
-		this.setAtq(15);
-		this.setDef(10);
+		this.setHPMax(obtenerValorEntre(100,150));
+		this.setHP(this.getHPMax());
+		this.setSPMax(obtenerValorEntre(30,70));
+		this.setSP(this.getSPMax());
+		this.setAtq(obtenerValorEntre(18,25));
+		this.setDef(obtenerValorEntre(10,13));
 		this.setPCRT(0.5);
 		this.setDCRT(2);
 	}

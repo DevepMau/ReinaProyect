@@ -12,12 +12,12 @@ public class Recluta extends Unidad{
 		super(zona, aliado,idFaccion, pdj);
 		this.setNombre("Recluta");
 		this.setClase(nombrarClase(idFaccion));
-		this.setHP(30);
-		this.setHPMax(30);
+		this.setHPMax(obtenerValorEntre(40,70));
+		this.setHP(this.getHPMax());
 		this.setSP(0);
 		this.setSPMax(0);
-		this.setAtq(7);
-		this.setDef(2);
+		this.setAtq(obtenerValorEntre(8,12));
+		this.setDef(obtenerValorEntre(1,5));
 		this.setPCRT(0);
 	}
 	

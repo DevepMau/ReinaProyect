@@ -46,14 +46,14 @@ public class Combate {
 		acciones[0] = "ATACAR";
 		acciones[1] = "HABILIDAD";
 		acciones[2] = "USAR OBJETO";
-		unidades.add(new Combatiente(zonas.get(0), true,0, pdj));
-		unidades.add(new Recluta(zonas.get(0), false,2, pdj));
-		unidades.add(new Combatiente(zonas.get(0), true,0, pdj));
-		unidades.add(new Elite(zonas.get(0), true,0, pdj));
-		unidades.add(new Combatiente(zonas.get(0), false,2, pdj));
-		unidades.add(new Elite(zonas.get(0), false,2, pdj));
-		unidades.add(new Especialista(zonas.get(0), false,2, pdj));
-		unidades.add(new Recluta(zonas.get(0), true,0, pdj));
+		unidades.add(new Combatiente(zonas.get(0), true,1, pdj));
+		unidades.add(new Recluta(zonas.get(0), false,1, pdj));
+		unidades.add(new Especialista(zonas.get(0), true,1, pdj));
+		unidades.add(new Elite(zonas.get(0), true,1, pdj));
+		unidades.add(new Combatiente(zonas.get(0), false,1, pdj));
+		unidades.add(new Elite(zonas.get(0), false,1, pdj));
+		unidades.add(new Especialista(zonas.get(0), false,1, pdj));
+		unidades.add(new Recluta(zonas.get(0), true,1, pdj));
 		
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////////////////
@@ -317,9 +317,7 @@ public class Combate {
 	    int posX = pdj.anchoDePantalla - ancho - 2;
 	    int posY = pdj.altoDePantalla - alto - 2;
 	    int ajusteY = -24;
-
-	    g2.setColor(Color.white);
-	    g2.drawRoundRect(posX, posY, ancho, alto, 10, 10);
+	    boolean dobleLinea = false;
 
 	    g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
 	    String nombreCompleto = unidad.getNombre();
@@ -330,6 +328,7 @@ public class Combate {
 	    String apellido = "";
 
 	    if (metrics.stringWidth(nombreCompleto) > maxAnchoNombre) {
+	    	dobleLinea = true;
 	        int espacioIndex = nombreCompleto.lastIndexOf(' ');
 	        if (espacioIndex > 0) {
 	            nombre = nombreCompleto.substring(0, espacioIndex).trim();
@@ -343,26 +342,49 @@ public class Combate {
 	            }
 	        }
 	    }
+	    
+	    g2.setColor(Color.white);
+	    if(dobleLinea) {
+	    	g2.drawRoundRect(posX, posY-24, ancho, alto+24, 10, 10);
+	    }
+	    else {
+	    	g2.drawRoundRect(posX, posY, ancho, alto, 10, 10);
+	    }
+	    
 	    if (unidad.getGenero() == 1) {
 	        g2.setColor(Color.CYAN);
 	    } else {
 	        g2.setColor(Color.PINK);
 	    }
 
-	    g2.drawString(nombre, posX + 8, posY + 24);
-	    if (!apellido.isEmpty()) {
-	        g2.drawString(apellido, posX + 8, posY + 48);
-	        ajusteY= 0;
+	    if(dobleLinea) {
+	    	g2.drawString(nombre, posX + 8, posY+ ajusteY + 24);
 	    }
-
+	    else {
+	    	g2.drawString(nombre, posX + 8, posY + 24);
+	    }
+	    if (!apellido.isEmpty()) {
+	        g2.drawString(apellido, posX + 8, posY+ ajusteY + 48);
+	    }
 	    g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18f));
 	    g2.setColor(Color.white);
 	    g2.drawString(unidad.getClase(), posX + 8, posY + ajusteY + 72);
 	    g2.drawString("HP: "+unidad.getHP()+"/"+unidad.getHPMax(), posX + 8, posY + ajusteY + 104);
-	    g2.drawString("SP: "+unidad.getSP()+"/"+unidad.getSPMax(), posX + 76, posY + ajusteY + 104);
-	    g2.drawString("ATQ: "+unidad.getAtq(), posX + 8, posY + ajusteY + 128);
-	    g2.drawString("DEF: "+unidad.getDef(), posX + 8, posY + ajusteY + 152);
-	    g2.drawString("P.CRT: "+(unidad.getPCRT())*100+"%", posX + 8, posY + ajusteY + 176);
+	    if(unidad.getSPMax() == 0) {
+	    	g2.drawString("SP: -/- ", posX + 8, posY + ajusteY + 128);
+	    }
+	    else {
+	    	g2.drawString("SP: "+unidad.getSP()+"/"+unidad.getSPMax(), posX + 8, posY + ajusteY + 128);
+	    }
+	    g2.drawString("ATQ: "+unidad.getAtq(), posX + 8, posY + ajusteY + 152);
+	    g2.drawString("DEF: "+unidad.getDef(), posX + 8, posY + ajusteY + 176);
+	    if(unidad.getPCRT() == 0) {
+	    	g2.drawString("P.CRT: ---", posX + 8, posY + ajusteY + 200);
+	    }
+	    else {
+	    	g2.drawString("P.CRT: "+(unidad.getPCRT())*100+"%", posX + 8, posY + ajusteY + 200);
+	    }
+	    
 	}
 
 	private String ajustarTexto(String texto, FontMetrics metrics, int maxAncho) {

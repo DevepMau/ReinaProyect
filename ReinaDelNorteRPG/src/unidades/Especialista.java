@@ -15,12 +15,12 @@ public class Especialista extends Unidad {
 		super(zona, aliado,idFaccion, pdj);
 		this.setNombre("Especialista");
 		this.setClase(nombrarClase(idFaccion));
-		this.setHP(45);
-		this.setHPMax(45);
-		this.setSP(80);
-		this.setSPMax(80);
-		this.setAtq(8);
-		this.setDef(4);
+		this.setHPMax(obtenerValorEntre(40,70));
+		this.setHP(this.getHPMax());
+		this.setSPMax(obtenerValorEntre(60,100));
+		this.setSP(this.getSPMax());
+		this.setAtq(obtenerValorEntre(8,12));
+		this.setDef(obtenerValorEntre(3,7));
 		this.setPCRT(0);
 		this.spHabilidad1 = 10;
 	}
