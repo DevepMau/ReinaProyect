@@ -12,7 +12,7 @@ import java.util.Random;
 
 import unidades.Elite;
 import unidades.Especialista;
-import unidades.Recluta;
+import unidades.CebadorDeMate;
 import unidades.Combatiente;
 import unidades.Unidad;
 
@@ -37,6 +37,8 @@ public class Combate {
 	private int instruccionElegida = -1;
 	private Rectangle selector;
 	private Rectangle resaltador;
+	//OBJETOS ESPECIALES/////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
 	
 	public Combate(PanelDeJuego pdj) {
 		this.pdj = pdj;
@@ -46,14 +48,10 @@ public class Combate {
 		acciones[0] = "ATACAR";
 		acciones[1] = "HABILIDAD";
 		acciones[2] = "USAR OBJETO";
-		unidades.add(new Combatiente(zonas.get(0), true,1, pdj));
-		unidades.add(new Recluta(zonas.get(0), false,1, pdj));
-		unidades.add(new Especialista(zonas.get(0), true,1, pdj));
-		unidades.add(new Elite(zonas.get(0), true,1, pdj));
-		unidades.add(new Combatiente(zonas.get(0), false,1, pdj));
-		unidades.add(new Elite(zonas.get(0), false,1, pdj));
-		unidades.add(new Especialista(zonas.get(0), false,1, pdj));
-		unidades.add(new Recluta(zonas.get(0), true,1, pdj));
+		unidades.add(new CebadorDeMate(zonas.get(0), true, pdj));
+		unidades.add(new Combatiente(zonas.get(0), false, pdj));
+		unidades.add(new CebadorDeMate(zonas.get(0), true, pdj));
+		//unidades.add(new Elite(zonas.get(0), true, pdj));
 		
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////////////////
@@ -92,11 +90,10 @@ public class Combate {
 		
 		for (Unidad unidad : unidades) {
 		    unidad.dibujar(g2);
-		    unidad.dibujarVida();
 		}
 		if(turnoJugador) {
 			menuDeOpciones(acciones, pdj.tamañoDeBaldosa*3 , pdj.altoDePantalla - pdj.tamañoDeBaldosa*(acciones.length-1), 160);
-			if(instruccionElegida == 0) {
+			if(instruccionElegida == 0 || instruccionElegida == 1) {
 				g2.setColor(Color.YELLOW);
 				g2.fillRect(selector.x, selector.y, selector.width, selector.height);
 			}
@@ -131,10 +128,11 @@ public class Combate {
 		    	if(instruccionElegida == -1) {
 		    		instruccionElegida = elegirAccion();
 		    	}
+		    	//ATAQUE JUGADOR////////////////////////////////////////
 		    	else if(instruccionElegida == 0) {
 		    		Unidad unidadSeleccionada = elegirUnidad(enemigos);
 			    	if(unidadSeleccionada != null) {
-			    		unidades.get(id).atacar(unidadSeleccionada);
+			    		unidades.get(id).realizarAtaque(unidadSeleccionada);
 			    		if(unidadSeleccionada.getHP() <= 0) {
 			    			pos = 0;
 			    		}
@@ -146,6 +144,20 @@ public class Combate {
 			    		}
 			    		instruccionElegida = -1;
 			    	}
+		    	}
+		    	//HABILIDAD JUGADOR/////////////////////////////////////
+		    	else if(instruccionElegida == 1) {
+		    		Unidad unidadSeleccionada = elegirUnidad(aliados);
+		    		if(unidadSeleccionada != null) {
+		    			unidades.get(id).usarHabilidad(unidadSeleccionada);
+		    			if(id >= unidades.size()-1) {
+			    			id = 0;
+			    		}
+			    		else {
+			    			id++;
+			    		}
+			    		instruccionElegida = -1;
+		    		}
 		    	}
 		    }
 		    else {
@@ -162,6 +174,7 @@ public class Combate {
 		    		}
 			    	timer = 100;
 		    	}
+		    	pos = 0;
 		    	timer--;
 		    }
 	    }
@@ -376,13 +389,29 @@ public class Combate {
 	    else {
 	    	g2.drawString("SP: "+unidad.getSP()+"/"+unidad.getSPMax(), posX + 8, posY + ajusteY + 128);
 	    }
-	    g2.drawString("ATQ: "+unidad.getAtq(), posX + 8, posY + ajusteY + 152);
+	    g2.drawString("ATQ: "+unidad.getAtq(), posX + 8, posY + ajusteY + 152); 
 	    g2.drawString("DEF: "+unidad.getDef(), posX + 8, posY + ajusteY + 176);
-	    if(unidad.getPCRT() == 0) {
-	    	g2.drawString("P.CRT: ---", posX + 8, posY + ajusteY + 200);
+	    
+	    g2.setColor(Color.yellow);
+	    if(unidad.getAtqMod() != 0) {
+	    	g2.drawString("+"+unidad.getAtqMod(), posX + 60, posY + ajusteY + 152);
+	    }
+	    if(unidad.getDefMod() != 0) {
+	    	g2.drawString("+"+unidad.getDefMod(), posX + 60, posY + ajusteY + 176);
+	    }  
+	    if((unidad.getPCRT()+unidad.getPcrtMod()) > 0) {
+	    	if(unidad.getPcrtMod() != 0) {
+	    		double d = unidad.getPCRT()+unidad.getPcrtMod();
+	    		g2.drawString("P.CRT: "+(d)*100+"%", posX + 8, posY + ajusteY + 200);
+	    	}
+	    	else {
+	    		g2.setColor(Color.white);
+	    		g2.drawString("P.CRT: "+(unidad.getPCRT())*100+"%", posX + 8, posY + ajusteY + 200);
+	    	}
 	    }
 	    else {
-	    	g2.drawString("P.CRT: "+(unidad.getPCRT())*100+"%", posX + 8, posY + ajusteY + 200);
+	    	g2.setColor(Color.white);
+	    	g2.drawString("P.CRT: ---", posX + 8, posY + ajusteY + 200);
 	    }
 	    
 	}

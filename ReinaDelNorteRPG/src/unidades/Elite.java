@@ -6,10 +6,10 @@ import principal.Zona;
 
 public class Elite extends Unidad{
 
-	public Elite(Zona zona, boolean aliado,int idFaccion, PanelDeJuego pdj) {
-		super(zona, aliado, idFaccion, pdj);
+	public Elite(Zona zona, boolean aliado, PanelDeJuego pdj) {
+		super(zona, aliado, pdj);
 		this.setNombre("Elite");
-		this.setClase(nombrarClase(idFaccion));
+		this.setClase("Heroe Federal");
 		this.setHPMax(obtenerValorEntre(100,150));
 		this.setHP(this.getHPMax());
 		this.setSPMax(obtenerValorEntre(30,70));

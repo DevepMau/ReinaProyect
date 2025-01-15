@@ -8,10 +8,10 @@ import principal.Zona;
 
 public class Combatiente extends Unidad {
 
-	public Combatiente(Zona zona, boolean aliado,int idFaccion, PanelDeJuego pdj) {
-		super(zona, aliado,idFaccion, pdj);
+	public Combatiente(Zona zona, boolean aliado, PanelDeJuego pdj) {
+		super(zona, aliado, pdj);
 		this.setNombre("Combatiente");
-		this.setClase(nombrarClase(idFaccion));
+		this.setClase("Gaucho Moderno");
 		this.setHPMax(obtenerValorEntre(60,90));
 		this.setHP(this.getHPMax());
 		this.setSP(0);

@@ -31,6 +31,9 @@ public class Unidad {
 	private boolean vivo = true;
 	private boolean esCritico;
 	private boolean esCurar;
+	private boolean esEsquivado;
+	private boolean habilidadOn = false;
+	private int duracionHabilidad = 50;
 	//VARIABLES PARA LA SACUDIDA/////////////////////////////////////
 	private boolean enSacudida = false;
 	private int duracionSacudida = 0; // Duración en frames
@@ -52,8 +55,17 @@ public class Unidad {
 	private double eva;
 	private double pcrt;
 	private double dcrt;
+	//MODIFICADORES DE STATS////////////////////////////////////////
+	private int hpMaxMod = 0;
+	private int spMaxMod = 0;
+	private int atqMod = 0;
+	private int defMod = 0;
+	private int velMod = 0;
+	private double evaMod = 0;
+	private double pcrtMod = 0;
+	private double dcrtMod = 0;
 	////////////////////////////////////////////////////////////////
-	public Unidad(Zona zona,boolean aliado,int idFaccion, PanelDeJuego pdj) {
+	public Unidad(Zona zona,boolean aliado, PanelDeJuego pdj) {
 		this.pdj = pdj;
 		this.zona = zona;
 		this.dañoRecibido = "";
@@ -81,6 +93,7 @@ public class Unidad {
             } else {
                 enSacudida = false;
                 esCurar = false;
+                esEsquivado = false;
                 desplazamientoSacudidaX = 0;
                 desplazamientoSacudidaY = 0;
                 desplazarDañoRecibido = getPosY();
@@ -91,10 +104,22 @@ public class Unidad {
         if(getHP() <= 0) {
         	setAlive(false);
         }
+        if(habilidadOn) {
+        	if(duracionHabilidad > 0) {
+        		duracionHabilidad--;
+        	}
+        	else {
+        		duracionHabilidad = 50;
+        		habilidadOn = false;
+        	}
+        }
     }
 	
 	public void dibujar(Graphics2D g2) {
         this.g2 = g2;
+        
+        dibujarVida();
+        
         if (isAliado()) {
             g2.setColor(Color.BLUE);
         } else {
@@ -107,6 +132,10 @@ public class Unidad {
         int dibujarY = getPosY() + desplazamientoSacudidaY;
         g2.fillRect(dibujarX + 24, dibujarY - 24, pdj.tamañoDeBaldosa, pdj.tamañoDeBaldosa * 2);
         
+        if(isHabilidadOn()) {
+        	dibujarEfecto(g2);
+        }
+        
         //MOSTRAR DAÑO RECIBIDO////////////////////////////
         if(this.esCurar) {
             g2.setColor(Color.green);
@@ -117,6 +146,11 @@ public class Unidad {
         	g2.setColor(Color.YELLOW);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
             g2.drawString(dañoRecibido, getPosX()+84, desplazarDañoRecibido-48);
+        }
+        else if(this.esEsquivado) {
+        	g2.setColor(Color.GRAY);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
+            g2.drawString("MISS!", getPosX()+84, desplazarDañoRecibido-48);
         }
         else {
         	g2.setColor(Color.WHITE);
@@ -130,22 +164,11 @@ public class Unidad {
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
 		int accion = elegirAleatorio(4);
 		if(accion == 0 && puedeUsarHabilidad()) {
-			usarHabilidad(aliados);
+			usarHabilidadEnemigo(aliados);
 		}
 		else {
-			ataqueEnemigo(enemigos);
+			realizarAtaqueEnemigo(enemigos);
 		}
-	}
-	
-	public void atacar(Unidad unidad) {
-		boolean isCritical = Math.random() <= this.getPCRT();
-	    	 
-		int daño = Math.max(1, this.getAtq() - unidad.getDef());
-	    	 
-		if (isCritical) {
-			daño *= this.dcrt;
-		}
-		unidad.recibirDaño(daño, isCritical);
 	}
 	
 	public void recibirDaño(int daño, boolean isCritical) {
@@ -166,18 +189,43 @@ public class Unidad {
 	    
 	}
 	
-	public void ataqueEnemigo(ArrayList<Unidad> unidades) {
+	public void realizarAtaque(Unidad unidad) {
+		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());
+		boolean isMiss = Math.random() <= (unidad.getEva() + unidad.getEvaMod());	 
+		int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod())); 	 
+		if (isCritical) {
+			daño *= (this.dcrt + this.getDcrtMod());
+		}
+		if(!isMiss) {
+			unidad.recibirDaño(daño, isCritical);
+		}	
+	}
+	
+	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
 		Unidad objetivo = elegirObjetivo(unidades);
-		boolean isCritical = Math.random() <= this.getPCRT();
+		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());
+		boolean isMiss = Math.random() <= (objetivo.getEva() + objetivo.getEvaMod());
 	    
 		if(objetivo != null) {
-			int daño = Math.max(1, this.getAtq() - objetivo.getDef());
+			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (objetivo.getDef() + objetivo.getDefMod()));
 	    	 
 			if (isCritical) {
-				daño *= 2;
+				daño *= (this.getDCRT() + this.getDcrtMod());
 			}
-			objetivo.recibirDaño(daño, isCritical);
+			if(!isMiss) {
+				objetivo.recibirDaño(daño, isCritical);
+			}
+			else {
+				objetivo.evadirAtaque();
+			}
 		}
+	}
+	
+	public void evadirAtaque() {
+		pdj.ReproducirSE(6);
+		esEsquivado = true;
+		enSacudida = true;
+	    duracionSacudida = 20;
 	}
 	
 	public void restaurarHP(int curacion) {
@@ -194,7 +242,9 @@ public class Unidad {
 	    pdj.ReproducirSE(4);
 	}
 	
-	public void usarHabilidad(ArrayList<Unidad> unidades) {}
+	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {}
+	
+	public void usarHabilidad(Unidad unidad) {}
 	
 	//METODOS VISUALES/////////////////////////////////////////////////////////
 	public void dibujarVida() {
@@ -239,6 +289,8 @@ public class Unidad {
 	    g2.drawRoundRect(posX, getPosY() + altura, barraHP, pdj.tamañoDeBaldosa / 5, 5, 5);
 	}
 	
+	public void dibujarEfecto(Graphics2D g2) {}
+	
 	//METODOS DE ELECCION/////////////////////////////////////////////////////
 	public Unidad elegirObjetivo(ArrayList<Unidad> unidades) {
 	    if (!unidades.isEmpty()) {
@@ -272,8 +324,8 @@ public class Unidad {
 	public boolean puedeUsarHabilidad() {
 		return false;
 	}
-	
-	//GETTERS & SETTERS//////////////////////////////////////
+
+	//GETTERS & SETTERS////////////////////////////////////////////////////////
 	public String getNombre() {
 		return nombre;
 	}
@@ -374,6 +426,12 @@ public class Unidad {
 		this.vivo = vivo;
 	}
 
+	public boolean isHabilidadOn() {
+		return habilidadOn;
+	}
+	public void setHabilidadOn(boolean habilidadOn) {
+		this.habilidadOn = habilidadOn;
+	}
 	public int getPosX() {
 		return posX;
 	}
@@ -404,6 +462,54 @@ public class Unidad {
 	}
 	public void setClase(String clase) {
 		this.clase = clase;
+	}
+	public int getHpMaxMod() {
+		return hpMaxMod;
+	}
+	public void setHpMaxMod(int hpMaxMod) {
+		this.hpMaxMod = hpMaxMod;
+	}
+	public int getSpMaxMod() {
+		return spMaxMod;
+	}
+	public void setSpMaxMod(int spMaxMod) {
+		this.spMaxMod = spMaxMod;
+	}
+	public int getAtqMod() {
+		return atqMod;
+	}
+	public void setAtqMod(int atqMod) {
+		this.atqMod = atqMod;
+	}
+	public int getDefMod() {
+		return defMod;
+	}
+	public void setDefMod(int defMod) {
+		this.defMod = defMod;
+	}
+	public int getVelMod() {
+		return velMod;
+	}
+	public void setVelMod(int velMod) {
+		this.velMod = velMod;
+	}
+	public double getEvaMod() {
+		return evaMod;
+	}
+	public void setEvaMod(double evaMod) {
+		this.evaMod = evaMod;
+	}
+	public double getPcrtMod() {
+		return pcrtMod;
+	}
+	public void setPcrtMod(double pcrtMod) {
+		this.pcrtMod = pcrtMod;
+	}
+	public double getDcrtMod() {
+		return dcrtMod;
+	}
+	public void setDcrtMod(double dcrtMod) {
+		this.dcrtMod = dcrtMod;
 	}
 
 }

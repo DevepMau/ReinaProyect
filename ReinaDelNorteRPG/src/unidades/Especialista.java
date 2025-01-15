@@ -11,10 +11,10 @@ public class Especialista extends Unidad {
 	
 	private int spHabilidad1;
 
-	public Especialista(Zona zona, boolean aliado,int idFaccion, PanelDeJuego pdj) {
-		super(zona, aliado,idFaccion, pdj);
+	public Especialista(Zona zona, boolean aliado, PanelDeJuego pdj) {
+		super(zona, aliado, pdj);
 		this.setNombre("Especialista");
-		this.setClase(nombrarClase(idFaccion));
+		this.setClase("Payador Tartamudo");
 		this.setHPMax(obtenerValorEntre(40,70));
 		this.setHP(this.getHPMax());
 		this.setSPMax(obtenerValorEntre(60,100));
@@ -39,11 +39,11 @@ public class Especialista extends Unidad {
 				this.setSP(this.getSP() - this.spHabilidad1);
 			}
 			else {
-				ataqueEnemigo(enemigos);
+				realizarAtaqueEnemigo(enemigos);
 			}
 		}
 		else {
-			ataqueEnemigo(enemigos);
+			realizarAtaqueEnemigo(enemigos);
 		}
 	}
 	
