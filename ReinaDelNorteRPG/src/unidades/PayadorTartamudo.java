@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import principal.PanelDeJuego;
 import principal.Zona;
 
-public class Especialista extends Unidad {
+public class PayadorTartamudo extends Unidad {
 	
 	private int spHabilidad1;
 
-	public Especialista(Zona zona, boolean aliado, PanelDeJuego pdj) {
+	public PayadorTartamudo(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
 		this.setNombre("Especialista");
 		this.setClase("Payador Tartamudo");

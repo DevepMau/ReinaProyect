@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.Random;
 
 import unidades.Elite;
-import unidades.Especialista;
+import unidades.PayadorTartamudo;
 import unidades.CebadorDeMate;
-import unidades.Combatiente;
+import unidades.GauchoModerno;
 import unidades.Unidad;
 
 public class Combate {
@@ -29,6 +29,8 @@ public class Combate {
 	private int pos = 0;
 	private int timer = 100;
 	private boolean unidadesSinNombre = true;
+	private boolean posicionarUnidades = true;
+	private boolean ordenarListaDeUnidades = true;
 	//CONTROL DE TURNO Y BOTONES/////////////////////////////////////////////
 	private boolean habilitar = true;
 	private boolean turnoJugador = true;
@@ -48,10 +50,15 @@ public class Combate {
 		acciones[0] = "ATACAR";
 		acciones[1] = "HABILIDAD";
 		acciones[2] = "USAR OBJETO";
+		unidades.add(new GauchoModerno(zonas.get(0), true, pdj));
+		unidades.add(new GauchoModerno(zonas.get(0), false, pdj));
+		unidades.add(new GauchoModerno(zonas.get(0), true, pdj));
+		unidades.add(new GauchoModerno(zonas.get(0), false, pdj));
 		unidades.add(new CebadorDeMate(zonas.get(0), true, pdj));
-		unidades.add(new Combatiente(zonas.get(0), false, pdj));
+		unidades.add(new CebadorDeMate(zonas.get(0), false, pdj));
 		unidades.add(new CebadorDeMate(zonas.get(0), true, pdj));
-		//unidades.add(new Elite(zonas.get(0), true, pdj));
+		unidades.add(new CebadorDeMate(zonas.get(0), false, pdj));
+
 		
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////////////////
@@ -60,18 +67,24 @@ public class Combate {
 			nombrarUnidades(unidades);
 			unidadesSinNombre = false;
 		}
-		
-		int idAli = 5;
-		int idEne = 1;
-		for (Unidad unidad : unidades) {
-		    if(unidad.isAliado() && idAli <= 8) {
-		    	unidad.posicionar(zonas.get(idAli));
-		    	idAli++;
-		    }
-		    else if(!unidad.isAliado() && idEne <= 4) {
-		    	unidad.posicionar(zonas.get(idEne));
-		    	idEne++;
-		    }
+		if(ordenarListaDeUnidades) {
+			unidades.sort((u1, u2) -> Integer.compare(u2.getVel(), u1.getVel()));
+			ordenarListaDeUnidades = false;
+		}
+		if(posicionarUnidades) {
+			int idAli = 5;
+			int idEne = 1;
+			for (Unidad unidad : unidades) {
+			    if(unidad.isAliado() && idAli <= 8) {
+			    	unidad.posicionar(zonas.get(idAli));
+			    	idAli++;
+			    }
+			    else if(!unidad.isAliado() && idEne <= 4) {
+			    	unidad.posicionar(zonas.get(idEne));
+			    	idEne++;
+			    }
+			}
+			posicionarUnidades = false;
 		}
 		for (Unidad unidad : unidades) {
 			unidad.actualizar();
@@ -103,7 +116,7 @@ public class Combate {
 		if(unidadSeleccionada != null) {
 			dibujarEstadisticasUnidad(unidadSeleccionada);
 			dibujarTriangulo(pdj.anchoDePantalla-pdj.tamañoDeBaldosa*4+(-4), pdj.altoDePantalla-pdj.tamañoDeBaldosa*4+(-32));
-		}	
+		}
 		
 	}
 	
@@ -111,6 +124,7 @@ public class Combate {
 	public void realizarTurno() {
 		ArrayList<Unidad> enemigos = new ArrayList<>();
 	    ArrayList<Unidad> aliados = new ArrayList<>();
+	    
 	    for (Unidad unidad : unidades) {
 	        if (unidad.getHP() > 0) {
 	            if (!unidad.isAliado()) {
@@ -121,8 +135,10 @@ public class Combate {
 	        }
 	    }
 	    if(unidades.get(id).isAlive()) {
+	    	System.out.println(unidades.get(id).getVel());
 	    	actualizarSelector(unidades.get(id), resaltador);
 	    	if(unidades.get(id).isAliado()) {
+	    		retrocederAccion();
 	    		unidadSeleccionada = unidades.get(id);
 		    	turnoJugador = true;
 		    	if(instruccionElegida == -1) {
@@ -143,6 +159,7 @@ public class Combate {
 			    			id++;
 			    		}
 			    		instruccionElegida = -1;
+			    		pos = 0;
 			    	}
 		    	}
 		    	//HABILIDAD JUGADOR/////////////////////////////////////
@@ -157,6 +174,8 @@ public class Combate {
 			    			id++;
 			    		}
 			    		instruccionElegida = -1;
+			    		numeroDeInstruccion = 0;
+			    		pos = 0;
 		    		}
 		    	}
 		    }
@@ -224,7 +243,7 @@ public class Combate {
 	}
 	
 	public int elegirAccion() {
-		if(pdj.teclado.RIGHT == true && habilitar) {
+		if(pdj.teclado.DOWN == true && habilitar) {
     		if(numeroDeInstruccion >= acciones.length-1) {
     			numeroDeInstruccion = 0;
     		}
@@ -234,7 +253,7 @@ public class Combate {
     		habilitar = false;
     		pdj.ReproducirSE(0);
     	}
-    	if(pdj.teclado.LEFT == true && habilitar) {
+    	if(pdj.teclado.UP == true && habilitar) {
     		if(numeroDeInstruccion <= 0) {
     			numeroDeInstruccion = acciones.length-1;
     		}
@@ -244,7 +263,7 @@ public class Combate {
     		habilitar = false;
     		pdj.ReproducirSE(0);
     	}
-    	if(!pdj.teclado.RIGHT && !pdj.teclado.LEFT && !pdj.teclado.ENTER) {
+    	if(!pdj.teclado.UP && !pdj.teclado.DOWN && !pdj.teclado.ESCAPE && !pdj.teclado.ENTER) {
     		habilitar = true;
     	}
     	if(pdj.teclado.ENTER == true && habilitar) {
@@ -479,6 +498,14 @@ public class Combate {
 		for(Unidad unidad: unidades) {
 			unidad.setNombre(pdj.gdn.generarNombreCompleto(unidad.getGenero()));
 		}
+	}
+	
+	public void retrocederAccion() {
+		if(pdj.teclado.ESCAPE == true && habilitar) {
+    		habilitar = false;
+    		pdj.ReproducirSE(0);
+    		instruccionElegida = -1;
+    	}
 	}
 	
 }

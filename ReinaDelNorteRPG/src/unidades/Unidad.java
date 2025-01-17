@@ -32,6 +32,8 @@ public class Unidad {
 	private boolean esCritico;
 	private boolean esCurar;
 	private boolean esEsquivado;
+	private boolean esMate;
+	private int idMate;
 	private boolean habilidadOn = false;
 	private int duracionHabilidad = 50;
 	//VARIABLES PARA LA SACUDIDA/////////////////////////////////////
@@ -40,7 +42,8 @@ public class Unidad {
 	private int desplazamientoSacudidaX = 0;
 	private int desplazamientoSacudidaY = 0;
 	private int desplazarDañoRecibido;
-    //ESTADISTICAS DE LA UNIDAD//////////////////////////////////////
+    //ESTADISTICAS Y ELEMENTOS DE LA UNIDAD/////////////////////////
+	private String[] habilidades = new String[1];
 	private String nombre;
 	private String clase;
 	private int idFaccion;
@@ -64,12 +67,15 @@ public class Unidad {
 	private double evaMod = 0;
 	private double pcrtMod = 0;
 	private double dcrtMod = 0;
+	private int vidaPerdida = 0;
 	////////////////////////////////////////////////////////////////
 	public Unidad(Zona zona,boolean aliado, PanelDeJuego pdj) {
 		this.pdj = pdj;
 		this.zona = zona;
 		this.dañoRecibido = "";
 		this.curaRecibida = "";
+		this.setEsMate(false);
+		this.setIdMate(-1);
 		this.setPosX(zona.x);
 		this.setPosY(zona.y);
 		this.setAliado(aliado);
@@ -83,17 +89,19 @@ public class Unidad {
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////
 	public void actualizar() {
-        if (enSacudida) {
-            if (duracionSacudida > 0) {
+		usarEfectosPasivos();
+        if (isEnSacudida()) {
+            if (getDuracionSacudida() > 0) {
                 desplazamientoSacudidaX = (int) (Math.random() * 10 - 5);
                 desplazamientoSacudidaY = (int) (Math.random() * 10 - 5);
-                duracionSacudida--;
+                setDuracionSacudida(getDuracionSacudida() - 1);
                 desplazarDañoRecibido--;
                 
             } else {
-                enSacudida = false;
+                setEnSacudida(false);
                 esCurar = false;
                 esEsquivado = false;
+                esMate = false;
                 desplazamientoSacudidaX = 0;
                 desplazamientoSacudidaY = 0;
                 desplazarDañoRecibido = getPosY();
@@ -152,6 +160,42 @@ public class Unidad {
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
             g2.drawString("MISS!", getPosX()+84, desplazarDañoRecibido-48);
         }
+        else if(this.isEsMate()) {
+        	if(getIdMate() == 0) {
+        		g2.setColor(Color.RED);
+        		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+                g2.drawString("HERVIDO", getPosX()+84, desplazarDañoRecibido-48);
+                g2.setColor(Color.pink);
+                g2.drawString("Y DULCE!", getPosX()+84, desplazarDañoRecibido-30);
+        	}
+        	if(getIdMate() == 1) {
+        		g2.setColor(Color.RED);
+        		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+                g2.drawString("HERVIDO", getPosX()+84, desplazarDañoRecibido-48);
+                g2.setColor(Color.GREEN);
+                g2.drawString("Y AMARGO!", getPosX()+84, desplazarDañoRecibido-30);
+        	}
+        	if(getIdMate() == 2) {
+        		g2.setColor(Color.BLUE);
+        		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+                g2.drawString("FRIO Y", getPosX()+84, desplazarDañoRecibido-48);
+                g2.setColor(Color.pink);
+                g2.drawString("DULCE!", getPosX()+84, desplazarDañoRecibido-30);
+        	}
+        	if(getIdMate() == 3) {
+        		g2.setColor(Color.BLUE);
+        		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+                g2.drawString("FRIO Y", getPosX()+84, desplazarDañoRecibido-48);
+                g2.setColor(Color.GREEN);
+                g2.drawString("AMARGO!", getPosX()+84, desplazarDañoRecibido-30);
+        	}
+        	if(getIdMate() == 4) {
+        		g2.setColor(Color.YELLOW);
+        		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+                g2.drawString("MATE", getPosX()+84, desplazarDañoRecibido-48);
+                g2.drawString("PERFECTO!", getPosX()+84, desplazarDañoRecibido-30);
+        	}
+        }
         else {
         	g2.setColor(Color.WHITE);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
@@ -182,31 +226,35 @@ public class Unidad {
 		else {
 			dañoRecibido = "" + daño;
 		}
-
-	    enSacudida = true;
-	    duracionSacudida = 20;
+		this.setVidaPerdida(this.getVidaPerdida() + daño);
+	    setEnSacudida(true);
+	    setDuracionSacudida(20);
 	    pdj.ReproducirSE(SEId);
 	    
 	}
 	
 	public void realizarAtaque(Unidad unidad) {
 		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());
-		boolean isMiss = Math.random() <= (unidad.getEva() + unidad.getEvaMod());	 
-		int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod())); 	 
-		if (isCritical) {
-			daño *= (this.dcrt + this.getDcrtMod());
+		if(unidad != null) {
+			boolean isMiss = Math.random() <= (unidad.getEva() + unidad.getEvaMod());	 
+			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod())); 	 
+			if (isCritical) {
+				daño *= (this.getDCRT() + this.getDcrtMod());
+			}
+			if(!isMiss) {
+				unidad.recibirDaño(daño, isCritical);
+			}
+			else {
+				unidad.evadirAtaque();
+			}
 		}
-		if(!isMiss) {
-			unidad.recibirDaño(daño, isCritical);
-		}	
 	}
 	
 	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
 		Unidad objetivo = elegirObjetivo(unidades);
-		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());
-		boolean isMiss = Math.random() <= (objetivo.getEva() + objetivo.getEvaMod());
-	    
+		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());  
 		if(objetivo != null) {
+			boolean isMiss = Math.random() <= (objetivo.getEva() + objetivo.getEvaMod());
 			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (objetivo.getDef() + objetivo.getDefMod()));
 	    	 
 			if (isCritical) {
@@ -224,8 +272,8 @@ public class Unidad {
 	public void evadirAtaque() {
 		pdj.ReproducirSE(6);
 		esEsquivado = true;
-		enSacudida = true;
-	    duracionSacudida = 20;
+		setEnSacudida(true);
+	    setDuracionSacudida(20);
 	}
 	
 	public void restaurarHP(int curacion) {
@@ -237,14 +285,16 @@ public class Unidad {
 		}
 		curaRecibida = "+" + curacion;
 		esCurar = true;
-		enSacudida = true;
-	    duracionSacudida = 20;
+		setEnSacudida(true);
+	    setDuracionSacudida(20);
 	    pdj.ReproducirSE(4);
 	}
 	
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {}
 	
 	public void usarHabilidad(Unidad unidad) {}
+	
+	public void usarEfectosPasivos() {}
 	
 	//METODOS VISUALES/////////////////////////////////////////////////////////
 	public void dibujarVida() {
@@ -397,7 +447,7 @@ public class Unidad {
 	}
 	
 	public double getDCRT() {
-		return pcrt;
+		return dcrt;
 	}
 
 	public void setDCRT(double dcrt) {
@@ -426,6 +476,24 @@ public class Unidad {
 		this.vivo = vivo;
 	}
 
+	public boolean isEnSacudida() {
+		return enSacudida;
+	}
+	public void setEnSacudida(boolean enSacudida) {
+		this.enSacudida = enSacudida;
+	}
+	public int getDuracionSacudida() {
+		return duracionSacudida;
+	}
+	public void setDuracionSacudida(int duracionSacudida) {
+		this.duracionSacudida = duracionSacudida;
+	}
+	public boolean isEsMate() {
+		return esMate;
+	}
+	public void setEsMate(boolean esMate) {
+		this.esMate = esMate;
+	}
 	public boolean isHabilidadOn() {
 		return habilidadOn;
 	}
@@ -510,6 +578,25 @@ public class Unidad {
 	}
 	public void setDcrtMod(double dcrtMod) {
 		this.dcrtMod = dcrtMod;
+	}
+	public int getVidaPerdida() {
+		return vidaPerdida;
+	}
+	public void setVidaPerdida(int vida) {
+		this.vidaPerdida = vida;
+	}
+	public int getIdMate() {
+		return idMate;
+	}
+	public void setIdMate(int idMate) {
+		this.idMate = idMate;
+	}
+	public String[] getHabilidades() {
+		return habilidades;
+	}
+
+	public void setHabilidades(String[] habilidades) {
+		this.habilidades = habilidades;
 	}
 
 }
