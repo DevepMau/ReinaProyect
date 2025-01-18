@@ -32,12 +32,15 @@ public class CebadorDeMate extends Unidad{
 		this.setVel(obtenerValorEntre(10,20));
 		this.spHabilidad1 = 7;
 		this.habilidades[0] = "CEBAR UN MATE";
+		
 	}
 	
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
 		int accion = elegirAleatorio(4);
 		if(accion <= 2 && puedeUsarHabilidad()) {
+			this.setHabilidadElegida(0);
 			usarHabilidadEnemigo(aliados);
+			//this.setHabilidadElegida(-1);
 			this.setSP(this.getSP() - this.spHabilidad1);
 			
 		}
@@ -56,10 +59,12 @@ public class CebadorDeMate extends Unidad{
 	}
 	
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
-		setHabilidadOn(true);
-		Unidad unidad = elegirObjetivo(unidades);
-		moverCubo(cubo, unidad);
-		cebarMate(unidad);	
+		if(this.getHabilidadElegida() == 0) {
+			setHabilidadOn(true);
+			Unidad unidad = elegirObjetivo(unidades);
+			moverCubo(cubo, unidad);
+			cebarMate(unidad);	
+		}
 	}
 	
 	public void usarHabilidad(Unidad unidad) {

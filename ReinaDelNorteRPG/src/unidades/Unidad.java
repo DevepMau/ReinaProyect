@@ -44,6 +44,8 @@ public class Unidad {
 	private int desplazarDañoRecibido;
     //ESTADISTICAS Y ELEMENTOS DE LA UNIDAD/////////////////////////
 	private String[] habilidades = new String[1];
+	private int habilidadElegida = -1;
+	private String accion = "";
 	private String nombre;
 	private String clase;
 	private int idFaccion;
@@ -597,6 +599,18 @@ public class Unidad {
 
 	public void setHabilidades(String[] habilidades) {
 		this.habilidades = habilidades;
+	}
+	public int getHabilidadElegida() {
+		return habilidadElegida;
+	}
+	public void setHabilidadElegida(int habilidadElegida) {
+		this.habilidadElegida = habilidadElegida;
+	}
+	public String getAccion() {
+		return accion;
+	}
+	public void setAccion(String accion) {
+		this.accion = accion;
 	}
 
 }

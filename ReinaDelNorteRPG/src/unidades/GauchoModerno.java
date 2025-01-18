@@ -9,7 +9,7 @@ import principal.Zona;
 
 public class GauchoModerno extends Unidad {
 	
-	private String[] habilidades = new String[1];
+	private String[] habilidades = new String[2];
 
 	public GauchoModerno(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
@@ -26,6 +26,7 @@ public class GauchoModerno extends Unidad {
 		this.setEva(0);
 		this.setVel(obtenerValorEntre(5,10));
 		this.habilidades[0] = "SALDAR DEUDA";
+		this.habilidades[1] = "APUÑALAR";
 	}
 	
 	public void realizarAtaque(Unidad unidad) {
