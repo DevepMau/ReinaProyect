@@ -62,10 +62,10 @@ public class Combate {
 		unidades.put(1, new GauchoModerno(zonas.get(0), false, pdj));
 		unidades.put(2, new GauchoModerno(zonas.get(0), true, pdj));
 		unidades.put(3, new GauchoModerno(zonas.get(0), false, pdj));
-		unidades.put(4, new CebadorDeMate(zonas.get(0), true, pdj));
+		//unidades.put(4, new CebadorDeMate(zonas.get(0), true, pdj));
 		unidades.put(5, new CebadorDeMate(zonas.get(0), false, pdj));
-		unidades.put(6, new CebadorDeMate(zonas.get(0), true, pdj));
-		unidades.put(7, new CebadorDeMate(zonas.get(0), false, pdj));
+		//unidades.put(6, new CebadorDeMate(zonas.get(0), true, pdj));
+		//unidades.put(7, new CebadorDeMate(zonas.get(0), false, pdj));
 
 		
 	}
@@ -125,7 +125,7 @@ public class Combate {
 			}
 		}
 		
-		if(unidadEnTurno != null) {
+		if(unidadEnTurno != null && seleccionarHabilidades) {
 			generarMenu(unidadEnTurno.getHabilidades(), pdj.tamañoDeBaldosa*6+10 , pdj.altoDePantalla - pdj.tamañoDeBaldosa*(acciones.length-1)+36, 160, numeroDeHabilidad, habilidadElegida);
 		}
 		
@@ -191,16 +191,26 @@ public class Combate {
 		    		if(unidadEnTurno != null) {
 		    			//SI HAY UNIDAD EN TURNO, SE ELIGE LA HABILIDAD//////////////////////
 		    			if(unidadEnTurno.getHabilidadElegida() == -1) {
+		    				seleccionarHabilidades = true;
 		    				unidades.get(turnoId).setHabilidadElegida(elegirHabilidad(unidades.get(turnoId).getHabilidades()));
+		    				unidades.get(turnoId).establecerTipoDeaccion();
 		    			}
 		    			else {
-		    				//SI HAY ELEGIA UNA HABILIDAD, SE DEFINE SI ES OFENSIVA O DE APOYO/
-		    				if(unidadEnTurno.getAccion() == "ATACAR") {
-		    					unidadSeleccionada = elegirUnidad(enemigos);
+		    				if(unidadEnTurno.cumpleLosRequisitos()) {
+		    					//SI HAY ELEGIDA UNA HABILIDAD, SE DEFINE SI ES OFENSIVA O DE APOYO/
+			    				if(unidadEnTurno.getAccion() == "ATACAR") {
+			    					unidadSeleccionada = elegirUnidad(enemigos);
+			    				}
+			    				else {
+			    					unidadSeleccionada = elegirUnidad(aliados);
+			    				}
 		    				}
 		    				else {
-		    					unidadSeleccionada = elegirUnidad(aliados);
-		    				}
+		    					seleccionarHabilidades = false;
+		    					unidadEnTurno.setHabilidadElegida(-1);
+		    					habilidadElegida = -1;
+		    					instruccionElegida = -1;
+		    				}	
 		    			}
 		    			//SI SE ELIGIO UN OBJETIVO, SE USA LA HABILIDAD///////////////////////
 		    			if(unidadSeleccionada != null) {
@@ -219,7 +229,8 @@ public class Combate {
 				    		numeroDeHabilidad = 0;
 				    		pos = 0;
 				    		unidadEnTurno.setHabilidadElegida(-1);
-				    		unidadEnTurno = null;
+				    		seleccionarHabilidades = false;
+				    		//unidadEnTurno = null;
 			    		}
 		    		}
 		    	}

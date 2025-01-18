@@ -37,10 +37,9 @@ public class CebadorDeMate extends Unidad{
 	
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
 		int accion = elegirAleatorio(4);
-		if(accion <= 2 && puedeUsarHabilidad()) {
+		if(accion <= 2 && cumpleLosRequisitos()) {
 			this.setHabilidadElegida(0);
 			usarHabilidadEnemigo(aliados);
-			//this.setHabilidadElegida(-1);
 			this.setSP(this.getSP() - this.spHabilidad1);
 			
 		}
@@ -49,7 +48,7 @@ public class CebadorDeMate extends Unidad{
 		}
 	}
 	
-	public boolean puedeUsarHabilidad() {
+	public boolean cumpleLosRequisitos() {
 		if(this.getSP() > 0) {
 			if(this.getSP() >= this.spHabilidad1) {
 				return true;
@@ -112,10 +111,10 @@ public class CebadorDeMate extends Unidad{
 		else {
 			//PERFECTO
 			unidad.setHPMax(unidad.getHPMax()+(unidad.getHPMax()/10));
-			unidad.setHP(unidad.getHPMax());
+			sumarHP(unidad, obtenerValorEntre(15,23));
 			if(unidad.getSPMax() > 0) {
 				unidad.setSPMax(unidad.getSPMax()+(unidad.getSPMax()/10));
-				unidad.setSP(unidad.getSPMax());
+				sumarSP(unidad, obtenerValorEntre(15,23));
 			}
 			unidad.setAtqMod(unidad.getAtqMod() + obtenerValorEntre(3,7));
 			unidad.setDefMod(unidad.getDefMod() + obtenerValorEntre(1,3));
@@ -142,6 +141,15 @@ public class CebadorDeMate extends Unidad{
 		}
 		else {
 			unidad.setSP(i);
+		}
+	}
+	
+	public void establecerTipoDeaccion() {
+		if(this.getHabilidadElegida() == 0) {
+			this.setAccion("APOYAR");
+		}
+		else {
+			this.setAccion("");
 		}
 	}
 	

@@ -33,6 +33,7 @@ public class Unidad {
 	private boolean esCurar;
 	private boolean esEsquivado;
 	private boolean esMate;
+	private boolean esHabilidad;
 	private int idMate;
 	private boolean habilidadOn = false;
 	private int duracionHabilidad = 50;
@@ -104,6 +105,7 @@ public class Unidad {
                 esCurar = false;
                 esEsquivado = false;
                 esMate = false;
+                esHabilidad = false;
                 desplazamientoSacudidaX = 0;
                 desplazamientoSacudidaY = 0;
                 desplazarDañoRecibido = getPosY();
@@ -198,6 +200,11 @@ public class Unidad {
                 g2.drawString("PERFECTO!", getPosX()+84, desplazarDañoRecibido-30);
         	}
         }
+        else if(this.esHabilidad) {
+        	g2.setColor(Color.cyan);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
+            g2.drawString(dañoRecibido+" IMPACT!!!", getPosX()+84, desplazarDañoRecibido-48);
+        }
         else {
         	g2.setColor(Color.WHITE);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
@@ -208,9 +215,10 @@ public class Unidad {
     }
 	//METODOS DE ACCION///////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
-		int accion = elegirAleatorio(4);
-		if(accion == 0 && puedeUsarHabilidad()) {
-			usarHabilidadEnemigo(aliados);
+		int accion = elegirAleatorio(2);
+		if(accion == 0 && cumpleLosRequisitos()) {
+			setHabilidadElegida(0);
+			usarHabilidadEnemigo(enemigos);
 		}
 		else {
 			realizarAtaqueEnemigo(enemigos);
@@ -373,9 +381,13 @@ public class Unidad {
 		return (getHP()*barraHP)/getHPMax();
 	}
 	
-	public boolean puedeUsarHabilidad() {
+	public void pasivaDeGaucho(int daño) {}
+	
+	public boolean cumpleLosRequisitos() {
 		return false;
 	}
+	
+	public void establecerTipoDeaccion() {}
 
 	//GETTERS & SETTERS////////////////////////////////////////////////////////
 	public String getNombre() {
@@ -495,6 +507,12 @@ public class Unidad {
 	}
 	public void setEsMate(boolean esMate) {
 		this.esMate = esMate;
+	}
+	public boolean isEshabilidad() {
+		return esHabilidad;
+	}
+	public void setEshabilidad(boolean eshabilidad) {
+		this.esHabilidad = eshabilidad;
 	}
 	public boolean isHabilidadOn() {
 		return habilidadOn;
