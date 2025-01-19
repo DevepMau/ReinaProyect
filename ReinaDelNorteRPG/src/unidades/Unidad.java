@@ -6,10 +6,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Random;
-
-import principal.GeneradorDeNombres;
 import principal.PanelDeJuego;
 import principal.Zona;
 
@@ -26,33 +23,32 @@ public class Unidad {
 	private String dañoRecibido;
 	private String curaRecibida;
 	//ESTADOS Y COMPORTAMIENTOS//////////////////////////////////////
-	private boolean aliado = false;
-	private boolean activo = true;
-	private boolean vivo = true;
-	private boolean esCritico;
-	private boolean esCurar;
-	private boolean esEsquivado;
-	private boolean esMate;
-	private boolean esHabilidad;
-	private boolean esGanarSP;
-	private boolean esMotivar;
 	private int idMate;
-	private boolean habilidadOn = false;
-	private int duracionHabilidad = 50;
+	private boolean esAliado = false;
+	private boolean estaActivo = true;
+	private boolean estaVivo = true;
+	private boolean realizaUnCritico;
+	private boolean realizaUnaCuracion;
+	private boolean estaEsquivando;
+	private boolean tomandoUnMate;
+	private boolean esUnaHabilidad;
+	private boolean estaGanandoSP;
+	private boolean estaMotivado;
 	//VARIABLES PARA LA SACUDIDA/////////////////////////////////////
 	private boolean enSacudida = false;
 	private int duracionSacudida = 0; // Duración en frames
 	private int desplazamientoSacudidaX = 0;
 	private int desplazamientoSacudidaY = 0;
 	private int desplazarDañoRecibido;
-    //ESTADISTICAS Y ELEMENTOS DE LA UNIDAD/////////////////////////
-	private String[] habilidades = new String[1];
-	private boolean singleTarget = true;
+    //ELEMENTOS DE LA UNIDAD/////////////////////////
+	private String tipoDeAccion = "";
+	private String[] listaDeHabilidades = new String[1];
 	private int habilidadElegida = -1;
-	private String accion = "";
+	private boolean objetivoUnico = true;
+	private int idFaccion;
+	//ESTADISTICAS DE LA UNIDAD/////////////////////////////////////
 	private String nombre;
 	private String clase;
-	private int idFaccion;
 	private int genero;
 	private int hp;
 	private int hpMax;
@@ -77,10 +73,10 @@ public class Unidad {
 	////////////////////////////////////////////////////////////////
 	public Unidad(Zona zona,boolean aliado, PanelDeJuego pdj) {
 		this.pdj = pdj;
-		this.zona = zona;
 		this.dañoRecibido = "";
 		this.curaRecibida = "";
-		this.setEsMate(false);
+		this.setZona(zona);
+		this.setTomandoUnMate(false);
 		this.setIdMate(-1);
 		this.setPosX(zona.x);
 		this.setPosY(zona.y);
@@ -95,81 +91,64 @@ public class Unidad {
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////
 	public void actualizar() {
-		usarEfectosPasivos();
-        if (isEnSacudida()) {
+        if (estaEnSacudida()) {
             if (getDuracionSacudida() > 0) {
+            	setDuracionSacudida(getDuracionSacudida() - 1);
                 desplazamientoSacudidaX = (int) (Math.random() * 10 - 5);
                 desplazamientoSacudidaY = (int) (Math.random() * 10 - 5);
-                setDuracionSacudida(getDuracionSacudida() - 1);
                 desplazarDañoRecibido--;
                 
             } else {
-                setEnSacudida(false);
-                esCurar = false;
-                esEsquivado = false;
-                esMate = false;
-                esHabilidad = false;
-                esGanarSP = false;
-                esMotivar = false;
+                setearSacudida(false);
+                realizaUnaCuracion = false;
+                estaEsquivando = false;
+                tomandoUnMate = false;
+                esUnaHabilidad = false;
+                estaGanandoSP = false;
+                estaMotivado = false;
+                realizaUnCritico = false;
                 desplazamientoSacudidaX = 0;
                 desplazamientoSacudidaY = 0;
                 desplazarDañoRecibido = getPosY();
                 dañoRecibido = "";
-                esCritico = false;
             }
         }
         if(getHP() <= 0) {
         	setAlive(false);
         }
-        if(habilidadOn) {
-        	if(duracionHabilidad > 0) {
-        		duracionHabilidad--;
-        	}
-        	else {
-        		duracionHabilidad = 50;
-        		habilidadOn = false;
-        	}
-        }
-    }
-	
+    }	
 	public void dibujar(Graphics2D g2) {
-        this.g2 = g2;
-        
+        this.g2 = g2;  
         dibujarVida();
-        
         if (isAliado()) {
             g2.setColor(Color.BLUE);
         } else {
             g2.setColor(Color.RED);
         }
+        //if(!)
         if(!isAlive()) {
         	g2.setColor(Color.YELLOW);
         }
         int dibujarX = getPosX() + desplazamientoSacudidaX;
         int dibujarY = getPosY() + desplazamientoSacudidaY;
         g2.fillRect(dibujarX + 24, dibujarY - 24, pdj.tamañoDeBaldosa, pdj.tamañoDeBaldosa * 2);
-        
-        if(isHabilidadOn()) {
-        	dibujarEfecto(g2);
-        }
-        
         //MOSTRAR DAÑO RECIBIDO////////////////////////////
-        if(this.esCurar) {
+        if(this.realizaUnaCuracion) {
             g2.setColor(Color.green);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
             g2.drawString(curaRecibida , getPosX()+84, desplazarDañoRecibido-48);
         }
-        else if(this.esCritico) {
+        else if(this.realizaUnCritico) {
         	g2.setColor(Color.YELLOW);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
             g2.drawString(dañoRecibido, getPosX()+84, desplazarDañoRecibido-48);
         }
-        else if(this.esEsquivado) {
+        else if(this.estaEsquivando) {
         	g2.setColor(Color.GRAY);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
             g2.drawString("MISS!", getPosX()+84, desplazarDañoRecibido-48);
         }
-        else if(this.isEsMate()) {
+        else if(this.getTomandoUnMate()) {
         	if(getIdMate() == 0) {
         		g2.setColor(Color.RED);
         		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
@@ -205,17 +184,17 @@ public class Unidad {
                 g2.drawString("PERFECTO!", getPosX()+84, desplazarDañoRecibido-30);
         	}
         }
-        else if(this.esHabilidad) {
+        else if(this.esUnaHabilidad) {
         	g2.setColor(Color.cyan);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
             g2.drawString(dañoRecibido+" IMPACT!!!", getPosX()+84, desplazarDañoRecibido-48);
         }
-        else if(this.esMotivar) {
+        else if(this.estaMotivado) {
         	g2.setColor(Color.RED);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
             g2.drawString("MOTIVADO!", getPosX()+84, desplazarDañoRecibido-48);
         }
-        else if(this.esGanarSP) {
+        else if(this.estaGanandoSP) {
         	g2.setColor(Color.cyan);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
             g2.drawString(dañoRecibido, getPosX()+84, desplazarDañoRecibido-48);
@@ -224,40 +203,36 @@ public class Unidad {
         	g2.setColor(Color.WHITE);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
             g2.drawString(dañoRecibido, getPosX()+84, desplazarDañoRecibido-48);
-        }
-
-        
+        }   
     }
 	//METODOS DE ACCION///////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
 		int accion = elegirAleatorio(2);
-		if(accion == 0 && cumpleLosRequisitos()) {
+		if(accion == 0 && cumpleReqDeHab1()) {
 			setHabilidadElegida(0);
 			usarHabilidadEnemigo(enemigos);
 		}
 		else {
 			realizarAtaqueEnemigo(enemigos);
 		}
-	}
-	
+	}	
 	public void recibirDaño(int daño, boolean isCritical) {
 		int SEId = 2;
 		this.setHP(this.getHP() - daño);
 		if(isCritical) {
 			dañoRecibido = "CRITICAL " + daño +"!";
-			this.esCritico = true;
+			this.realizaUnCritico = true;
 			SEId = 3;
 		}
 		else {
 			dañoRecibido = "" + daño;
 		}
 		this.setVidaPerdida(this.getVidaPerdida() + daño);
-	    setEnSacudida(true);
+	    setearSacudida(true);
 	    setDuracionSacudida(20);
 	    pdj.ReproducirSE(SEId);
 	    
 	}
-	
 	public void realizarAtaque(Unidad unidad) {
 		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());
 		if(unidad != null) {
@@ -274,7 +249,6 @@ public class Unidad {
 			}
 		}
 	}
-	
 	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
 		Unidad objetivo = elegirObjetivo(unidades);
 		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());  
@@ -292,15 +266,13 @@ public class Unidad {
 				objetivo.evadirAtaque();
 			}
 		}
-	}
-	
+	}	
 	public void evadirAtaque() {
 		pdj.ReproducirSE(6);
-		esEsquivado = true;
-		setEnSacudida(true);
+		estaEsquivando = true;
+		setearSacudida(true);
 	    setDuracionSacudida(20);
-	}
-	
+	}	
 	public void restaurarHP(int curacion) {
 		if((this.getHP() + curacion) > this.getHPMax()) {
 			this.setHP(this.getHPMax());
@@ -309,18 +281,13 @@ public class Unidad {
 			this.setHP(this.getHP() + curacion);
 		}
 		curaRecibida = "+" + curacion;
-		esCurar = true;
-		setEnSacudida(true);
+		realizaUnaCuracion = true;
+		setearSacudida(true);
 	    setDuracionSacudida(20);
 	    pdj.ReproducirSE(4);
-	}
-	
-	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {}
-	
-	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {}
-	
-	public void usarEfectosPasivos() {}
-	
+	}	
+	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {}	
+	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {}	
 	//METODOS VISUALES/////////////////////////////////////////////////////////
 	public void dibujarVida() {
 	    g2.setFont(g2.getFont().deriveFont(Font.BOLD, 15f));
@@ -363,9 +330,6 @@ public class Unidad {
 	    g2.setStroke(new BasicStroke(2));
 	    g2.drawRoundRect(posX, getPosY() + altura, barraHP, pdj.tamañoDeBaldosa / 5, 5, 5);
 	}
-	
-	public void dibujarEfecto(Graphics2D g2) {}
-	
 	//METODOS DE ELECCION/////////////////////////////////////////////////////
 	public Unidad elegirObjetivo(ArrayList<Unidad> unidades) {
 	    if (!unidades.isEmpty()) {
@@ -373,299 +337,110 @@ public class Unidad {
 	    }
 	    return null;
 	}
-	
 	public int elegirAleatorio(int i) {
 	    Random random = new Random();
 	    return random.nextInt(i);
-	}
-	
+	}	
 	public int obtenerValorEntre(int min, int max) {
 	    if (min > max) {
 	        throw new IllegalArgumentException("El valor mínimo no puede ser mayor que el máximo.");
 	    }
 	    return (int) (Math.random() * (max - min + 1) + min);
 	}
-	
 	//METODOS AUXILIARES//////////////////////////////////////////////////////
 	public void posicionar(Zona zona) {
 		setPosX(zona.x);
 		setPosY(zona.y);
 	}
-	
 	public int calcularBarraHP() {
 		return (getHP()*barraHP)/getHPMax();
 	}
-	
-	public void pasivaDeGaucho(int daño) {}
-	
-	public boolean cumpleLosRequisitos() {
-		return false;
-	}
-	
-	public boolean cumpleLosReqHab2() {
-		return false;
-	}
-	
-	public void establecerTipoDeaccion() {}
-
+	public boolean cumpleReqDeHab1() {return false;}
+	public boolean cumpleReqDeHab2() {return false;}
+	public void configurarTipoDeaccion() {}
 	//GETTERS & SETTERS////////////////////////////////////////////////////////
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
-	public int getHP() {
-		return hp;
-	}
-
-	public void setHP(int hp) {
-		this.hp = hp;
-	}
-
-	public int getHPMax() {
-		return hpMax;
-	}
-
-	public void setHPMax(int hpMax) {
-		this.hpMax = hpMax;
-	}
-
-	public int getSP() {
-		return sp;
-	}
-
-	public void setSP(int sp) {
-		this.sp = sp;
-	}
-
-	public int getSPMax() {
-		return spMax;
-	}
-
-	public void setSPMax(int spMax) {
-		this.spMax = spMax;
-	}
-
-	public int getAtq() {
-		return atq;
-	}
-
-	public void setAtq(int atq) {
-		this.atq = atq;
-	}
-
-	public int getDef() {
-		return def;
-	}
-
-	public int getVel() {
-		return vel;
-	}
-	public void setVel(int vel) {
-		this.vel = vel;
-	}
-	public void setDef(int def) {
-		this.def = def;
-	}
-
-	public double getPCRT() {
-		return pcrt;
-	}
-
-	public void setPCRT(double pcrt) {
-		this.pcrt = pcrt;
-	}
-	
-	public double getDCRT() {
-		return dcrt;
-	}
-
-	public void setDCRT(double dcrt) {
-		this.dcrt = dcrt;
-	}
-
-	public double getEva() {
-		return eva;
-	}
-	public void setEva(double eva) {
-		this.eva = eva;
-	}
-	public boolean isAliado() {
-		return aliado;
-	}
-
-	public void setAliado(boolean aliado) {
-		this.aliado = aliado;
-	}
-
-	public boolean isAlive() {
-		return vivo;
-	}
-
-	public void setAlive(boolean vivo) {
-		this.vivo = vivo;
-	}
-
-	public boolean isEnSacudida() {
-		return enSacudida;
-	}
-	public void setEnSacudida(boolean enSacudida) {
-		this.enSacudida = enSacudida;
-	}
-	public int getDuracionSacudida() {
-		return duracionSacudida;
-	}
-	public void setDuracionSacudida(int duracionSacudida) {
-		this.duracionSacudida = duracionSacudida;
-	}
-	public boolean isEsMate() {
-		return esMate;
-	}
-	public boolean getEsMotivar() {
-		return esMotivar;
-	}
-	public void setEsMotivar(boolean esMotivar) {
-		this.esMotivar = esMotivar;
-	}
-	public void setEsMate(boolean esMate) {
-		this.esMate = esMate;
-	}
-	public boolean isEshabilidad() {
-		return esHabilidad;
-	}
-	public void setEshabilidad(boolean eshabilidad) {
-		this.esHabilidad = eshabilidad;
-	}
-	public boolean isHabilidadOn() {
-		return habilidadOn;
-	}
-	public void setHabilidadOn(boolean habilidadOn) {
-		this.habilidadOn = habilidadOn;
-	}
-	public int getPosX() {
-		return posX;
-	}
-
-	public void setPosX(int posX) {
-		this.posX = posX;
-	}
-
-	public int getPosY() {
-		return posY;
-	}
-
-	public void setPosY(int posY) {
-		this.posY = posY;
-	}
-	
-	public int getGenero() {
-		return genero;
-	}
-	public int getIdFaccion() {
-		return idFaccion;
-	}
-	public void setIdFaccion(int idFaccion) {
-		this.idFaccion = idFaccion;
-	}
-	public String getClase() {
-		return clase;
-	}
-	public void setClase(String clase) {
-		this.clase = clase;
-	}
-	public int getHpMaxMod() {
-		return hpMaxMod;
-	}
-	public void setHpMaxMod(int hpMaxMod) {
-		this.hpMaxMod = hpMaxMod;
-	}
-	public int getSpMaxMod() {
-		return spMaxMod;
-	}
-	public void setSpMaxMod(int spMaxMod) {
-		this.spMaxMod = spMaxMod;
-	}
-	public int getAtqMod() {
-		return atqMod;
-	}
-	public void setAtqMod(int atqMod) {
-		this.atqMod = atqMod;
-	}
-	public int getDefMod() {
-		return defMod;
-	}
-	public void setDefMod(int defMod) {
-		this.defMod = defMod;
-	}
-	public int getVelMod() {
-		return velMod;
-	}
-	public void setVelMod(int velMod) {
-		this.velMod = velMod;
-	}
-	public double getEvaMod() {
-		return evaMod;
-	}
-	public void setEvaMod(double evaMod) {
-		this.evaMod = evaMod;
-	}
-	public double getPcrtMod() {
-		return pcrtMod;
-	}
-	public void setPcrtMod(double pcrtMod) {
-		this.pcrtMod = pcrtMod;
-	}
-	public double getDcrtMod() {
-		return dcrtMod;
-	}
-	public void setDcrtMod(double dcrtMod) {
-		this.dcrtMod = dcrtMod;
-	}
-	public int getVidaPerdida() {
-		return vidaPerdida;
-	}
-	public void setVidaPerdida(int vida) {
-		this.vidaPerdida = vida;
-	}
-	public int getIdMate() {
-		return idMate;
-	}
-	public void setIdMate(int idMate) {
-		this.idMate = idMate;
-	}
-	public boolean isEsGanarSP() {
-		return esGanarSP;
-	}
-	public void setEsGanarSP(boolean esGanarSP) {
-		this.esGanarSP = esGanarSP;
-	}
-	public String[] getHabilidades() {
-		return habilidades;
-	}
-
-	public void setHabilidades(String[] habilidades) {
-		this.habilidades = habilidades;
-	}
-	public int getHabilidadElegida() {
-		return habilidadElegida;
-	}
-	public void setHabilidadElegida(int habilidadElegida) {
-		this.habilidadElegida = habilidadElegida;
-	}
-	public boolean isSingleTarget() {
-		return singleTarget;
-	}
-	public void setSingleTarget(boolean singleTarget) {
-		this.singleTarget = singleTarget;
-	}
-	public String getAccion() {
-		return accion;
-	}
-	public void setAccion(String accion) {
-		this.accion = accion;
-	}
+	public boolean isAliado() {return esAliado;}
+	public void setAliado(boolean aliado) {this.esAliado = aliado;}
+	public boolean isAlive() {return estaVivo;}
+	public void setAlive(boolean vivo) {this.estaVivo = vivo;}
+	public boolean isEstaActivo() {return estaActivo;}
+	public void setEstaActivo(boolean estaActivo) {this.estaActivo = estaActivo;}
+	public boolean isObjetivoUnico() {return objetivoUnico;}
+	public void setObjetivoUnico(boolean singleTarget) {this.objetivoUnico = singleTarget;}
+	//GETTERS & SETTERS DE EFECTOS//////////////////////////////////////////////
+	public boolean getTomandoUnMate() {return tomandoUnMate;}
+	public void setTomandoUnMate(boolean esMate) {this.tomandoUnMate = esMate;}
+	public boolean getEstaMotivado() {return estaMotivado;}
+	public void setEstaMotivado(boolean esMotivar) {this.estaMotivado = esMotivar;}
+	public boolean getEsUnaHabilidad() {return esUnaHabilidad;}
+	public void setEsUnaHabilidad(boolean eshabilidad) {this.esUnaHabilidad = eshabilidad;}
+	public boolean getEstaGanandoSP() {return estaGanandoSP;}
+	public void setEstaGanandoSP(boolean esGanarSP) {this.estaGanandoSP = esGanarSP;}
+	//GETTER & SETTERS MISCELANEOS///////////////////////////////////////////////
+	public Zona getZona() {return zona;}
+	public void setZona(Zona zona) {this.zona = zona;}
+	public int getPosX() {return posX;}
+	public void setPosX(int posX) {this.posX = posX;}
+	public int getPosY() {return posY;}
+	public void setPosY(int posY) {this.posY = posY;}
+	public boolean estaEnSacudida() {return enSacudida;}
+	public void setearSacudida(boolean enSacudida) {this.enSacudida = enSacudida;}
+	public int getDuracionSacudida() {return duracionSacudida;}
+	public void setDuracionSacudida(int duracionSacudida) {this.duracionSacudida = duracionSacudida;}
+	public int getVidaPerdida() {return vidaPerdida;}
+	public void setVidaPerdida(int vida) {this.vidaPerdida = vida;}
+	public int getIdMate() {return idMate;}
+	public void setIdMate(int idMate) {this.idMate = idMate;}
+	public String[] getListaDeHabilidades() {return listaDeHabilidades;}
+	public void setListaDeHabilidades(String[] habilidades) {this.listaDeHabilidades = habilidades;}
+	public int getHabilidadElegida() {return habilidadElegida;}
+	public void setHabilidadElegida(int habilidadElegida) {this.habilidadElegida = habilidadElegida;}
+	public String getAccion() {return tipoDeAccion;}
+	public void setAccion(String accion) {this.tipoDeAccion = accion;}
+	//GETTERS & SETTERS STATS BASE/////////////////////////////////////////////
+	public int getGenero() {return genero;}
+	public int getIdFaccion() {return idFaccion;}
+	public void setIdFaccion(int idFaccion) {this.idFaccion = idFaccion;}
+	public String getClase() {return clase;}
+	public void setClase(String clase) {this.clase = clase;}
+	public String getNombre() {return nombre;}
+	public void setNombre(String nombre) {this.nombre = nombre;}
+	public int getHP() {return hp;}
+	public void setHP(int hp) {this.hp = hp;}
+	public int getHPMax() {return hpMax;}
+	public void setHPMax(int hpMax) {this.hpMax = hpMax;}
+	public int getSP() {return sp;}
+	public void setSP(int sp) {this.sp = sp;}
+	public int getSPMax() {return spMax;}
+	public void setSPMax(int spMax) {this.spMax = spMax;}
+	public int getAtq() {return atq;}
+	public void setAtq(int atq) {this.atq = atq;}
+	public int getDef() {return def;}
+	public int getVel() {return vel;}
+	public void setVel(int vel) {this.vel = vel;}
+	public void setDef(int def) {this.def = def;}
+	public double getPCRT() {return pcrt;}
+	public void setPCRT(double pcrt) {this.pcrt = pcrt;}
+	public double getDCRT() {return dcrt;}
+	public void setDCRT(double dcrt) {this.dcrt = dcrt;}
+	public double getEva() {return eva;}
+	public void setEva(double eva) {this.eva = eva;}
+	//GETTERS & SETTERS STATS MOD//////////////////////////////////////////////
+	public int getHpMaxMod() {return hpMaxMod;}
+	public void setHpMaxMod(int hpMaxMod) {this.hpMaxMod = hpMaxMod;}
+	public int getSpMaxMod() {return spMaxMod;}
+	public void setSpMaxMod(int spMaxMod) {this.spMaxMod = spMaxMod;}
+	public int getAtqMod() {return atqMod;}
+	public void setAtqMod(int atqMod) {this.atqMod = atqMod;}
+	public int getDefMod() {return defMod;}
+	public void setDefMod(int defMod) {this.defMod = defMod;}
+	public int getVelMod() {return velMod;}
+	public void setVelMod(int velMod) {this.velMod = velMod;}
+	public double getEvaMod() {return evaMod;}
+	public void setEvaMod(double evaMod) { this.evaMod = evaMod;}
+	public double getPcrtMod() { return pcrtMod;}
+	public void setPcrtMod(double pcrtMod) { this.pcrtMod = pcrtMod;}
+	public double getDcrtMod() { return dcrtMod;}
+	public void setDcrtMod(double dcrtMod) { this.dcrtMod = dcrtMod;}
 
 }

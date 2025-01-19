@@ -1,8 +1,5 @@
 package unidades;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
@@ -13,7 +10,7 @@ public class CebadorDeMate extends Unidad{
 	
 	private int spHabilidad1;
 	private Rectangle cubo = new Rectangle(0, 0, 50, 50);
-	private String[] habilidades = new String[1];
+	private String[] listaDeHabilidades = new String[1];
 
 	public CebadorDeMate(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
@@ -31,13 +28,12 @@ public class CebadorDeMate extends Unidad{
 		this.setEva(0);
 		this.setVel(obtenerValorEntre(10,20));
 		this.spHabilidad1 = 7;
-		this.habilidades[0] = "CEBAR UN MATE";
-		
+		this.listaDeHabilidades[0] = "CEBAR UN MATE";	
 	}
-	
+	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
 		int accion = elegirAleatorio(4);
-		if(accion <= 2 && cumpleLosRequisitos()) {
+		if(accion <= 2 && cumpleReqDeHab1()) {
 			this.setHabilidadElegida(0);
 			usarHabilidadEnemigo(aliados);
 			this.setSP(this.getSP() - this.spHabilidad1);
@@ -47,38 +43,27 @@ public class CebadorDeMate extends Unidad{
 			realizarAtaqueEnemigo(enemigos);
 		}
 	}
-	
-	public boolean cumpleLosRequisitos() {
-		if(this.getSP() > 0) {
-			if(this.getSP() >= this.spHabilidad1) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
+	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
 		if(this.getHabilidadElegida() == 0) {
-			setHabilidadOn(true);
 			Unidad unidad = elegirObjetivo(unidades);
 			moverCubo(cubo, unidad);
 			cebarMate(unidad);	
 		}
 	}
-	
+	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {
-		setHabilidadOn(true);
 		moverCubo(cubo, unidad);
 		cebarMate(unidad);
 		this.setSP(this.getSP() - this.spHabilidad1);
 	}
-	
+	//HABILIDADES////////////////////////////////////////////////////////////////////////
 	public void cebarMate(Unidad unidad) {
 		int opcion = elegirAleatorio(5);
-		unidad.setEnSacudida(true);
+		unidad.setearSacudida(true);
 		unidad.setDuracionSacudida(20);
 		unidad.setIdMate(opcion);
-		unidad.setEsMate(true);
+		unidad.setTomandoUnMate(true);
 		if(opcion == 0) {
 			//HERVIDO Y DULCE
 			sumarHP(unidad, obtenerValorEntre(7,15));
@@ -123,7 +108,15 @@ public class CebadorDeMate extends Unidad{
 			
 		}
 	}
-	
+	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
+	public boolean cumpleReqDeHab1() {
+		if(this.getSP() > 0) {
+			if(this.getSP() >= this.spHabilidad1) {
+				return true;
+			}
+		}
+		return false;
+	}
 	public void sumarHP(Unidad unidad, int hp) {
 		int i = hp + unidad.getHP();
 		if(i > unidad.getHPMax()) {
@@ -132,8 +125,7 @@ public class CebadorDeMate extends Unidad{
 		else {
 			unidad.setHP(i);
 		}
-	}
-	
+	}	
 	public void sumarSP(Unidad unidad, int sp) {
 		int i = sp + unidad.getSP();
 		if(i > unidad.getSPMax()) {
@@ -143,8 +135,7 @@ public class CebadorDeMate extends Unidad{
 			unidad.setSP(i);
 		}
 	}
-	
-	public void establecerTipoDeaccion() {
+	public void configurarTipoDeaccion() {
 		if(this.getHabilidadElegida() == 0) {
 			this.setAccion("APOYAR");
 		}
@@ -152,18 +143,10 @@ public class CebadorDeMate extends Unidad{
 			this.setAccion("");
 		}
 	}
-	
 	public void moverCubo(Rectangle cubo, Unidad unidad) {
 		pdj.ReproducirSE(5);
 		cubo.setLocation(unidad.getPosX()+25, unidad.getPosY()+25);
 	}
-
-	public String[] getHabilidades() {
-		return habilidades;
-	}
-
-	public void setHabilidades(String[] habilidades) {
-		this.habilidades = habilidades;
-	}
-
+	public String[] getListaDeHabilidades() {return listaDeHabilidades;}
+	public void setListaDeHabilidades(String[] habilidades) {this.listaDeHabilidades = habilidades;}
 }

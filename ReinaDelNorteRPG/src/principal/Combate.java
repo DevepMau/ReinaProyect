@@ -8,10 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 import java.util.stream.Collectors;
-
-import unidades.Elite;
 import unidades.PayadorTartamudo;
 import unidades.CebadorDeMate;
 import unidades.GauchoModerno;
@@ -29,17 +26,18 @@ public class Combate {
 	//CONFIGURACION GENERAL//////////////////////////////////////////////////
 	private String[] acciones = new String[3];
 	private String turnos = "";
-	private int turnoId = 0;
-	private int id = 0;
-	private int pos = 0;
+	private int idTurno = 0;
+	private int idUnidad = 0;
+	private int contadorDeTurnos = 0;
+	private int posEnLista = 0;
 	private int timer = 100;
-	private boolean unidadesSinNombre = true;
+	private boolean nombrarUnidades = true;
 	private boolean posicionarUnidades = true;
-	private boolean ordenarListaDeUnidades = true;
+	private boolean ordenarUnidades = true;
+	private boolean seleccionarHabilidades = false;
 	//CONTROL DE TURNO Y BOTONES/////////////////////////////////////////////
-	private boolean habilitar = true;
-	private boolean turnoJugador = true;
-	private boolean seleccionarHabilidades = false; 
+	private boolean habilitarBoton = true;
+	private boolean turnoJugador = true; 
 	//CONTROL DE INSTRUCCIONES///////////////////////////////////////////////
 	private int numeroDeInstruccion = 0;
 	private int instruccionElegida = -1;
@@ -65,24 +63,23 @@ public class Combate {
 		unidades.put(4, new CebadorDeMate(zonas.get(0), true, pdj));
 		unidades.put(5, new PayadorTartamudo(zonas.get(0), false, pdj));
 		//unidades.put(6, new CebadorDeMate(zonas.get(0), true, pdj));
-		//unidades.put(7, new CebadorDeMate(zonas.get(0), false, pdj));
-
-		
+		//unidades.put(7, new CebadorDeMate(zonas.get(0), false, pdj));	
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////////////////
 	public void actualizar() {
 		//SE NOMBRAN A LAS UNIDADES/////////////////////////////////////////////
-		if(unidadesSinNombre) {
+		if(nombrarUnidades) {
 			nombrarUnidades(unidades);
-			unidadesSinNombre = false;
+			nombrarUnidades = false;
+			contadorDeTurnos = unidades.size();
 			for(int clave : unidades.keySet()) {
 				velocidades.put(clave, unidades.get(clave).getVel());
 			}
 		}
-		if(ordenarListaDeUnidades) {
+		if(ordenarUnidades) {
 			turnos = obtenerClavesOrdenadasPorVelocidad(velocidades);
 	        System.out.println(turnos);
-			ordenarListaDeUnidades = false;
+			ordenarUnidades = false;
 		}
 		if(posicionarUnidades) {
 			int idAli = 5;
@@ -111,9 +108,7 @@ public class Combate {
 		for (Zona zona : zonas.values()) {
 			zona.dibujar(g2);
 		}
-		
 		dibujarResaltadorDeUnidad();
-		
 		for (Unidad unidad : unidades.values()) {
 		    unidad.dibujar(g2);
 		}
@@ -124,24 +119,18 @@ public class Combate {
 				g2.fillRect(selector.x, selector.y, selector.width, selector.height);
 			}
 		}
-		
 		if(unidadEnTurno != null && seleccionarHabilidades) {
-			generarMenu(unidadEnTurno.getHabilidades(), pdj.tamañoDeBaldosa*6+10 , pdj.altoDePantalla - pdj.tamañoDeBaldosa*(acciones.length-1)+36, 160, numeroDeHabilidad, habilidadElegida);
+			generarMenu(unidadEnTurno.getListaDeHabilidades(), pdj.tamañoDeBaldosa*6+10 , pdj.altoDePantalla - pdj.tamañoDeBaldosa*(acciones.length-1)+36, 160, numeroDeHabilidad, habilidadElegida);
 		}
-		
-		//dibujarCartelDeTurno();
 		if(unidadSeleccionada != null) {
 			dibujarEstadisticasUnidad(unidadSeleccionada);
 			dibujarTriangulo(pdj.anchoDePantalla-pdj.tamañoDeBaldosa*4+(-4), pdj.altoDePantalla-pdj.tamañoDeBaldosa*4+(-32));
 		}
-		
 	}
-	
 	//METODOS PARA JUGAR//////////////////////////////////////////////////////
 	public void realizarTurno() {
 		ArrayList<Unidad> enemigos = new ArrayList<>();
-	    ArrayList<Unidad> aliados = new ArrayList<>();
-	    
+	    ArrayList<Unidad> aliados = new ArrayList<>();  
 	    for (Unidad unidad : unidades.values()) {
 	        if (unidad.getHP() > 0) {
 	            if (!unidad.isAliado()) {
@@ -151,16 +140,27 @@ public class Combate {
 	            }
 	        }
 	    }
+	    if(contadorDeTurnos == unidades.size()) {
+	    	if(!enemigos.isEmpty()) {
+	    		for(Unidad unidad : enemigos) {
+		    		unidad.setEstaActivo(true);
+		    	}
+	    	}
+	    	if(!aliados.isEmpty()) {
+	    		for(Unidad unidad : aliados) {
+		    		unidad.setEstaActivo(true);
+		    	}
+	    	}
+	    	contadorDeTurnos = 0;
+	    }
 	    //SE DEFINE EL ID DE LA UNIDAD PARA EL SIGUIENTE TURNO////////////////////////////////
-	    turnoId = turnos.charAt(id) - '0';
-	    //SE COMPRUEBA QUE LA UNIDAD ESTE VIVA////////////////////////////////////////////////
-	    if(unidades.get(turnoId).isAlive()) {
-	    	//SE ACTUALIZA EL SELECTOR////////////////////////////////////////////////////////
-	    	actualizarSelector(unidades.get(turnoId), resaltador);
+	    idTurno = turnos.charAt(idUnidad) - '0';
+	    if(unidades.get(idTurno).isAlive() && unidades.get(idTurno).isEstaActivo()) {
+	    	actualizarSelector(unidades.get(idTurno), resaltador);
 	    	//COMPRUEBA QUE LA UNIDAD SEA ALIADA//////////////////////////////////////////////
-	    	if(unidades.get(turnoId).isAliado()) {
+	    	if(unidades.get(idTurno).isAliado()) {
 	    		retrocederAccion();
-	    		unidadSeleccionada = unidades.get(turnoId);
+	    		unidadSeleccionada = unidades.get(idTurno);
 		    	turnoJugador = true;
 		    	if(instruccionElegida == -1) {
 		    		instruccionElegida = elegirAccion();
@@ -169,18 +169,20 @@ public class Combate {
 		    	else if(instruccionElegida == 0) {
 		    		Unidad unidadSeleccionada = elegirUnidad(enemigos);
 			    	if(unidadSeleccionada != null) {
-			    		unidades.get(turnoId).realizarAtaque(unidadSeleccionada);
+			    		unidades.get(idTurno).realizarAtaque(unidadSeleccionada);
+			    		unidades.get(idTurno).setEstaActivo(false);
 			    		if(unidadSeleccionada.getHP() <= 0) {
-			    			pos = 0;
+			    			posEnLista = 0;
 			    		}
-			    		if(id >= unidades.size()-1) {
-			    			id = 0;
+			    		if(idUnidad >= unidades.size()-1) {
+			    			idUnidad = 0;
 			    		}
 			    		else {
-			    			id++;
+			    			idUnidad++;
 			    		}
 			    		instruccionElegida = -1;
-			    		pos = 0;
+			    		posEnLista = 0;
+			    		contadorDeTurnos++;
 			    	}
 		    	}
 		    	//HABILIDAD JUGADOR//////////////////////////////////////////////////////////
@@ -188,17 +190,17 @@ public class Combate {
 		    		Unidad unidadSeleccionada = null;
 		    		ArrayList<Unidad> unidadesObjetivo = null;
 		    		//ASIGNAMOS LA UNIDAD EN TURNO////////////////////////////////////////////
-		    		unidadEnTurno = unidades.get(turnoId);
+		    		unidadEnTurno = unidades.get(idTurno);
 		    		if(unidadEnTurno != null) {
 		    			//SI HAY UNIDAD EN TURNO, SE ELIGE LA HABILIDAD//////////////////////
 		    			if(unidadEnTurno.getHabilidadElegida() == -1) {
 		    				seleccionarHabilidades = true;
-		    				unidades.get(turnoId).setHabilidadElegida(elegirHabilidad(unidades.get(turnoId).getHabilidades()));
-		    				unidades.get(turnoId).establecerTipoDeaccion();
+		    				unidades.get(idTurno).setHabilidadElegida(elegirHabilidad(unidades.get(idTurno).getListaDeHabilidades()));
+		    				unidades.get(idTurno).configurarTipoDeaccion();
 		    			}
 		    			else {
-		    				if(unidadEnTurno.isSingleTarget()) {
-		    					if(unidadEnTurno.cumpleLosRequisitos()) {
+		    				if(unidadEnTurno.isObjetivoUnico()) {
+		    					if(unidadEnTurno.cumpleReqDeHab1()) {
 			    					//SI HAY ELEGIDA UNA HABILIDAD, SE DEFINE SI ES OFENSIVA O DE APOYO/
 				    				if(unidadEnTurno.getAccion() == "ATACAR") {
 				    					unidadSeleccionada = elegirUnidad(enemigos);
@@ -215,7 +217,7 @@ public class Combate {
 			    				}
 		    				}
 		    				else {
-		    					if(unidadEnTurno.cumpleLosReqHab2()) {
+		    					if(unidadEnTurno.cumpleReqDeHab2()) {
 			    					//SI HAY ELEGIDA UNA HABILIDAD, SE DEFINE SI ES OFENSIVA O DE APOYO/
 				    				if(unidadEnTurno.getAccion() == "ATACAR") {
 				    					unidadesObjetivo = enemigos;
@@ -234,51 +236,56 @@ public class Combate {
 		    			}
 		    			//SI SE ELIGIO UN OBJETIVO, SE USA LA HABILIDAD///////////////////////
 		    			if(unidadSeleccionada != null || unidadesObjetivo != null) {
-			    			unidades.get(turnoId).usarHabilidad(unidadSeleccionada, unidadesObjetivo);
-		    				unidades.get(turnoId).setHabilidadElegida(-1);
-			    			if(id >= unidades.size()-1) {
-				    			id = 0;
+			    			unidades.get(idTurno).usarHabilidad(unidadSeleccionada, unidadesObjetivo);
+			    			unidades.get(idTurno).setEstaActivo(false);
+		    				unidades.get(idTurno).setHabilidadElegida(-1);
+			    			if(idUnidad >= unidades.size()-1) {
+				    			idUnidad = 0;
 				    		}
 				    		else {
-				    			id++;
+				    			idUnidad++;
 				    		}
 			    			//SE RESETEAN LAS VARIABLES DE USO////////////////////////////////
 				    		instruccionElegida = -1;
 				    		habilidadElegida = -1;
 				    		numeroDeInstruccion = 0;
 				    		numeroDeHabilidad = 0;
-				    		pos = 0;
+				    		posEnLista = 0;
 				    		unidadEnTurno.setHabilidadElegida(-1);
 				    		seleccionarHabilidades = false;
-				    		//unidadEnTurno = null;
+				    		contadorDeTurnos++;
 			    		}
 		    		}
 		    	}
 		    }
+	    	//ACCIONES ENEMIGAS/////////////////////////////////////////////////////////
 		    else {
 		    	unidadSeleccionada = null;
 		    	turnoJugador = false;
 		    	if(timer == 0) {
 		    		numeroDeInstruccion = 0;
-		    		unidades.get(turnoId).realizarAccion(aliados, enemigos);
-			    	if(id >= unidades.size()-1) {
-		    			id = 0;
+		    		unidades.get(idTurno).realizarAccion(aliados, enemigos);
+			    	if(idUnidad >= unidades.size()-1) {
+		    			idUnidad = 0;
 		    		}
 		    		else {
-		    			id++;
+		    			idUnidad++;
 		    		}
 			    	timer = 100;
+			    	contadorDeTurnos++;
+			    	unidades.get(idTurno).setEstaActivo(false);
 		    	}
-		    	pos = 0;
+		    	posEnLista = 0;
 		    	timer--;
 		    }
 	    }
 	    else {
-	    	if(id >= unidades.size()-1) {
-	    		id = 0;
+	    	contadorDeTurnos++;
+	    	if(idUnidad >= unidades.size()-1) {
+	    		idUnidad = 0;
 	    	}
 	    	else {
-		    	id++;
+		    	idUnidad++;
 	    	}
 	    }
 	}
@@ -286,64 +293,64 @@ public class Combate {
 	//METODOS DE ELECCION////////////////////////////////////////////////////
 	private Unidad elegirUnidad(ArrayList<Unidad> unidades) {
 	    if (!unidades.isEmpty()) {
-	    	actualizarSelector(unidades.get(pos), selector);
-	    	if(pdj.teclado.RIGHT == true && habilitar) {
-	    		if(pos >= unidades.size()-1) {
-	    			pos = 0;
+	    	actualizarSelector(unidades.get(posEnLista), selector);
+	    	if(pdj.teclado.RIGHT == true && habilitarBoton) {
+	    		if(posEnLista >= unidades.size()-1) {
+	    			posEnLista = 0;
 	    		}
 	    		else {
-	    			pos++;
+	    			posEnLista++;
 	    		}
-	    		habilitar = false;
+	    		habilitarBoton = false;
 	    		pdj.ReproducirSE(1);
 	    	}
-	    	if(pdj.teclado.LEFT == true && habilitar) {
-	    		if(pos <= 0) {
-	    			pos = unidades.size()-1;
+	    	if(pdj.teclado.LEFT == true && habilitarBoton) {
+	    		if(posEnLista <= 0) {
+	    			posEnLista = unidades.size()-1;
 	    		}
 	    		else {
-	    			pos--;
+	    			posEnLista--;
 	    		}
-	    		habilitar = false;
+	    		habilitarBoton = false;
 	    		pdj.ReproducirSE(1);
 	    	}
 	    	if(!pdj.teclado.RIGHT && !pdj.teclado.LEFT && !pdj.teclado.ENTER) {
-	    		habilitar = true;
+	    		habilitarBoton = true;
 	    	}
-	    	if(pdj.teclado.ENTER == true && habilitar) {
-	    		habilitar = false;
-	    		return unidades.get(pos);
+	    	if(pdj.teclado.ENTER == true && habilitarBoton) {
+	    		habilitarBoton = false;
+	    		return unidades.get(posEnLista);
 	    	}
 	    }
 	    return null;
 	}
 	
 	public int elegirAccion() {
-		if(pdj.teclado.DOWN == true && habilitar) {
+		if(pdj.teclado.DOWN == true && habilitarBoton) {
     		if(numeroDeInstruccion >= acciones.length-1) {
     			numeroDeInstruccion = 0;
     		}
     		else {
     			numeroDeInstruccion++;
     		}
-    		habilitar = false;
+    		habilitarBoton = false;
     		pdj.ReproducirSE(0);
     	}
-    	if(pdj.teclado.UP == true && habilitar) {
+    	if(pdj.teclado.UP == true && habilitarBoton) {
     		if(numeroDeInstruccion <= 0) {
     			numeroDeInstruccion = acciones.length-1;
     		}
     		else {
     			numeroDeInstruccion--;
     		}
-    		habilitar = false;
+    		habilitarBoton = false;
     		pdj.ReproducirSE(0);
     	}
     	if(!pdj.teclado.UP && !pdj.teclado.DOWN && !pdj.teclado.ESCAPE && !pdj.teclado.ENTER) {
-    		habilitar = true;
+    		habilitarBoton = true;
     	}
-    	if(pdj.teclado.ENTER == true && habilitar) {
-    		habilitar = false;
+    	if(pdj.teclado.ENTER == true && habilitarBoton) {
+    		habilitarBoton = false;
     		pdj.ReproducirSE(1);
     		return instruccionElegida = numeroDeInstruccion;
     	}
@@ -351,31 +358,31 @@ public class Combate {
 	}
 	
 	public int elegirHabilidad(String[] habilidades) {
-		if(pdj.teclado.DOWN == true && habilitar) {
+		if(pdj.teclado.DOWN == true && habilitarBoton) {
     		if(numeroDeHabilidad >= habilidades.length-1) {
     			numeroDeHabilidad = 0;
     		}
     		else {
     			numeroDeHabilidad++;
     		}
-    		habilitar = false;
+    		habilitarBoton = false;
     		pdj.ReproducirSE(0);
     	}
-    	if(pdj.teclado.UP == true && habilitar) {
+    	if(pdj.teclado.UP == true && habilitarBoton) {
     		if(numeroDeHabilidad <= 0) {
     			numeroDeHabilidad = habilidades.length-1;
     		}
     		else {
     			numeroDeHabilidad--;
     		}
-    		habilitar = false;
+    		habilitarBoton = false;
     		pdj.ReproducirSE(0);
     	}
     	if(!pdj.teclado.UP && !pdj.teclado.DOWN && !pdj.teclado.ESCAPE && !pdj.teclado.ENTER) {
-    		habilitar = true;
+    		habilitarBoton = true;
     	}
-    	if(pdj.teclado.ENTER == true && habilitar) {
-    		habilitar = false;
+    	if(pdj.teclado.ENTER == true && habilitarBoton) {
+    		habilitarBoton = false;
     		pdj.ReproducirSE(1);
     		return habilidadElegida = numeroDeHabilidad;
     	}
@@ -573,14 +580,14 @@ public class Combate {
 			g2.fillRect(pdj.tamañoDeBaldosa*4, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*8, pdj.tamañoDeBaldosa);
 			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 30f));
 			g2.setColor(Color.white);
-			g2.drawString("Turno: "+unidades.get(id).getNombre(), pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*5+32);
+			g2.drawString("Turno: "+unidades.get(idUnidad).getNombre(), pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*5+32);
 		}
 		else {
 			g2.setColor(Color.RED);
 			g2.fillRect(pdj.tamañoDeBaldosa*4, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*8, pdj.tamañoDeBaldosa);
 			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 30f));
 			g2.setColor(Color.white);
-			g2.drawString("Turno: "+unidades.get(id).getNombre(), pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*5+32);
+			g2.drawString("Turno: "+unidades.get(idUnidad).getNombre(), pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*5+32);
 		}
 	}
 	
@@ -624,8 +631,8 @@ public class Combate {
 	}
 	
 	public void retrocederAccion() {
-		if(pdj.teclado.ESCAPE == true && habilitar) {
-    		habilitar = false;
+		if(pdj.teclado.ESCAPE == true && habilitarBoton) {
+    		habilitarBoton = false;
     		pdj.ReproducirSE(0);
     		instruccionElegida = -1;
     		habilidadElegida = -1;

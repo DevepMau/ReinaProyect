@@ -1,15 +1,12 @@
 package unidades;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.util.ArrayList;
-
 import principal.PanelDeJuego;
 import principal.Zona;
 
 public class GauchoModerno extends Unidad {
 	
-	private String[] habilidades = new String[1];
+	private String[] listaDeHabilidades = new String[1];
 	private int acumuladorDeVidaPrdida = 0;
 
 	public GauchoModerno(Zona zona, boolean aliado, PanelDeJuego pdj) {
@@ -26,9 +23,9 @@ public class GauchoModerno extends Unidad {
 		this.setDCRT(1.5);
 		this.setEva(0);
 		this.setVel(obtenerValorEntre(5,10));
-		this.habilidades[0] = "SALDAR DEUDA";
+		this.listaDeHabilidades[0] = "SALDAR DEUDA";
 	}
-	
+	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void recibirDaño(int daño, boolean isCritical) {
 	    int hpAnterior = this.getHP();
 	    super.recibirDaño(daño, isCritical);
@@ -37,29 +34,10 @@ public class GauchoModerno extends Unidad {
 	    if(acumuladorDeVidaPrdida >= 10) {
 	    	int acumuladorDeAtq = (acumuladorDeVidaPrdida / 10);
 	    	this.setAtqMod(this.getAtqMod() + acumuladorDeAtq);
-	        this.acumuladorDeVidaPrdida -= (10*acumuladorDeAtq);
-	        
+	        this.acumuladorDeVidaPrdida -= (10*acumuladorDeAtq); 
 	    }
 	}
-	
-	public void realizarAtaque(Unidad unidad) {
-		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());
-		if(unidad != null) {
-			boolean isMiss = Math.random() <= (unidad.getEva() + unidad.getEvaMod());	
-			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod())); 	 
-			if (isCritical) {
-				daño *= (this.getDCRT() + this.getDcrtMod());
-			}
-			if(!isMiss) {
-				unidad.recibirDaño(daño, isCritical);
-				this.setPcrtMod(this.getPcrtMod()+0.05);
-			}
-			else {
-				unidad.evadirAtaque();
-			}
-		}
-	}
-	
+	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////
 	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
 		Unidad objetivo = elegirObjetivo(unidades);
 		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());   
@@ -79,41 +57,54 @@ public class GauchoModerno extends Unidad {
 			}
 		}
 	}
-	
-	public boolean cumpleLosRequisitos() {
-		if(this.getAtqMod() >= 5) {
-			return true;
-		}
-		return false;
-	}
-	
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
 		if(this.getHabilidadElegida() == 0) {
-			setHabilidadOn(true);
 			if(!unidades.isEmpty()) {
 				Unidad unidad = elegirObjetivo(unidades);
 				saldarDeuda(unidad);
 			}
 		}
 	}
-	
-	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {
-		setHabilidadOn(true);	
+	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
+	public void realizarAtaque(Unidad unidad) {
+		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());
+		if(unidad != null) {
+			boolean isMiss = Math.random() <= (unidad.getEva() + unidad.getEvaMod());	
+			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod())); 	 
+			if (isCritical) {
+				daño *= (this.getDCRT() + this.getDcrtMod());
+			}
+			if(!isMiss) {
+				unidad.recibirDaño(daño, isCritical);
+				this.setPcrtMod(this.getPcrtMod()+0.05);
+			}
+			else {
+				unidad.evadirAtaque();
+			}
+		}
+	}
+	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {	
 		saldarDeuda(unidad);
 	}
-	
+	//HABILIDADES////////////////////////////////////////////////////////////////////////
 	public void saldarDeuda(Unidad unidad) {
 		int daño = (this.getAtqMod()*4);
 		if(unidad != null) {
 			unidad.recibirDaño(daño, false);
-			unidad.setEnSacudida(true);
+			unidad.setearSacudida(true);
 			unidad.setDuracionSacudida(20);
-			unidad.setEshabilidad(true);
+			unidad.setEsUnaHabilidad(true);
 		}
 		this.setAtqMod(0);
 	}
-	
-	public void establecerTipoDeaccion() {
+	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
+	public boolean cumpleReqDeHab1() {
+		if(this.getAtqMod() >= 5) {
+			return true;
+		}
+		return false;
+	}
+	public void configurarTipoDeaccion() {
 		if(this.getHabilidadElegida() == 0) {
 			this.setAccion("ATACAR");
 		}
@@ -121,12 +112,6 @@ public class GauchoModerno extends Unidad {
 			this.setAccion("");
 		}
 	}
-	
-	public String[] getHabilidades() {
-		return habilidades;
-	}
-
-	public void setHabilidades(String[] habilidades) {
-		this.habilidades = habilidades;
-	}
+	public String[] getListaDeHabilidades() {return listaDeHabilidades;}
+	public void setListaDeHabilidades(String[] habilidades) {this.listaDeHabilidades = habilidades;}
 }

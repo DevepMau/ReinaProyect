@@ -20,6 +20,8 @@ public class Sonido {
 		urlSonidos[4] = getClass().getResource("/sonidos/skill-heal.wav");
 		urlSonidos[5] = getClass().getResource("/sonidos/mate-use.wav");
 		urlSonidos[6] = getClass().getResource("/sonidos/side-step.wav");
+		urlSonidos[7] = getClass().getResource("/sonidos/motivated.wav");
+		urlSonidos[8] = getClass().getResource("/sonidos/unmotivated.wav");
 
 	}
 
