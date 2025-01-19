@@ -89,7 +89,6 @@ public class GauchoModerno extends Unidad {
 	
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
 		if(this.getHabilidadElegida() == 0) {
-			System.out.println("habilidad");
 			setHabilidadOn(true);
 			if(!unidades.isEmpty()) {
 				Unidad unidad = elegirObjetivo(unidades);
@@ -98,18 +97,18 @@ public class GauchoModerno extends Unidad {
 		}
 	}
 	
-	public void usarHabilidad(Unidad unidad) {
+	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {
 		setHabilidadOn(true);	
 		saldarDeuda(unidad);
 	}
 	
 	public void saldarDeuda(Unidad unidad) {
-		unidad.setEnSacudida(true);
-		unidad.setDuracionSacudida(20);
-		unidad.setEshabilidad(true);
 		int daño = (this.getAtqMod()*4);
 		if(unidad != null) {
 			unidad.recibirDaño(daño, false);
+			unidad.setEnSacudida(true);
+			unidad.setDuracionSacudida(20);
+			unidad.setEshabilidad(true);
 		}
 		this.setAtqMod(0);
 	}

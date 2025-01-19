@@ -34,6 +34,8 @@ public class Unidad {
 	private boolean esEsquivado;
 	private boolean esMate;
 	private boolean esHabilidad;
+	private boolean esGanarSP;
+	private boolean esMotivar;
 	private int idMate;
 	private boolean habilidadOn = false;
 	private int duracionHabilidad = 50;
@@ -45,6 +47,7 @@ public class Unidad {
 	private int desplazarDañoRecibido;
     //ESTADISTICAS Y ELEMENTOS DE LA UNIDAD/////////////////////////
 	private String[] habilidades = new String[1];
+	private boolean singleTarget = true;
 	private int habilidadElegida = -1;
 	private String accion = "";
 	private String nombre;
@@ -106,6 +109,8 @@ public class Unidad {
                 esEsquivado = false;
                 esMate = false;
                 esHabilidad = false;
+                esGanarSP = false;
+                esMotivar = false;
                 desplazamientoSacudidaX = 0;
                 desplazamientoSacudidaY = 0;
                 desplazarDañoRecibido = getPosY();
@@ -205,6 +210,16 @@ public class Unidad {
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
             g2.drawString(dañoRecibido+" IMPACT!!!", getPosX()+84, desplazarDañoRecibido-48);
         }
+        else if(this.esMotivar) {
+        	g2.setColor(Color.RED);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
+            g2.drawString("MOTIVADO!", getPosX()+84, desplazarDañoRecibido-48);
+        }
+        else if(this.esGanarSP) {
+        	g2.setColor(Color.cyan);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+            g2.drawString(dañoRecibido, getPosX()+84, desplazarDañoRecibido-48);
+        }
         else {
         	g2.setColor(Color.WHITE);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
@@ -302,7 +317,7 @@ public class Unidad {
 	
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {}
 	
-	public void usarHabilidad(Unidad unidad) {}
+	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {}
 	
 	public void usarEfectosPasivos() {}
 	
@@ -384,6 +399,10 @@ public class Unidad {
 	public void pasivaDeGaucho(int daño) {}
 	
 	public boolean cumpleLosRequisitos() {
+		return false;
+	}
+	
+	public boolean cumpleLosReqHab2() {
 		return false;
 	}
 	
@@ -505,6 +524,12 @@ public class Unidad {
 	public boolean isEsMate() {
 		return esMate;
 	}
+	public boolean getEsMotivar() {
+		return esMotivar;
+	}
+	public void setEsMotivar(boolean esMotivar) {
+		this.esMotivar = esMotivar;
+	}
 	public void setEsMate(boolean esMate) {
 		this.esMate = esMate;
 	}
@@ -611,6 +636,12 @@ public class Unidad {
 	public void setIdMate(int idMate) {
 		this.idMate = idMate;
 	}
+	public boolean isEsGanarSP() {
+		return esGanarSP;
+	}
+	public void setEsGanarSP(boolean esGanarSP) {
+		this.esGanarSP = esGanarSP;
+	}
 	public String[] getHabilidades() {
 		return habilidades;
 	}
@@ -623,6 +654,12 @@ public class Unidad {
 	}
 	public void setHabilidadElegida(int habilidadElegida) {
 		this.habilidadElegida = habilidadElegida;
+	}
+	public boolean isSingleTarget() {
+		return singleTarget;
+	}
+	public void setSingleTarget(boolean singleTarget) {
+		this.singleTarget = singleTarget;
 	}
 	public String getAccion() {
 		return accion;

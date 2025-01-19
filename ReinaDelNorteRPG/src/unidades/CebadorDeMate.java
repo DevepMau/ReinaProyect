@@ -66,7 +66,7 @@ public class CebadorDeMate extends Unidad{
 		}
 	}
 	
-	public void usarHabilidad(Unidad unidad) {
+	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {
 		setHabilidadOn(true);
 		moverCubo(cubo, unidad);
 		cebarMate(unidad);

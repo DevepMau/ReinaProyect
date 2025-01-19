@@ -58,12 +58,12 @@ public class Combate {
 		acciones[0] = "ATACAR";
 		acciones[1] = "HABILIDAD";
 		acciones[2] = "USAR OBJETO";
-		unidades.put(0, new GauchoModerno(zonas.get(0), true, pdj));
-		unidades.put(1, new GauchoModerno(zonas.get(0), false, pdj));
+		unidades.put(0, new PayadorTartamudo(zonas.get(0), true, pdj));
+		unidades.put(1, new PayadorTartamudo(zonas.get(0), false, pdj));
 		unidades.put(2, new GauchoModerno(zonas.get(0), true, pdj));
-		unidades.put(3, new GauchoModerno(zonas.get(0), false, pdj));
-		//unidades.put(4, new CebadorDeMate(zonas.get(0), true, pdj));
-		unidades.put(5, new CebadorDeMate(zonas.get(0), false, pdj));
+		//unidades.put(3, new GauchoModerno(zonas.get(0), false, pdj));
+		unidades.put(4, new CebadorDeMate(zonas.get(0), true, pdj));
+		unidades.put(5, new PayadorTartamudo(zonas.get(0), false, pdj));
 		//unidades.put(6, new CebadorDeMate(zonas.get(0), true, pdj));
 		//unidades.put(7, new CebadorDeMate(zonas.get(0), false, pdj));
 
@@ -186,6 +186,7 @@ public class Combate {
 		    	//HABILIDAD JUGADOR//////////////////////////////////////////////////////////
 		    	else if(instruccionElegida == 1) {
 		    		Unidad unidadSeleccionada = null;
+		    		ArrayList<Unidad> unidadesObjetivo = null;
 		    		//ASIGNAMOS LA UNIDAD EN TURNO////////////////////////////////////////////
 		    		unidadEnTurno = unidades.get(turnoId);
 		    		if(unidadEnTurno != null) {
@@ -196,25 +197,44 @@ public class Combate {
 		    				unidades.get(turnoId).establecerTipoDeaccion();
 		    			}
 		    			else {
-		    				if(unidadEnTurno.cumpleLosRequisitos()) {
-		    					//SI HAY ELEGIDA UNA HABILIDAD, SE DEFINE SI ES OFENSIVA O DE APOYO/
-			    				if(unidadEnTurno.getAccion() == "ATACAR") {
-			    					unidadSeleccionada = elegirUnidad(enemigos);
+		    				if(unidadEnTurno.isSingleTarget()) {
+		    					if(unidadEnTurno.cumpleLosRequisitos()) {
+			    					//SI HAY ELEGIDA UNA HABILIDAD, SE DEFINE SI ES OFENSIVA O DE APOYO/
+				    				if(unidadEnTurno.getAccion() == "ATACAR") {
+				    					unidadSeleccionada = elegirUnidad(enemigos);
+				    				}
+				    				else {
+				    					unidadSeleccionada = elegirUnidad(aliados);
+				    				}
 			    				}
 			    				else {
-			    					unidadSeleccionada = elegirUnidad(aliados);
+			    					seleccionarHabilidades = false;
+			    					unidadEnTurno.setHabilidadElegida(-1);
+			    					habilidadElegida = -1;
+			    					instruccionElegida = -1;
 			    				}
 		    				}
 		    				else {
-		    					seleccionarHabilidades = false;
-		    					unidadEnTurno.setHabilidadElegida(-1);
-		    					habilidadElegida = -1;
-		    					instruccionElegida = -1;
-		    				}	
+		    					if(unidadEnTurno.cumpleLosReqHab2()) {
+			    					//SI HAY ELEGIDA UNA HABILIDAD, SE DEFINE SI ES OFENSIVA O DE APOYO/
+				    				if(unidadEnTurno.getAccion() == "ATACAR") {
+				    					unidadesObjetivo = enemigos;
+				    				}
+				    				else {
+				    					unidadesObjetivo = aliados;
+				    				}
+			    				}
+			    				else {
+			    					seleccionarHabilidades = false;
+			    					unidadEnTurno.setHabilidadElegida(-1);
+			    					habilidadElegida = -1;
+			    					instruccionElegida = -1;
+			    				}
+		    				}		
 		    			}
 		    			//SI SE ELIGIO UN OBJETIVO, SE USA LA HABILIDAD///////////////////////
-		    			if(unidadSeleccionada != null) {
-			    			unidades.get(turnoId).usarHabilidad(unidadSeleccionada);
+		    			if(unidadSeleccionada != null || unidadesObjetivo != null) {
+			    			unidades.get(turnoId).usarHabilidad(unidadSeleccionada, unidadesObjetivo);
 		    				unidades.get(turnoId).setHabilidadElegida(-1);
 			    			if(id >= unidades.size()-1) {
 				    			id = 0;
