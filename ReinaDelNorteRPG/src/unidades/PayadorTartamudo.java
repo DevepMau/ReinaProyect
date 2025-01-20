@@ -122,6 +122,8 @@ public class PayadorTartamudo extends Unidad {
 			unidad.setearSacudida(true);
 			unidad.setDuracionSacudida(20);
 			unidad.setEsUnaHabilidad(true);
+			unidad.setVelMod(unidad.getVelMod() - 3);
+			unidad.setDefMod(unidad.getDefMod() - obtenerValorEntre(1,3));
 		}
 	}
 	public void motivar(Unidad unidad) {
@@ -130,8 +132,8 @@ public class PayadorTartamudo extends Unidad {
 			unidad.setearSacudida(true);
 			unidad.setDuracionSacudida(20);
 			unidad.setEstaMotivado(true);
-			unidad.setVelMod(unidad.getVelMod() + 15);
-			unidad.setAtqMod(unidad.getAtqMod() + 3);
+			unidad.setVelMod(unidad.getVelMod() + obtenerValorEntre(1,5));
+			unidad.setAtqMod(unidad.getAtqMod() + obtenerValorEntre(1,5));
 		}
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////

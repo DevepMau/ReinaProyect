@@ -56,12 +56,12 @@ public class Combate {
 		acciones[0] = "ATACAR";
 		acciones[1] = "HABILIDAD";
 		acciones[2] = "USAR OBJETO";
-		unidades.put(0, new PayadorTartamudo(zonas.get(0), true, pdj));
+		unidades.put(0, new PayadorTartamudo(zonas.get(0), false, pdj));
 		unidades.put(1, new PayadorTartamudo(zonas.get(0), false, pdj));
-		unidades.put(2, new GauchoModerno(zonas.get(0), true, pdj));
+		unidades.put(2, new PayadorTartamudo(zonas.get(0), true, pdj));
+		unidades.put(3, new GauchoModerno(zonas.get(0), true, pdj));
 		//unidades.put(3, new GauchoModerno(zonas.get(0), false, pdj));
-		unidades.put(4, new CebadorDeMate(zonas.get(0), true, pdj));
-		unidades.put(5, new PayadorTartamudo(zonas.get(0), false, pdj));
+		unidades.put(4, new CebadorDeMate(zonas.get(0), true, pdj));	
 		//unidades.put(6, new CebadorDeMate(zonas.get(0), true, pdj));
 		//unidades.put(7, new CebadorDeMate(zonas.get(0), false, pdj));	
 	}
@@ -73,7 +73,7 @@ public class Combate {
 			nombrarUnidades = false;
 			contadorDeTurnos = unidades.size();
 			for(int clave : unidades.keySet()) {
-				velocidades.put(clave, unidades.get(clave).getVel());
+				velocidades.put(clave, (unidades.get(clave).getVel()+unidades.get(clave).getVelMod()));
 			}
 		}
 		if(ordenarUnidades) {
@@ -141,6 +141,11 @@ public class Combate {
 	        }
 	    }
 	    if(contadorDeTurnos == unidades.size()) {
+	    	for(int clave : unidades.keySet()) {
+	    		velocidades.put(clave, (unidades.get(clave).getVel()+unidades.get(clave).getVelMod()));
+			}
+	    	turnos = obtenerClavesOrdenadasPorVelocidad(velocidades);
+	        System.out.println(turnos);
 	    	if(!enemigos.isEmpty()) {
 	    		for(Unidad unidad : enemigos) {
 		    		unidad.setEstaActivo(true);
