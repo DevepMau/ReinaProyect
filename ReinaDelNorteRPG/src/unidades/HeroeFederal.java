@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import principal.PanelDeJuego;
 import principal.Zona;
 
-public class Elite extends Unidad{
+public class HeroeFederal extends Unidad{
 
-	public Elite(Zona zona, boolean aliado, PanelDeJuego pdj) {
+	public HeroeFederal(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
 		this.setNombre("Elite");
 		this.setClase("Heroe Federal");

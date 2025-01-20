@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.io.IOException;
-
 import javax.swing.JPanel;
 
 public class PanelDeJuego extends JPanel implements Runnable {
@@ -15,25 +13,22 @@ public class PanelDeJuego extends JPanel implements Runnable {
 	// CONFIGURACIÓN DE PANTALLA
 	final int tamañoOriginalDeBaldosa = 16;
 	final int escala = 3;
-
 	public final int tamañoDeBaldosa = tamañoOriginalDeBaldosa * escala;
 	public final int maxColDePantalla = 16;
 	public final int maxFilaDePantalla = 12;
 	public final int anchoDePantalla = tamañoDeBaldosa * maxColDePantalla;
 	public final int altoDePantalla = tamañoDeBaldosa * maxFilaDePantalla;
-	
 	//CONFIGURACION DEL MUNDO
 	public final int maxColDeMundo = 16;
 	public final int maxFilaDeMundo = 12;
 	public final int anchoMundo = tamañoDeBaldosa * maxColDeMundo;
 	public final int altoMundo = tamañoDeBaldosa * maxFilaDeMundo;
-
 	//SISTEMA
 	public Teclado teclado = new Teclado(this);
-	Sonido musica = new Sonido();
-	Sonido se = new Sonido();
+	public Sonido musica = new Sonido();
+	public Sonido se = new Sonido();
 	public UI ui = new UI(this);
-	Combate combate = new Combate(this);
+	public Combate combate = new Combate(this);
 	public GeneradorDeNombres gdn = new GeneradorDeNombres(this);
 
 	Thread hiloDeJuego;
@@ -112,6 +107,9 @@ public class PanelDeJuego extends JPanel implements Runnable {
 	}
 
 	public void actualizar() {
+		if(teclado.ESCAPE == true) {
+			System.exit(0);
+		}
 		combate.actualizar();
 	}
 

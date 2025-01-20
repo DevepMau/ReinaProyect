@@ -10,6 +10,7 @@ public class Main {
 		ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		ventana.setResizable(false);
 		ventana.setTitle("Juego 2D");
+		ventana.setUndecorated(true);
 
 		PanelDeJuego pdj = new PanelDeJuego();
 		ventana.add(pdj);
