@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import principal.PanelDeJuego;
 import principal.Zona;
 
-public class PayadorTartamudo extends Unidad {
+public class PayadorGracioso extends Unidad {
 	
 	private String[] habilidades = new String[2];
 	private int spHabilidad1;
 	private int spHabilidad2;
 
-	public PayadorTartamudo(Zona zona, boolean aliado, PanelDeJuego pdj) {
+	public PayadorGracioso(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
 		this.setNombre("Especialista");
-		this.setClase("Payador Tartamudo");
+		this.setClase("Payador Gracioso");
 		this.setHPMax(obtenerValorEntre(40,70));
 		this.setHP(this.getHPMax());
 		this.setSPMax(obtenerValorEntre(60,100));

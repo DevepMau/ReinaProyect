@@ -9,7 +9,7 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.stream.Collectors;
-import unidades.PayadorTartamudo;
+import unidades.PayadorGracioso;
 import unidades.CebadorDeMate;
 import unidades.GauchoModerno;
 import unidades.HeroeFederal;
@@ -58,7 +58,7 @@ public class Combate {
 		acciones[1] = "HABILIDAD";
 		acciones[2] = "USAR OBJETO";
 		unidades.put(0, new HeroeFederal(zonas.get(0), true, pdj));
-		unidades.put(1, new PayadorTartamudo(zonas.get(0), false, pdj));
+		unidades.put(1, new PayadorGracioso(zonas.get(0), false, pdj));
 		//unidades.put(2, new PayadorTartamudo(zonas.get(0), true, pdj));
 		//unidades.put(3, new GauchoModerno(zonas.get(0), true, pdj));
 		unidades.put(3, new GauchoModerno(zonas.get(0), false, pdj));
