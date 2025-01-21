@@ -58,6 +58,7 @@ public class PayadorTartamudo extends Unidad {
 			}
 			if(!isMiss) {
 				objetivo.recibirDaño(daño, isCritical);
+				ganarSP(daño);
 			}
 			else {
 				objetivo.evadirAtaque();
@@ -92,8 +93,7 @@ public class PayadorTartamudo extends Unidad {
 			}
 			if(!isMiss) {
 				unidad.recibirDaño(daño, isCritical);
-				this.setSP(this.getSP() + daño*3);
-				this.setEstaGanandoSP(true);
+				ganarSP(daño);
 			}
 			else {
 				unidad.evadirAtaque();
@@ -115,14 +115,14 @@ public class PayadorTartamudo extends Unidad {
 	//HABILIDADES////////////////////////////////////////////////////////////////////////
 	public void chicanear(Unidad unidad) {
 		this.setSP(this.getSP() - this.spHabilidad1);
-		int daño = this.getAtq()+this.getAtqMod()+(this.getSPMax() / 20);
+		int daño = (this.getAtq()+this.getAtqMod()+(this.getSPMax() / 20));
 		if(unidad != null) {
 			pdj.ReproducirSE(8);
 			unidad.recibirDaño(daño, false);
 			unidad.setearSacudida(true);
 			unidad.setDuracionSacudida(20);
-			unidad.setEsUnaHabilidad(true);
-			unidad.setVelMod(unidad.getVelMod() - 3);
+			unidad.setEstaDesmotivado(true);
+			unidad.setVelMod(unidad.getVelMod() - obtenerValorEntre(1,5));
 			unidad.setDefMod(unidad.getDefMod() - obtenerValorEntre(1,3));
 		}
 	}
@@ -135,6 +135,17 @@ public class PayadorTartamudo extends Unidad {
 			unidad.setVelMod(unidad.getVelMod() + obtenerValorEntre(1,5));
 			unidad.setAtqMod(unidad.getAtqMod() + obtenerValorEntre(1,5));
 		}
+	}
+	public void ganarSP(int daño) {
+		if((this.getSP()+(daño*2)) > this.getSPMax()){
+			this.setSP(this.getSPMax());
+		}
+		else {
+			this.setSP(this.getSP() + daño*2);
+		}
+		this.setearSacudida(true);
+		this.setDuracionSacudida(20);
+		this.setEstaGanandoSP(true);
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
 	public void configurarTipoDeaccion() {

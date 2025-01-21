@@ -34,6 +34,9 @@ public class Unidad {
 	private boolean esUnaHabilidad;
 	private boolean estaGanandoSP;
 	private boolean estaMotivado;
+	private boolean estaDesmotivado;
+	private boolean estaLisiado;
+	private boolean estaKO;
 	//VARIABLES PARA LA SACUDIDA/////////////////////////////////////
 	private boolean enSacudida = false;
 	private int duracionSacudida = 0; // Duración en frames
@@ -106,7 +109,10 @@ public class Unidad {
                 esUnaHabilidad = false;
                 estaGanandoSP = false;
                 estaMotivado = false;
+                estaDesmotivado = false;
                 realizaUnCritico = false;
+                estaLisiado = false;
+                estaKO = false;
                 desplazamientoSacudidaX = 0;
                 desplazamientoSacudidaY = 0;
                 desplazarDañoRecibido = getPosY();
@@ -190,14 +196,33 @@ public class Unidad {
             g2.drawString(dañoRecibido+" IMPACT!!!", getPosX()+84, desplazarDañoRecibido-48);
         }
         else if(this.estaMotivado) {
-        	g2.setColor(Color.RED);
+        	g2.setColor(Color.ORANGE);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
-            g2.drawString("MOTIVADO!", getPosX()+84, desplazarDañoRecibido-48);
+            g2.drawString("+HIGH!", getPosX()+84, desplazarDañoRecibido-48);
+        }
+        else if(this.estaDesmotivado) {
+        	g2.setColor(Color.WHITE);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
+            g2.drawString(dañoRecibido, getPosX()+84, desplazarDañoRecibido-48);
+            g2.setColor(Color.CYAN);
+            g2.drawString("& DOWN!", getPosX()+104, desplazarDañoRecibido-48);
         }
         else if(this.estaGanandoSP) {
         	g2.setColor(Color.cyan);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
-            g2.drawString(dañoRecibido, getPosX()+84, desplazarDañoRecibido-48);
+            g2.drawString("+SP", getPosX()+84, desplazarDañoRecibido-48);
+        }
+        else if(this.estaLisiado) {
+        	Color c = new Color(50, 100, 100);
+        	g2.setColor(c);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+            g2.drawString("HURT...", getPosX()+84, desplazarDañoRecibido-48);
+        }
+        else if(this.estaKO) {
+        	//Color c = new Color(50, 100, 100);
+        	g2.setColor(Color.white);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+            g2.drawString("KNOCK OUT!", getPosX()+84, desplazarDañoRecibido-48);
         }
         else {
         	g2.setColor(Color.WHITE);
@@ -372,10 +397,16 @@ public class Unidad {
 	public void setTomandoUnMate(boolean esMate) {this.tomandoUnMate = esMate;}
 	public boolean getEstaMotivado() {return estaMotivado;}
 	public void setEstaMotivado(boolean esMotivar) {this.estaMotivado = esMotivar;}
+	public boolean getEstaDesmotivado() {return estaDesmotivado;}
+	public void setEstaDesmotivado(boolean esDesmotivar) {this.estaDesmotivado = esDesmotivar;}
 	public boolean getEsUnaHabilidad() {return esUnaHabilidad;}
 	public void setEsUnaHabilidad(boolean eshabilidad) {this.esUnaHabilidad = eshabilidad;}
 	public boolean getEstaGanandoSP() {return estaGanandoSP;}
 	public void setEstaGanandoSP(boolean esGanarSP) {this.estaGanandoSP = esGanarSP;}
+	public boolean getEstaLisiado() {return estaLisiado;}
+	public void setEstaLisiado(boolean estaLisiado) {this.estaLisiado = estaLisiado;}
+	public boolean getEstaKO() {return estaKO;}
+	public void setEstaKO(boolean estaKO) {this.estaKO = estaKO;}
 	//GETTER & SETTERS MISCELANEOS///////////////////////////////////////////////
 	public Zona getZona() {return zona;}
 	public void setZona(Zona zona) {this.zona = zona;}

@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import unidades.PayadorTartamudo;
 import unidades.CebadorDeMate;
 import unidades.GauchoModerno;
+import unidades.HeroeFederal;
 import unidades.Unidad;
 
 public class Combate {
@@ -56,14 +57,14 @@ public class Combate {
 		acciones[0] = "ATACAR";
 		acciones[1] = "HABILIDAD";
 		acciones[2] = "USAR OBJETO";
-		unidades.put(0, new PayadorTartamudo(zonas.get(0), false, pdj));
+		unidades.put(0, new HeroeFederal(zonas.get(0), true, pdj));
 		unidades.put(1, new PayadorTartamudo(zonas.get(0), false, pdj));
-		unidades.put(2, new PayadorTartamudo(zonas.get(0), true, pdj));
-		unidades.put(3, new GauchoModerno(zonas.get(0), true, pdj));
-		//unidades.put(3, new GauchoModerno(zonas.get(0), false, pdj));
+		//unidades.put(2, new PayadorTartamudo(zonas.get(0), true, pdj));
+		//unidades.put(3, new GauchoModerno(zonas.get(0), true, pdj));
+		unidades.put(3, new GauchoModerno(zonas.get(0), false, pdj));
 		unidades.put(4, new CebadorDeMate(zonas.get(0), true, pdj));	
 		//unidades.put(6, new CebadorDeMate(zonas.get(0), true, pdj));
-		//unidades.put(7, new CebadorDeMate(zonas.get(0), false, pdj));	
+		unidades.put(7, new CebadorDeMate(zonas.get(0), false, pdj));	
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////////////////
 	public void actualizar() {
@@ -548,13 +549,26 @@ public class Combate {
 	    
 	    g2.setColor(Color.yellow);
 	    if(unidad.getAtqMod() != 0) {
-	    	g2.drawString("+"+unidad.getAtqMod(), posX + 60, posY + ajusteY + 152);
+	    	if(unidad.getAtqMod() < 0) {
+	    		g2.setColor(Color.RED);
+	    		g2.drawString(""+unidad.getAtqMod(), posX + 60, posY + ajusteY + 152);
+		    }
+		    else {
+		    	g2.drawString("+"+unidad.getAtqMod(), posX + 60, posY + ajusteY + 152);
+		    }
 	    }
 	    if(unidad.getDefMod() != 0) {
-	    	g2.drawString("+"+unidad.getDefMod(), posX + 60, posY + ajusteY + 176);
+	    	if(unidad.getDefMod() < 0){
+	    		g2.setColor(Color.RED);
+	    		g2.drawString(""+unidad.getDefMod(), posX + 60, posY + ajusteY + 176);
+	    	}
+	    	else {
+	    		g2.drawString("+"+unidad.getDefMod(), posX + 60, posY + ajusteY + 176);
+	    	}
 	    }  
 	    if((unidad.getPCRT()+unidad.getPcrtMod()) > 0) {
 	    	if(unidad.getPcrtMod() != 0) {
+	    		g2.setColor(Color.yellow);
 	    		double d = unidad.getPCRT()+unidad.getPcrtMod();
 	    		g2.drawString("P.CRT: "+(d)*100+"%", posX + 8, posY + ajusteY + 200);
 	    	}
