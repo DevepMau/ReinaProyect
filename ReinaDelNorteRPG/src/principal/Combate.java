@@ -150,6 +150,9 @@ public class Combate {
 	    	if(!enemigos.isEmpty()) {
 	    		for(Unidad unidad : enemigos) {
 		    		unidad.setEstaActivo(true);
+		    		if(unidad.getEstaKO()) {
+		    			unidad.setEstaKO(false);
+		    		}
 		    	}
 	    	}
 	    	if(!aliados.isEmpty()) {

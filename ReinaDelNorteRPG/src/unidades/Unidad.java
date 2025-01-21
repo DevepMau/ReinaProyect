@@ -134,7 +134,6 @@ public class Unidad {
                 estaDesmotivado = false;
                 realizaUnCritico = false;
                 estaLisiado = false;
-                estaKO = false;
                 desplazamientoSacudidaX = 0;
                 desplazamientoSacudidaY = 0;
                 desplazarDañoRecibido = getPosY();
@@ -240,10 +239,8 @@ public class Unidad {
             g2.drawString("HURT...", getPosX()+84, desplazarDañoRecibido-48);
         }
         else if(this.estaKO) {
-        	//Color c = new Color(50, 100, 100);
-        	g2.setColor(Color.white);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
-            g2.drawString("KNOCK OUT!", getPosX()+84, desplazarDañoRecibido-48);
+        	Image KO = configurarImagen("/efectos/stun", 3);
+        	g2.drawImage(KO, dibujarX+10, dibujarY, null);
         }
         else {
         	g2.setColor(Color.WHITE);
