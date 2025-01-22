@@ -28,8 +28,8 @@ public class HeroeFederal extends Unidad{
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
-		int accion = elegirAleatorio(2);
-		if(accion == 0 && cumpleReqDeHab1()) {
+		int accion = elegirAleatorio(3);
+		if(accion <= 1 && cumpleReqDeHab1()) {
 			setHabilidadElegida(0);
 			usarHabilidadEnemigo(enemigos);
 		}
@@ -38,6 +38,13 @@ public class HeroeFederal extends Unidad{
 		}
 	}
 	//METODOS DE ENEMIGO////////////////////////////////////////////////////////////
+	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
+		if(this.getHabilidadElegida() == 0) {
+			Unidad unidad = elegirObjetivoMasFuerte(unidades);
+			expulsar(unidad);	
+			this.setSP(this.getSP() - this.spHabilidad1);
+		}
+	}
 	//METODOS DE JUGADOR////////////////////////////////////////////////////////////
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {
 		expulsar(unidad);
@@ -82,6 +89,18 @@ public class HeroeFederal extends Unidad{
 	    	int porcentajeHP = (unidad.getHP() * 100) / unidad.getHPMax();;
 	        if (porcentajeHP < menorPorcentajeHP) {
 	            menorPorcentajeHP = porcentajeHP;
+	            unidadSeleccionada = unidad;
+	        }
+	    }
+	    return unidadSeleccionada;
+	}
+	public Unidad elegirObjetivoMasFuerte(ArrayList<Unidad> unidades) {
+	    Unidad unidadSeleccionada = null;
+	    int mayorPorcentajeATQ = Integer.MIN_VALUE;
+	    for (Unidad unidad : unidades) {
+	    	int ATQUnidad = unidad.getAtq() + unidad.getAtqMod();
+	        if (ATQUnidad > mayorPorcentajeATQ) {
+	        	mayorPorcentajeATQ = ATQUnidad;
 	            unidadSeleccionada = unidad;
 	        }
 	    }

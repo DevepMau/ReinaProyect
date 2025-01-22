@@ -51,7 +51,8 @@ public class Unidad {
 	private int desplazamientoSacudidaY = 0;
 	private int desplazarDañoRecibido;
     //ELEMENTOS DE LA UNIDAD/////////////////////////
-	private BufferedImage[] imagenes = new BufferedImage[4];
+	private BufferedImage[] imagenesBody = new BufferedImage[4];
+	private BufferedImage[] imagenesDead = new BufferedImage[4];
 	private int tiempoMov = 20;
 	private int imageMov = 0;
 	private int direccion = 1; // 1 para incrementar, -1 para decrementar
@@ -103,6 +104,7 @@ public class Unidad {
 			desplazarDañoRecibido = 96;
 		}
 		this.cargarImagenes("dummy-cabeza", "dummy-cuerpo", "dummy-piernas", "dummy-manos");
+		this.cargarImagenes();
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////
 	public void actualizar() {
@@ -149,15 +151,12 @@ public class Unidad {
         dibujarVida();
         int dibujarX = getPosX() + desplazamientoSacudidaX;
         int dibujarY = getPosY() + desplazamientoSacudidaY;
-        mostrarImagenes(g2, dibujarX+10, dibujarY-20, imageMov);
-        if(!isEstaActivo()) {
-        	//Image KO = configurarImagen("/efectos/stun", 3);
-        	//g2.drawImage(KO, dibujarX, dibujarY, null);
-        }
-        if(!isAlive()) {
-        	g2.setColor(Color.YELLOW);
-        	g2.fillRect(dibujarX + 24, dibujarY - 24, pdj.tamañoDeBaldosa, pdj.tamañoDeBaldosa * 2);
+        if(isAlive()) {
+        	mostrarImagenes(g2, dibujarX+10, dibujarY-20, imageMov);
         } 
+        else {
+        	mostrarMuerte(g2, dibujarX+10, dibujarY-20, imageMov);
+        }
         //MOSTRAR DAÑO RECIBIDO Y EFECTOS////////////////////////////
         if(this.realizaUnaCuracion) {
             g2.setColor(Color.green);
@@ -411,16 +410,28 @@ public class Unidad {
 
 	}
 	public void cargarImagenes(String cabeza, String cuerpo, String piernas, String manos) {
-		imagenes[2] = configurarImagen("/piernas/"+piernas, 3);
-		imagenes[1] = configurarImagen("/cuerpos/"+cuerpo, 3);
-		imagenes[0] = configurarImagen("/cabezas/"+cabeza, 3);
-		imagenes[3] = configurarImagen("/manos/"+manos, 3);
+		imagenesBody[2] = configurarImagen("/piernas/"+piernas, 3);
+		imagenesBody[1] = configurarImagen("/cuerpos/"+cuerpo, 3);
+		imagenesBody[0] = configurarImagen("/cabezas/"+cabeza, 3);
+		imagenesBody[3] = configurarImagen("/manos/"+manos, 3);
+	}
+	public void cargarImagenes() {
+		imagenesDead[2] = configurarImagen("/piernas/dead-piernas", 3);
+		imagenesDead[1] = configurarImagen("/cuerpos/dead-cuerpo", 3);
+		imagenesDead[0] = configurarImagen("/cabezas/dead-cabeza", 3);
+		imagenesDead[3] = configurarImagen("/manos/dead-manos", 3);
 	}
 	public void mostrarImagenes(Graphics2D g2, int posX, int posY, int dezplazamiento) {
-		g2.drawImage(imagenes[2], posX, posY+46, null);
-		g2.drawImage(imagenes[1], posX, posY+28+dezplazamiento, null);
-		g2.drawImage(imagenes[0], posX, posY+dezplazamiento*2, null);
-		g2.drawImage(imagenes[3], posX, posY+24+dezplazamiento, null);
+		g2.drawImage(imagenesBody[2], posX, posY+46, null);
+		g2.drawImage(imagenesBody[1], posX, posY+28+dezplazamiento, null);
+		g2.drawImage(imagenesBody[0], posX, posY+dezplazamiento*2, null);
+		g2.drawImage(imagenesBody[3], posX, posY+24+dezplazamiento, null);
+	}
+	public void mostrarMuerte(Graphics2D g2, int posX, int posY, int dezplazamiento) {
+		g2.drawImage(imagenesDead[2], posX, posY+46, null);
+		g2.drawImage(imagenesDead[1], posX, posY+28+dezplazamiento, null);
+		g2.drawImage(imagenesDead[0], posX, posY+dezplazamiento*2, null);
+		g2.drawImage(imagenesDead[3], posX, posY+24+dezplazamiento, null);
 	}
 	public boolean cumpleReqDeHab1() {return false;}
 	public boolean cumpleReqDeHab2() {return false;}
