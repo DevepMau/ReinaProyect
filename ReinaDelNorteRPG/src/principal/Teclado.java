@@ -6,7 +6,7 @@ import java.awt.event.KeyListener;
 public class Teclado implements KeyListener {
 
 	PanelDeJuego pdj;
-	public boolean UP, DOWN, RIGHT, LEFT, ENTER, ESCAPE;
+	public boolean UP, DOWN, RIGHT, LEFT, ENTER, ESCAPE, Z, X, C;
 	//DEBUG
 	boolean comprobarTiempoDeDibujado = false;
 	
@@ -28,6 +28,15 @@ public class Teclado implements KeyListener {
 			if(codigo == KeyEvent.VK_W) {
 				//pdj.combate.dañar = true;
 			}
+		}
+		if(codigo == KeyEvent.VK_Z) {
+			Z = true;
+		}
+		if(codigo == KeyEvent.VK_X) {
+			X = true;
+		}
+		if(codigo == KeyEvent.VK_C) {
+			C = true;
 		}
 		if(codigo == KeyEvent.VK_UP) {
 			UP = true;
@@ -63,6 +72,15 @@ public class Teclado implements KeyListener {
 	public void keyReleased(KeyEvent e) {
 		int codigo = e.getKeyCode();
 
+		if(codigo == KeyEvent.VK_Z) {
+			Z = false;
+		}
+		if(codigo == KeyEvent.VK_X) {
+			X = false;
+		}
+		if(codigo == KeyEvent.VK_C) {
+			C = false;
+		}
 		if(codigo == KeyEvent.VK_UP) {
 			UP = false;
 		}
