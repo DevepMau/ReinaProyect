@@ -326,10 +326,10 @@ public class Combate {
 	    		habilitarBoton = false;
 	    		pdj.ReproducirSE(1);
 	    	}
-	    	if(!pdj.teclado.RIGHT && !pdj.teclado.LEFT && !pdj.teclado.ENTER) {
+	    	if(!pdj.teclado.RIGHT && !pdj.teclado.LEFT && !pdj.teclado.Z) {
 	    		habilitarBoton = true;
 	    	}
-	    	if(pdj.teclado.ENTER == true && habilitarBoton) {
+	    	if(pdj.teclado.Z == true && habilitarBoton) {
 	    		habilitarBoton = false;
 	    		return unidades.get(posEnLista);
 	    	}
@@ -358,10 +358,10 @@ public class Combate {
     		habilitarBoton = false;
     		pdj.ReproducirSE(0);
     	}
-    	if(!pdj.teclado.UP && !pdj.teclado.DOWN && !pdj.teclado.ESCAPE && !pdj.teclado.ENTER) {
+    	if(!pdj.teclado.UP && !pdj.teclado.DOWN && !pdj.teclado.X && !pdj.teclado.Z) {
     		habilitarBoton = true;
     	}
-    	if(pdj.teclado.ENTER == true && habilitarBoton) {
+    	if(pdj.teclado.Z == true && habilitarBoton) {
     		habilitarBoton = false;
     		pdj.ReproducirSE(1);
     		return instruccionElegida = numeroDeInstruccion;
@@ -390,10 +390,10 @@ public class Combate {
     		habilitarBoton = false;
     		pdj.ReproducirSE(0);
     	}
-    	if(!pdj.teclado.UP && !pdj.teclado.DOWN && !pdj.teclado.ESCAPE && !pdj.teclado.ENTER) {
+    	if(!pdj.teclado.UP && !pdj.teclado.DOWN && !pdj.teclado.X && !pdj.teclado.Z) {
     		habilitarBoton = true;
     	}
-    	if(pdj.teclado.ENTER == true && habilitarBoton) {
+    	if(pdj.teclado.Z == true && habilitarBoton) {
     		habilitarBoton = false;
     		pdj.ReproducirSE(1);
     		return habilidadElegida = numeroDeHabilidad;
@@ -656,7 +656,7 @@ public class Combate {
 	}
 	
 	public void retrocederAccion() {
-		if(pdj.teclado.ESCAPE == true && habilitarBoton) {
+		if(pdj.teclado.X == true && habilitarBoton) {
     		habilitarBoton = false;
     		pdj.ReproducirSE(0);
     		instruccionElegida = -1;
