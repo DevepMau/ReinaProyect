@@ -13,6 +13,7 @@ public class HeroeFederal extends Unidad{
 		super(zona, aliado, pdj);
 		this.setNombre("Elite");
 		this.setClase("Heroe Federal");
+		this.setIdFaccion(1);
 		this.setHPMax(obtenerValorEntre(100,150));
 		this.setHP(this.getHPMax());
 		this.setSPMax(obtenerValorEntre(50,70));
@@ -25,6 +26,7 @@ public class HeroeFederal extends Unidad{
 		this.setVel(obtenerValorEntre(20,25));
 		this.spHabilidad1 = 10;
 		this.listaDeHabilidades[0] = "EXPULSAR";
+		this.generarCuerpo();
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {

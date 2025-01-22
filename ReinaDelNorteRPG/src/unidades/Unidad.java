@@ -51,8 +51,8 @@ public class Unidad {
 	private int desplazamientoSacudidaY = 0;
 	private int desplazarDañoRecibido;
     //ELEMENTOS DE LA UNIDAD/////////////////////////
-	private BufferedImage[] imagenesBody = new BufferedImage[4];
-	private BufferedImage[] imagenesDead = new BufferedImage[4];
+	private BufferedImage[] imagenesBody = new BufferedImage[5];
+	private BufferedImage[] imagenesDead = new BufferedImage[5];
 	private int tiempoMov = 20;
 	private int imageMov = 0;
 	private int direccion = 1; // 1 para incrementar, -1 para decrementar
@@ -60,7 +60,9 @@ public class Unidad {
 	private String[] listaDeHabilidades = new String[1];
 	private int habilidadElegida = -1;
 	private boolean objetivoUnico = true;
+	private int alturaPorClase = 0;
 	private int idFaccion;
+	private int idTez;
 	//ESTADISTICAS DE LA UNIDAD/////////////////////////////////////
 	private String nombre;
 	private String clase;
@@ -103,7 +105,7 @@ public class Unidad {
 		else {
 			desplazarDañoRecibido = 96;
 		}
-		this.cargarImagenes("dummy-cabeza", "dummy-cuerpo", "dummy-piernas", "dummy-manos");
+		this.generarCuerpo();
 		this.cargarImagenes();
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////
@@ -152,7 +154,7 @@ public class Unidad {
         int dibujarX = getPosX() + desplazamientoSacudidaX;
         int dibujarY = getPosY() + desplazamientoSacudidaY;
         if(isAlive()) {
-        	mostrarImagenes(g2, dibujarX+10, dibujarY-20, imageMov);
+        	mostrarImagenes(g2, dibujarX+10, dibujarY-20+alturaPorClase, imageMov);
         } 
         else {
         	mostrarMuerte(g2, dibujarX+10, dibujarY-20, imageMov);
@@ -409,22 +411,106 @@ public class Unidad {
 	    return imagen;
 
 	}
-	public void cargarImagenes(String cabeza, String cuerpo, String piernas, String manos) {
-		imagenesBody[2] = configurarImagen("/piernas/"+piernas, 3);
-		imagenesBody[1] = configurarImagen("/cuerpos/"+cuerpo, 3);
-		imagenesBody[0] = configurarImagen("/cabezas/"+cabeza, 3);
-		imagenesBody[3] = configurarImagen("/manos/"+manos, 3);
+	
+	public void definirIdTez() {
+		if(this.idFaccion == 1) {
+			this.idTez = obtenerValorEntre(1,3);
+		}
+		else {
+			this.idTez = obtenerValorEntre(1,5);
+		}
+	}
+	
+	public String elegirEquipo() {
+		int i = elegirAleatorio(3);
+		String equipo = "";
+		if(i == 0) {
+			equipo = "boca";
+		}
+		else if(i == 1) {
+			equipo = "river";
+		}
+		else {
+			equipo = "arg";
+		}
+		return equipo;
+	}
+	
+	public void generarCuerpo() {
+		definirIdTez();
+		if(this.idFaccion == 1) {
+			imagenesBody[4] = configurarImagen("/imagenes/accesorios/boina1",3);
+			String equipo = elegirEquipo();
+			if(this.getGenero() == 1) {
+				//SI ES HOMBRE/////////////////////////////////////////////////////////////////////////
+				if(this.clase == "Heroe Federal") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/caballo-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/hombre/bici-boy", 3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo-heroe", 3);
+					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
+					alturaPorClase = -10;
+				}
+				else if(this.clase == "Cebador De Mate") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/mates-"+equipo+"-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-1",3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
+					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
+				}
+				else if(this.clase == "Payador Picante") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/guitarra-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-1",3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
+					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
+				}
+				else if(this.clase == "Gaucho Moderno") {
+					imagenesBody[3] = configurarImagen("/imagenes/hombre/cutter-"+this.idTez,3);
+					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-subido-"+this.idTez,3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo-gaucho", 3);
+					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
+				}
+			}
+			//SI ES MUJER////////////////////////////////////////////////////////////////////////////
+			else {
+				if(this.clase == "Heroe Federal") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/caballo-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/mujer/bici-girl-"+this.idTez, 3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo-heroe", 3);
+					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
+					alturaPorClase = -10;
+				}
+				if(this.clase == "Cebador De Mate") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/mates-"+equipo+"-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
+					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
+				}
+				else if(this.clase == "Payador Picante") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/guitarra-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
+					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
+				}
+				else if(this.clase == "Gaucho Moderno") {
+					imagenesBody[3] = configurarImagen("/imagenes/hombre/cutter-"+this.idTez,3);
+					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo-gaucho", 3);
+					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
+				}
+			}
+		}
 	}
 	public void cargarImagenes() {
-		imagenesDead[2] = configurarImagen("/piernas/dead-piernas", 3);
-		imagenesDead[1] = configurarImagen("/cuerpos/dead-cuerpo", 3);
-		imagenesDead[0] = configurarImagen("/cabezas/dead-cabeza", 3);
-		imagenesDead[3] = configurarImagen("/manos/dead-manos", 3);
+		imagenesBody[4] = null;
+		imagenesDead[2] = configurarImagen("/imagenes/dummy/dead-piernas", 3);
+		imagenesDead[1] = configurarImagen("/imagenes/dummy/dead-cuerpo", 3);
+		imagenesDead[0] = configurarImagen("/imagenes/dummy/dead-cabeza", 3);
+		imagenesDead[3] = configurarImagen("/imagenes/dummy/dead-manos", 3);
 	}
 	public void mostrarImagenes(Graphics2D g2, int posX, int posY, int dezplazamiento) {
 		g2.drawImage(imagenesBody[2], posX, posY+46, null);
 		g2.drawImage(imagenesBody[1], posX, posY+28+dezplazamiento, null);
 		g2.drawImage(imagenesBody[0], posX, posY+dezplazamiento*2, null);
+		g2.drawImage(imagenesBody[4], posX-1, posY-20+dezplazamiento*2, null);
 		g2.drawImage(imagenesBody[3], posX, posY+24+dezplazamiento, null);
 	}
 	public void mostrarMuerte(Graphics2D g2, int posX, int posY, int dezplazamiento) {

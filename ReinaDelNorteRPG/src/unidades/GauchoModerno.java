@@ -13,6 +13,7 @@ public class GauchoModerno extends Unidad {
 		super(zona, aliado, pdj);
 		this.setNombre("");
 		this.setClase("Gaucho Moderno");
+		this.setIdFaccion(1);
 		this.setHPMax(obtenerValorEntre(60,90));
 		this.setHP(this.getHPMax());
 		this.setSP(0);
@@ -24,6 +25,7 @@ public class GauchoModerno extends Unidad {
 		this.setEva(0);
 		this.setVel(obtenerValorEntre(5,10));
 		this.listaDeHabilidades[0] = "SALDAR DEUDA";
+		this.generarCuerpo();
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void recibirDaño(int daño, boolean isCritical) {

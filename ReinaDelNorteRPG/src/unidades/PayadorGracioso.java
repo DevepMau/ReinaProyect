@@ -13,7 +13,8 @@ public class PayadorGracioso extends Unidad {
 	public PayadorGracioso(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
 		this.setNombre("Especialista");
-		this.setClase("Payador Gracioso");
+		this.setClase("Payador Picante");
+		this.setIdFaccion(1);
 		this.setHPMax(obtenerValorEntre(40,70));
 		this.setHP(this.getHPMax());
 		this.setSPMax(obtenerValorEntre(60,100));
@@ -26,6 +27,7 @@ public class PayadorGracioso extends Unidad {
 		this.spHabilidad2 = 30;
 		this.habilidades[0] = "CHICANEAR";
 		this.habilidades[1] = "MOTIVAR";
+		this.generarCuerpo();
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {

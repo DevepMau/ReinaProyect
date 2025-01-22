@@ -28,8 +28,8 @@ public class CebadorDeMate extends Unidad{
 		this.setEva(0);
 		this.setVel(obtenerValorEntre(10,20));
 		this.spHabilidad1 = 7;
-		this.listaDeHabilidades[0] = "CEBAR UN MATE";	
-		this.cargarImagenes("CebadorDeMate-cabeza","CebadorDeMate-cuerpo","CebadorDeMate-piernas","CebadorDeMate-manos");
+		this.listaDeHabilidades[0] = "CEBAR UN MATE";
+		this.generarCuerpo();
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
