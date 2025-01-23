@@ -498,6 +498,12 @@ public class Unidad {
 				}
 			}
 		}
+		else {
+			imagenesBody[3] = configurarImagen("/imagenes/dummy/dummy-manos",3);
+			imagenesBody[2] = configurarImagen("/imagenes/dummy/dummy-piernas",3);
+			imagenesBody[1] = configurarImagen("/imagenes/dummy/dummy-cuerpo", 3);
+			imagenesBody[0] = configurarImagen("/imagenes/dummy/dummy-cabeza", 3);
+		}
 	}
 	public void cargarImagenes() {
 		imagenesBody[4] = null;

@@ -179,6 +179,19 @@ public class UI {
 
 	}
 	
+	public BufferedImage configurarImagen(String rutaImagen, int escala) {
+	    Utilidades uTool = new Utilidades();
+	    BufferedImage imagen = null;
+	    try {
+	        imagen = ImageIO.read(getClass().getResourceAsStream(rutaImagen + ".png"));
+	        imagen = uTool.escalarImagen(imagen, imagen.getWidth()/2*escala, imagen.getHeight()/2*escala);
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	    return imagen;
+
+	}
+	
 	public Font getMaruMonica() {
 		return this.maruMonica;
 	}

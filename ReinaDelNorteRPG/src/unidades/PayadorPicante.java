@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import principal.PanelDeJuego;
 import principal.Zona;
 
-public class PayadorGracioso extends Unidad {
+public class PayadorPicante extends Unidad {
 	
 	private String[] habilidades = new String[2];
 	private int spHabilidad1;
 	private int spHabilidad2;
 
-	public PayadorGracioso(Zona zona, boolean aliado, PanelDeJuego pdj) {
+	public PayadorPicante(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
 		this.setNombre("Especialista");
 		this.setClase("Payador Picante");

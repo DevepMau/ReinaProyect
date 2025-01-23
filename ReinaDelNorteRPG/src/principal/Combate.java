@@ -6,10 +6,15 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.stream.Collectors;
-import unidades.PayadorGracioso;
+
+import javax.imageio.ImageIO;
+
+import unidades.PayadorPicante;
 import unidades.CebadorDeMate;
 import unidades.GauchoModerno;
 import unidades.HeroeFederal;
@@ -46,6 +51,8 @@ public class Combate {
 	private int habilidadElegida = -1;
 	private Rectangle selector;
 	private Rectangle resaltador;
+	private BufferedImage indicador = configurarImagen("/efectos/selector", 4);
+	private BufferedImage lockOn = configurarImagen("/efectos/lock-on", 4);
 	//OBJETOS ESPECIALES/////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
 	
@@ -53,17 +60,17 @@ public class Combate {
 		this.pdj = pdj;
 		crearTablero();
 		selector = new Rectangle(0, 0, pdj.tamañoDeBaldosa*2, pdj.tamañoDeBaldosa/8);
-		resaltador = new Rectangle(0, 0, pdj.tamañoDeBaldosa*2, pdj.tamañoDeBaldosa/8);
+		resaltador = new Rectangle(0, 0, 0, 0);
 		acciones[0] = "ATACAR";
 		acciones[1] = "HABILIDAD";
 		acciones[2] = "USAR OBJETO";
-		unidades.put(0, new HeroeFederal(zonas.get(0), true, pdj));
-		unidades.put(1, new PayadorGracioso(zonas.get(0), false, pdj));
-		unidades.put(2, new HeroeFederal(zonas.get(0), false, pdj));
-		unidades.put(3, new GauchoModerno(zonas.get(0), true, pdj));
-		//unidades.put(3, new GauchoModerno(zonas.get(0), false, pdj));
-		//unidades.put(4, new CebadorDeMate(zonas.get(0), true, pdj));	
-		unidades.put(6, new CebadorDeMate(zonas.get(0), true, pdj));
+		unidades.put(0, new CebadorDeMate(zonas.get(0), true, pdj));
+		unidades.put(1, new HeroeFederal(zonas.get(0), true, pdj));
+		unidades.put(2, new PayadorPicante(zonas.get(0), false, pdj));
+		unidades.put(3, new HeroeFederal(zonas.get(0), false, pdj));
+		unidades.put(4, new GauchoModerno(zonas.get(0), true, pdj));
+		unidades.put(5, new GauchoModerno(zonas.get(0), false, pdj));
+		unidades.put(6, new PayadorPicante(zonas.get(0), true, pdj));	
 		unidades.put(7, new CebadorDeMate(zonas.get(0), false, pdj));	
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////////////////
@@ -78,8 +85,6 @@ public class Combate {
 			}
 		}
 		if(ordenarUnidades) {
-			//turnos = obtenerClavesOrdenadasPorVelocidad(velocidades);
-	        System.out.println(turnos);
 			ordenarUnidades = false;
 		}
 		if(posicionarUnidades) {
@@ -116,8 +121,7 @@ public class Combate {
 		if(turnoJugador) {
 			generarMenu(acciones, pdj.tamañoDeBaldosa*3 , pdj.altoDePantalla - pdj.tamañoDeBaldosa*(acciones.length-1), 160, numeroDeInstruccion, instruccionElegida);
 			if(instruccionElegida == 0 || instruccionElegida == 1) {
-				g2.setColor(Color.YELLOW);
-				g2.fillRect(selector.x, selector.y, selector.width, selector.height);
+				g2.drawImage(lockOn, selector.x, selector.y, null);
 			}
 		}
 		if(unidadEnTurno != null && seleccionarHabilidades) {
@@ -146,7 +150,6 @@ public class Combate {
 	    		velocidades.put(clave, (unidades.get(clave).getVel()+unidades.get(clave).getVelMod()));
 			}
 	    	turnos = obtenerClavesOrdenadasPorVelocidad(velocidades);
-	        System.out.println(turnos);
 	    	if(!enemigos.isEmpty()) {
 	    		for(Unidad unidad : enemigos) {
 		    		unidad.setEstaActivo(true);
@@ -617,10 +620,7 @@ public class Combate {
 	}
 	
 	public void dibujarResaltadorDeUnidad() {
-		g2.setColor(Color.orange);
-		g2.fillRect(resaltador.x, resaltador.y-20, pdj.tamañoDeBaldosa*2, 20);
-		g2.fillRect(resaltador.x, resaltador.y-96, 20, pdj.tamañoDeBaldosa*2);
-		g2.fillRect(resaltador.x+pdj.tamañoDeBaldosa*2-20, resaltador.y-96, 20, pdj.tamañoDeBaldosa*2);
+		g2.drawImage(indicador, resaltador.x, resaltador.y, null);
 	}
 	
 	public void dibujarTriangulo(int posX, int posY) {
@@ -635,6 +635,19 @@ public class Combate {
         g2.fillRect(posX+48, posY+41, 3, 18);
         g2.setColor(Color.WHITE);
     }
+	
+	public BufferedImage configurarImagen(String rutaImagen, int escala) {
+	    Utilidades uTool = new Utilidades();
+	    BufferedImage imagen = null;
+	    try {
+	        imagen = ImageIO.read(getClass().getResourceAsStream(rutaImagen + ".png"));
+	        imagen = uTool.escalarImagen(imagen, imagen.getWidth()/2*escala, imagen.getHeight()/2*escala);
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	    return imagen;
+
+	}
 	//VERIFICACION Y ACTUALIZACION///////////////////////////////////////////
 	public boolean verificar(int n) {
 		if(n == 0 || (10 <= n && n <= 13) || (34 <= n && n <= 37) || n == 32) {
@@ -645,7 +658,7 @@ public class Combate {
 	
 	public void actualizarSelector(Unidad unidad, Rectangle resaltador) {
 		if(unidad != null) {
-			resaltador.setLocation(unidad.getPosX(), unidad.getPosY()+pdj.tamañoDeBaldosa*2);
+			resaltador.setLocation(unidad.getPosX(), unidad.getPosY());
 		}
 	}
 	
