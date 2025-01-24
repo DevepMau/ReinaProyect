@@ -60,7 +60,7 @@ public class PayadorPicante extends Unidad {
 			}
 			if(!isMiss) {
 				objetivo.recibirDaño(daño, isCritical);
-				ganarSP(daño);
+				this.restaurarSP(daño);
 			}
 			else {
 				objetivo.evadirAtaque();
@@ -95,7 +95,7 @@ public class PayadorPicante extends Unidad {
 			}
 			if(!isMiss) {
 				unidad.recibirDaño(daño, isCritical);
-				ganarSP(daño);
+				this.restaurarSP(daño);
 			}
 			else {
 				unidad.evadirAtaque();

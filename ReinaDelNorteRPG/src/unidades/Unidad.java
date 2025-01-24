@@ -106,7 +106,7 @@ public class Unidad {
 			desplazarDañoRecibido = 96;
 		}
 		this.generarCuerpo();
-		this.cargarImagenes();
+		this.cargarDummyMuerto();
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////
 	public void actualizar() {
@@ -231,7 +231,7 @@ public class Unidad {
         else if(this.estaGanandoSP) {
         	g2.setColor(Color.cyan);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
-            g2.drawString("+SP", getPosX()+84, desplazarDañoRecibido-48);
+            g2.drawString(curaRecibida, getPosX()+84, desplazarDañoRecibido-48);
         }
         else if(this.estaLisiado) {
         	Color c = new Color(50, 100, 100);
@@ -247,7 +247,9 @@ public class Unidad {
         	g2.setColor(Color.WHITE);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
             g2.drawString(dañoRecibido, getPosX()+84, desplazarDañoRecibido-48);
-        }   
+        }
+        
+        efectosVisualesPersonalizados(g2);
     }
 	//METODOS DE ACCION///////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
@@ -329,7 +331,31 @@ public class Unidad {
 		setearSacudida(true);
 	    setDuracionSacudida(20);
 	    pdj.ReproducirSE(4);
-	}	
+	}
+	public void restaurarSP(int energia) {
+		if((this.getSP() + energia) > this.getSPMax()) {
+			this.setSP(this.getSPMax());
+		}
+		else {
+			this.setSP(this.getSP() + energia);
+		}
+		curaRecibida = "+" + energia;
+		estaGanandoSP = true;
+		setearSacudida(true);
+	    setDuracionSacudida(20);
+	    pdj.ReproducirSE(4);
+	}
+	public void sumarSP(Unidad unidad, int sp) {
+		int i = sp + unidad.getSP();
+		if(i > unidad.getSPMax()) {
+			unidad.setSP(unidad.getSPMax());
+		}
+		else {
+			unidad.setSP(i);
+		}
+	}
+	public void pasivaDeClase(ArrayList<Unidad> unidades) {}
+	public void sumarNeocreditos(int neocreditos) {}
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {}	
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {}	
 	//METODOS VISUALES/////////////////////////////////////////////////////////
@@ -374,6 +400,8 @@ public class Unidad {
 	    g2.setStroke(new BasicStroke(2));
 	    g2.drawRoundRect(posX, getPosY() + altura, barraHP, pdj.tamañoDeBaldosa / 5, 5, 5);
 	}
+	
+	public void efectosVisualesPersonalizados(Graphics2D g2){}
 	//METODOS DE ELECCION/////////////////////////////////////////////////////
 	public Unidad elegirObjetivo(ArrayList<Unidad> unidades) {
 	    if (!unidades.isEmpty()) {
@@ -416,6 +444,9 @@ public class Unidad {
 		if(this.idFaccion == 1) {
 			this.idTez = obtenerValorEntre(1,3);
 		}
+		else if(this.idFaccion == 2) {
+			this.idTez = obtenerValorEntre(4,5);
+		}
 		else {
 			this.idTez = obtenerValorEntre(1,5);
 		}
@@ -438,6 +469,7 @@ public class Unidad {
 	
 	public void generarCuerpo() {
 		definirIdTez();
+		cargarDummy();
 		if(this.idFaccion == 1) {
 			imagenesBody[4] = configurarImagen("/imagenes/accesorios/boina1",3);
 			String equipo = elegirEquipo();
@@ -447,7 +479,7 @@ public class Unidad {
 					imagenesBody[3] = configurarImagen("/imagenes/unisex/caballo-"+this.idTez, 3);
 					imagenesBody[2] = configurarImagen("/imagenes/hombre/bici-boy", 3);
 					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo-heroe", 3);
-					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
+					//imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
 					alturaPorClase = -10;
 				}
 				else if(this.clase == "Cebador De Mate") {
@@ -498,14 +530,33 @@ public class Unidad {
 				}
 			}
 		}
-		else {
-			imagenesBody[3] = configurarImagen("/imagenes/dummy/dummy-manos",3);
-			imagenesBody[2] = configurarImagen("/imagenes/dummy/dummy-piernas",3);
-			imagenesBody[1] = configurarImagen("/imagenes/dummy/dummy-cuerpo", 3);
-			imagenesBody[0] = configurarImagen("/imagenes/dummy/dummy-cabeza", 3);
+		else if(this.idFaccion == 2) {
+			if(this.getGenero() == 1) {
+				if(this.clase == "Respetable Ciudadano") {
+					//imagenesBody[3] = configurarImagen("/imagenes/unisex/mates-"+equipo+"-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-1",3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
+					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
+				}
+			}
+			else {
+				if(this.clase == "Respetable Ciudadano") {
+					//imagenesBody[3] = configurarImagen("/imagenes/unisex/mates-"+equipo+"-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
+					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
+				}
+			}
 		}
 	}
-	public void cargarImagenes() {
+	public void cargarDummy() {
+		imagenesBody[4] = null;
+		imagenesBody[3] = configurarImagen("/imagenes/dummy/dummy-manos",3);
+		imagenesBody[2] = configurarImagen("/imagenes/dummy/dummy-piernas",3);
+		imagenesBody[1] = configurarImagen("/imagenes/dummy/dummy-cuerpo", 3);
+		imagenesBody[0] = configurarImagen("/imagenes/dummy/dummy-cabeza", 3);
+	}
+	public void cargarDummyMuerto() {
 		imagenesBody[4] = null;
 		imagenesDead[2] = configurarImagen("/imagenes/dummy/dead-piernas", 3);
 		imagenesDead[1] = configurarImagen("/imagenes/dummy/dead-cuerpo", 3);
