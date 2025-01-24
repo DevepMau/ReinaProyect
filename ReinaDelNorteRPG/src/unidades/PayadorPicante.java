@@ -65,6 +65,7 @@ public class PayadorPicante extends Unidad {
 			else {
 				objetivo.evadirAtaque();
 			}
+			this.reflejarDaño(objetivo, daño);
 		}
 	}
 	public void usarHabilidadEnemigo(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
@@ -100,6 +101,7 @@ public class PayadorPicante extends Unidad {
 			else {
 				unidad.evadirAtaque();
 			}
+			this.reflejarDaño(unidad, daño);
 		}
 	}
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {	

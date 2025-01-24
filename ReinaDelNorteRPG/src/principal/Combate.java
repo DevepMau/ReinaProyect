@@ -16,6 +16,7 @@ import javax.imageio.ImageIO;
 
 import unidades.PayadorPicante;
 import unidades.RespetableCiudadano;
+import unidades.ShaolinEscolar;
 import unidades.CebadorDeMate;
 import unidades.GauchoModerno;
 import unidades.HeroeFederal;
@@ -70,16 +71,16 @@ public class Combate {
 		//unidades.put(2, new PayadorPicante(zonas.get(0), true, pdj));
 		//unidades.put(3, new HeroeFederal(zonas.get(0), false, pdj));
 		//unidades.put(4, new GauchoModerno(zonas.get(0), true, pdj));
-		//unidades.put(5, new GauchoModerno(zonas.get(0), false, pdj));
+		unidades.put(5, new GauchoModerno(zonas.get(0), false, pdj));
 		//unidades.put(6, new PayadorPicante(zonas.get(0), true, pdj));	
 		//unidades.put(7, new CebadorDeMate(zonas.get(0), false, pdj));	
-		unidades.put(8, new RespetableCiudadano(zonas.get(0), false, pdj));
-		unidades.put(6, new RespetableCiudadano(zonas.get(0), false, pdj));
-		unidades.put(7, new RespetableCiudadano(zonas.get(0), false, pdj));
-		unidades.put(5, new RespetableCiudadano(zonas.get(0), true, pdj));
-		unidades.put(4, new RespetableCiudadano(zonas.get(0), true, pdj));
-		unidades.put(1, new RespetableCiudadano(zonas.get(0), true, pdj));
-		unidades.put(2, new RespetableCiudadano(zonas.get(0), true, pdj));
+		//unidades.put(8, new RespetableCiudadano(zonas.get(0), false, pdj));
+		//unidades.put(6, new RespetableCiudadano(zonas.get(0), false, pdj));
+		//unidades.put(7, new RespetableCiudadano(zonas.get(0), false, pdj));
+		//unidades.put(5, new RespetableCiudadano(zonas.get(0), true, pdj));
+		//unidades.put(4, new RespetableCiudadano(zonas.get(0), true, pdj));
+		//unidades.put(1, new RespetableCiudadano(zonas.get(0), true, pdj));
+		unidades.put(2, new ShaolinEscolar(zonas.get(0), true, pdj));
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////////////////
 	public void actualizar() {

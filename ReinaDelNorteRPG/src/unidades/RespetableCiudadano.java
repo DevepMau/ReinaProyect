@@ -29,7 +29,7 @@ public class RespetableCiudadano extends Unidad{
 		this.setDCRT(1.5);
 		this.setEva(0);
 		this.setVel(obtenerValorEntre(10,20));
-		this.neocreditos = 100;
+		this.neocreditos = 0;
 		this.spHabilidad1 = 100;
 		this.listaDeHabilidades[0] = "FAVOR ESTATAL";
 		this.generarCuerpo();
@@ -79,6 +79,7 @@ public class RespetableCiudadano extends Unidad{
 			else {
 				objetivo.evadirAtaque();
 			}
+			this.reflejarDaño(objetivo, daño);
 		}
 	}	
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
@@ -108,6 +109,7 @@ public class RespetableCiudadano extends Unidad{
 			else {
 				unidad.evadirAtaque();
 			}
+			this.reflejarDaño(unidad, daño);
 		}
 	}
 	//HABILIDADES////////////////////////////////////////////////////////////////////////

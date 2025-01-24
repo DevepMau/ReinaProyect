@@ -293,6 +293,7 @@ public class Unidad {
 			else {
 				unidad.evadirAtaque();
 			}
+			this.reflejarDaño(unidad, daño);
 		}
 	}
 	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
@@ -352,6 +353,17 @@ public class Unidad {
 		}
 		else {
 			unidad.setSP(i);
+		}
+	}
+	public void reflejarDaño(Unidad unidad, int daño) {
+		if(unidad.getClase() == "Shaolin Escolar") {
+			int i = (daño/3);
+			if(i > 1) {
+				this.recibirDaño(i, false);
+			}
+			else {
+				this.recibirDaño(1, false);
+			}
 		}
 	}
 	public void pasivaDeClase(ArrayList<Unidad> unidades) {}

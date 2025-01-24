@@ -1,46 +1,61 @@
 package unidades;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import principal.PanelDeJuego;
 import principal.Zona;
 
-public class GauchoModerno extends Unidad {
+public class ShaolinEscolar extends Unidad {
 	
 	private String[] listaDeHabilidades = new String[1];
 	private int acumuladorDeVidaPrdida = 0;
+	private int neocreditos;
+	private int dañoCausado = 0;
 
-	public GauchoModerno(Zona zona, boolean aliado, PanelDeJuego pdj) {
+	public ShaolinEscolar(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
 		this.setNombre("");
-		this.setClase("Gaucho Moderno");
-		this.setIdFaccion(1);
-		this.setHPMax(obtenerValorEntre(60,90));
+		this.setClase("Shaolin Escolar");
+		this.setIdFaccion(2);
+		this.setHPMax(obtenerValorEntre(50,80));
 		this.setHP(this.getHPMax());
 		this.setSP(0);
 		this.setSPMax(0);
-		this.setAtq(obtenerValorEntre(13,17));
-		this.setDef(obtenerValorEntre(5,9));
-		this.setPCRT(0.15);
+		this.setAtq(obtenerValorEntre(13,15));
+		this.setDef(obtenerValorEntre(4,7));
+		this.setPCRT(0.25);
 		this.setDCRT(1.5);
-		this.setEva(0);
-		this.setVel(obtenerValorEntre(5,10));
-		this.listaDeHabilidades[0] = "SALDAR DEUDA";
+		this.setEva(0.35);
+		this.setVel(obtenerValorEntre(7,13));
+		this.neocreditos = 0;
+		this.listaDeHabilidades[0] = "...";
 		this.generarCuerpo();
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
+	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
+		realizarAtaqueEnemigo(enemigos);
+		this.pasivaDeClase(aliados);
+	}
 	public void recibirDaño(int daño, boolean isCritical) {
+		int valor = 6;
 	    int hpAnterior = this.getHP();
 	    super.recibirDaño(daño, isCritical);
 	    int hpPerdido = hpAnterior - this.getHP();
 	    this.acumuladorDeVidaPrdida += hpPerdido;
-	    if(acumuladorDeVidaPrdida >= 10) {
-	    	int acumuladorDeAtq = (acumuladorDeVidaPrdida / 10);
-	    	this.setAtqMod(this.getAtqMod() + acumuladorDeAtq);
-	        this.acumuladorDeVidaPrdida -= (10*acumuladorDeAtq); 
+	    if(acumuladorDeVidaPrdida >= valor) {
+	    	int acumuladorDeDef = (acumuladorDeVidaPrdida / valor);
+	    	this.setDefMod(this.getDefMod() + acumuladorDeDef);
+	        this.acumuladorDeVidaPrdida -= (valor*acumuladorDeDef); 
 	    }
 	}
 	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////
 	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
+		if(this.neocreditos == 100) {
+			potenciar();
+			this.neocreditos = 0;
+		}
 		Unidad objetivo = elegirObjetivo(unidades);
 		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());   
 		if(objetivo != null) {
@@ -52,7 +67,8 @@ public class GauchoModerno extends Unidad {
 			}
 			if(!isMiss) {
 				objetivo.recibirDaño(daño, isCritical);
-				this.setPcrtMod(this.getPcrtMod()+0.05);
+				this.dañoCausado = this.obtenerValorEntre(1, daño);
+				this.sumarNeocreditos(daño);
 			}
 			else {
 				objetivo.evadirAtaque();
@@ -60,26 +76,24 @@ public class GauchoModerno extends Unidad {
 			this.reflejarDaño(objetivo, daño);
 		}
 	}
-	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
-		if(this.getHabilidadElegida() == 0) {
-			if(!unidades.isEmpty()) {
-				Unidad unidad = elegirObjetivo(unidades);
-				saldarDeuda(unidad);
-			}
-		}
-	}
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
 	public void realizarAtaque(Unidad unidad) {
+		if(this.neocreditos == 100) {
+			potenciar();
+			this.neocreditos = 0;
+		}
 		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());
 		if(unidad != null) {
-			boolean isMiss = Math.random() <= (unidad.getEva() + unidad.getEvaMod());	
+			boolean isMiss = Math.random() <= (unidad.getEva() + unidad.getEvaMod());	 
 			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod())); 	 
 			if (isCritical) {
 				daño *= (this.getDCRT() + this.getDcrtMod());
 			}
 			if(!isMiss) {
 				unidad.recibirDaño(daño, isCritical);
-				this.setPcrtMod(this.getPcrtMod()+0.05);
+				this.dañoCausado = this.obtenerValorEntre(1, daño);
+				this.sumarNeocreditos(daño);
+				
 			}
 			else {
 				unidad.evadirAtaque();
@@ -87,31 +101,27 @@ public class GauchoModerno extends Unidad {
 			this.reflejarDaño(unidad, daño);
 		}
 	}
-	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {	
-		saldarDeuda(unidad);
-	}
 	//HABILIDADES////////////////////////////////////////////////////////////////////////
-	public void saldarDeuda(Unidad unidad) {
-		boolean isMiss = Math.random() <= (unidad.getEva() + unidad.getEvaMod());	
-		if(unidad != null) {
-			if(!isMiss) {
-				int daño = (this.getAtqMod()*4);
-				unidad.recibirDaño(daño, false);
-				unidad.setearSacudida(true);
-				unidad.setDuracionSacudida(20);
-				unidad.setEsUnaHabilidad(true);
-			}
-			else {
-				unidad.evadirAtaque();
-			}	
-		}
-		this.setAtqMod(0);
+	public void potenciar() {
+		pdj.ReproducirSE(7);
+		this.setearSacudida(true);
+		this.setDuracionSacudida(20);
+		this.setEstaMotivado(true);
+		this.setPcrtMod(this.getPcrtMod() + 0.1);
+		this.setVelMod(this.getVelMod() + obtenerValorEntre(1,7));
+		this.setAtqMod(this.getAtqMod() + obtenerValorEntre(1,7));
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
-	public boolean cumpleReqDeHab1() {
-		if(this.getAtqMod() >= 5) {
-			return true;
+	public void sumarNeocreditos(int neocreditos) {
+		int i = neocreditos + this.neocreditos;
+		if(i > 100) {
+			this.neocreditos = 100;
 		}
+		else {
+			this.neocreditos += neocreditos;
+		}
+	}
+	public boolean cumpleReqDeHab1() {
 		return false;
 	}
 	public void configurarTipoDeaccion() {
@@ -121,6 +131,26 @@ public class GauchoModerno extends Unidad {
 		else {
 			this.setAccion("");
 		}
+	}
+	public void efectosVisualesPersonalizados(Graphics2D g2) {
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18f));
+		g2.setColor(Color.white);
+		g2.drawString("NC: "+this.neocreditos, this.getPosX()+8, this.getPosY()-11);
+	}
+	public void pasivaDeClase(ArrayList<Unidad> unidades) {
+		if(!unidades.isEmpty()) {
+			for(Unidad unidad : unidades) {
+				if(unidad.getIdFaccion() == 2) {
+					unidad.sumarNeocreditos(this.getDañoCaudado()/2);
+				}
+			}
+		}
+	}
+	public int getDañoCaudado() {
+		return this.dañoCausado;
+	}
+	public void setDañoCausado(int daño) {
+		this.dañoCausado = daño;
 	}
 	public String[] getListaDeHabilidades() {return listaDeHabilidades;}
 	public void setListaDeHabilidades(String[] habilidades) {this.listaDeHabilidades = habilidades;}
