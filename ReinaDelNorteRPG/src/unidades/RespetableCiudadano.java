@@ -124,6 +124,7 @@ public class RespetableCiudadano extends Unidad{
 		if(!unidades.isEmpty()) {
 			for(Unidad unidad : unidades) {
 				pdj.ReproducirSE(3);
+				unidad.recibirDaño(unidad.getHPMax()/10, false);
 				unidad.setEstaActivo(false);
 				unidad.setEstaKO(true);
 				unidad.setearSacudida(true);

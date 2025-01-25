@@ -1,40 +1,43 @@
 package unidades;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import principal.PanelDeJuego;
 import principal.Zona;
 
-public class PayadorPicante extends Unidad {
+public class MedicoTradicionalista extends Unidad {
 	
 	private String[] habilidades = new String[2];
 	private int spHabilidad1;
-	private int spHabilidad2;
+	private int neocreditos;
+	private int dañoCausado = 0;
 
-	public PayadorPicante(Zona zona, boolean aliado, PanelDeJuego pdj) {
+	public MedicoTradicionalista(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
 		this.setNombre("Especialista");
-		this.setClase("Payador Picante");
-		this.setIdFaccion(1);
+		this.setClase("Medico Tradicionalista");
+		this.setIdFaccion(2);
 		this.setHPMax(obtenerValorEntre(40,70));
 		this.setHP(this.getHPMax());
-		this.setSPMax(obtenerValorEntre(60,100));
+		this.setSPMax(obtenerValorEntre(120,150));
 		this.setSP(this.getSPMax());
-		this.setAtq(obtenerValorEntre(8,12));
-		this.setDef(obtenerValorEntre(3,7));
-		this.setVel(obtenerValorEntre(8,15));
+		this.setAtq(obtenerValorEntre(3,8));
+		this.setDef(obtenerValorEntre(5,9));
+		this.setVel(obtenerValorEntre(2,8));
 		this.setPCRT(0);
+		this.neocreditos = 100;
 		this.spHabilidad1 = 10;
-		this.spHabilidad2 = 30;
-		this.habilidades[0] = "CHICANEAR";
-		this.habilidades[1] = "MOTIVAR";
+		this.habilidades[0] = "CURAR";
+		this.habilidades[1] = "TONICO IMPERIA";
 		this.generarCuerpo();
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
-		int accion = elegirAleatorio(5);
-		if(accion <= 3 && cumpleReqDeHab1()) {
-			int nroHabilidad = elegirAleatorio(4);
-			if(nroHabilidad == 0 &&  cumpleReqDeHab2()) {
+		int accion = elegirAleatorio(6);
+		if(accion <= 4 && cumpleReqDeHab1()) {
+			if(cumpleReqDeHab2()) {
 				this.setHabilidadElegida(1);
 			}
 			else {
@@ -73,14 +76,17 @@ public class PayadorPicante extends Unidad {
 			if(!enemigos.isEmpty()) {
 				this.setSP(this.getSP() - this.spHabilidad1);
 				Unidad unidad = elegirObjetivo(enemigos);
-				chicanear(unidad);
+				curar(unidad);
 			}
 		}
 		else {
 			if(!aliados.isEmpty()) {
-				this.setSP(this.getSP() - this.spHabilidad2);
+				this.neocreditos = 0;
 				for(Unidad unidad : aliados) {
-					motivar(unidad);
+					if(unidad.getGenero() == this.generoMayoritario(aliados)){
+						System.out.println(this.generoMayoritario(aliados));
+						tonicoImperial(unidad);
+					}
 				}
 			}
 		}
@@ -106,38 +112,38 @@ public class PayadorPicante extends Unidad {
 	}
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {	
 		if(this.getHabilidadElegida() == 0) {
-			chicanear(unidad);
+			curar(unidad);
 		}
 		else {
-			this.setSP(this.getSP() - this.spHabilidad2);
-			for(Unidad unidadObjetivo : unidades) {
-				motivar(unidadObjetivo);
+			if(!unidades.isEmpty()) {
+				this.neocreditos = 0;
+				for(Unidad unidadObjetivo : unidades) {
+					if(unidadObjetivo.getGenero() == this.generoMayoritario(unidades)){
+						System.out.println(this.generoMayoritario(unidades));
+						tonicoImperial(unidadObjetivo);
+					}
+				}
 			}	
 		}
 		
 	}
 	//HABILIDADES////////////////////////////////////////////////////////////////////////
-	public void chicanear(Unidad unidad) {
+	public void curar(Unidad unidad) {
 		this.setSP(this.getSP() - this.spHabilidad1);
-		int daño = (this.getAtq()+this.getAtqMod()+(this.getSPMax() / 20));
 		if(unidad != null) {
-			pdj.ReproducirSE(8);
-			unidad.recibirDaño(daño, false);
-			unidad.setearSacudida(true);
-			unidad.setDuracionSacudida(20);
-			unidad.setEstaDesmotivado(true);
-			unidad.setVelMod(unidad.getVelMod() - obtenerValorEntre(1,5));
-			unidad.setDefMod(unidad.getDefMod() - obtenerValorEntre(1,3));
+			unidad.restaurarHP(unidad.getHPMax()/4);
+			this.sumarNeocreditos(unidad.getHPMax()/8);
 		}
 	}
-	public void motivar(Unidad unidad) {
+	public void tonicoImperial(Unidad unidad) {
 		if(unidad != null) {
 			pdj.ReproducirSE(7);
 			unidad.setearSacudida(true);
 			unidad.setDuracionSacudida(20);
 			unidad.setEstaMotivado(true);
-			unidad.setVelMod(unidad.getVelMod() + obtenerValorEntre(1,5));
-			unidad.setAtqMod(unidad.getAtqMod() + obtenerValorEntre(1,5));
+			unidad.setAtqMod(unidad.getAtqMod() + obtenerValorEntre(3,7));
+			unidad.setHPMax(unidad.getHPMax()+(unidad.getHPMax()/5));
+			unidad.restaurarHP(unidad.getHPMax()/5);
 		}
 	}
 	public void ganarSP(int daño) {
@@ -152,16 +158,6 @@ public class PayadorPicante extends Unidad {
 		this.setEstaGanandoSP(true);
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
-	public void configurarTipoDeaccion() {
-		if(this.getHabilidadElegida() == 0) {
-			this.setAccion("ATACAR");
-			this.setObjetivoUnico(true);
-		}
-		else {
-			this.setAccion("APOYAR");
-			this.setObjetivoUnico(false);
-		}
-	}
 	public boolean cumpleReqDeHab1() {
 		if(this.getSP() > 0) {
 			if(this.getSP() >= this.spHabilidad1) {
@@ -171,12 +167,62 @@ public class PayadorPicante extends Unidad {
 		return false;
 	}
 	public boolean cumpleReqDeHab2() {
-		if(this.getSP() > 0) {
-			if(this.getSP() >= this.spHabilidad2) {
-				return true;
-			}
+		if(this.neocreditos == 100) {
+			return true;
 		}
 		return false;
+	}
+	public void sumarNeocreditos(int neocreditos) {
+		int i = neocreditos + this.neocreditos;
+		if(i > 100) {
+			this.neocreditos = 100;
+		}
+		else {
+			this.neocreditos += neocreditos;
+		}
+	}
+	public void configurarTipoDeaccion() {
+		if(this.getHabilidadElegida() == 0) {
+			this.setAccion("APOYAR");
+			this.setObjetivoUnico(true);
+		}
+		else {
+			this.setAccion("APOYAR");
+			this.setObjetivoUnico(false);
+		}
+	}
+	public int generoMayoritario(ArrayList<Unidad> unidades) {
+	    int conteoMasculino = 0;
+	    int genero = 0;
+	    for (Unidad unidad : unidades) {
+	        if (unidad.getGenero() == 1) {
+	            conteoMasculino++;
+	        }
+	    }
+	   if(conteoMasculino >= unidades.size() / 2) {
+		   genero = 1;
+	   } 
+	   return genero;
+	}
+	public void efectosVisualesPersonalizados(Graphics2D g2) {
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18f));
+		g2.setColor(Color.white);
+		g2.drawString("NC: "+this.neocreditos, this.getPosX()+8, this.getPosY()-11);
+	}
+	public void pasivaDeClase(ArrayList<Unidad> unidades) {
+		if(!unidades.isEmpty()) {
+			for(Unidad unidad : unidades) {
+				if(unidad.getIdFaccion() == 2) {
+					unidad.sumarNeocreditos(this.getDañoCaudado()/2);
+				}
+			}
+		}
+	}
+	public int getDañoCaudado() {
+		return this.dañoCausado;
+	}
+	public void setDañoCausado(int daño) {
+		this.dañoCausado = daño;
 	}
 	public String[] getListaDeHabilidades() {return habilidades;}
 	public void setListaDeHabilidades(String[] habilidades) {this.habilidades = habilidades;}
