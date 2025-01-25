@@ -366,7 +366,7 @@ public class Unidad {
 			}
 		}
 	}
-	public void pasivaDeClase(ArrayList<Unidad> unidades) {}
+	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {}
 	public void sumarNeocreditos(int neocreditos) {}
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {}	
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {}	

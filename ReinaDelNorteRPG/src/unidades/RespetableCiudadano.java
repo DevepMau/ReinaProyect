@@ -49,7 +49,7 @@ public class RespetableCiudadano extends Unidad{
 		}
 		else {
 			realizarAtaqueEnemigo(enemigos);
-			this.pasivaDeClase(aliados);
+			this.pasivaDeClase(aliados, enemigos);
 		}
 	}
 	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////
@@ -185,9 +185,9 @@ public class RespetableCiudadano extends Unidad{
 		g2.setColor(Color.white);
 		g2.drawString("NC: "+this.neocreditos, this.getPosX()+8, this.getPosY()-11);
 	}
-	public void pasivaDeClase(ArrayList<Unidad> unidades) {
-		if(!unidades.isEmpty()) {
-			for(Unidad unidad : unidades) {
+	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
+		if(!aliados.isEmpty()) {
+			for(Unidad unidad : aliados) {
 				if(unidad.getIdFaccion() == 2) {
 					unidad.sumarNeocreditos(this.getDañoCaudado()/2);
 				}
