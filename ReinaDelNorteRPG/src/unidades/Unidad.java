@@ -544,16 +544,16 @@ public class Unidad {
 		}
 		else if(this.idFaccion == 2) {
 			if(this.getGenero() == 1) {
-				if(this.clase == "Respetable Ciudadano") {
-					//imagenesBody[3] = configurarImagen("/imagenes/unisex/mates-"+equipo+"-"+this.idTez, 3);
+				if(this.clase == "Alumno Modelo") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/libro-"+this.idTez, 3);
 					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-1",3);
 					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
 					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
 				}
 			}
 			else {
-				if(this.clase == "Respetable Ciudadano") {
-					//imagenesBody[3] = configurarImagen("/imagenes/unisex/mates-"+equipo+"-"+this.idTez, 3);
+				if(this.clase == "Alumno Modelo") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/libro-"+this.idTez, 3);
 					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
 					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
 					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);

@@ -7,17 +7,17 @@ import java.util.ArrayList;
 import principal.PanelDeJuego;
 import principal.Zona;
 
-public class RespetableCiudadano extends Unidad{
+public class AlumnoModelo extends Unidad{
 	
 	private int neocreditos;
 	private int dañoCausado = 0;
 	private int spHabilidad1;
 	private String[] listaDeHabilidades = new String[1];
 	
-	public RespetableCiudadano(Zona zona, boolean aliado, PanelDeJuego pdj) {
+	public AlumnoModelo(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
 		this.setNombre("");
-		this.setClase("Respetable Ciudadano");
+		this.setClase("Alumno Modelo");
 		this.setIdFaccion(2);
 		this.setHPMax(obtenerValorEntre(50,70));
 		this.setHP(this.getHPMax());

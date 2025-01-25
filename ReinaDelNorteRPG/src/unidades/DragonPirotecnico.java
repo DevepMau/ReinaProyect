@@ -18,7 +18,7 @@ public class DragonPirotecnico extends Unidad{
 		super(zona, aliado, pdj);
 		this.setNombre("Elite");
 		this.setClase("Dragon Pirotecnico");
-		this.setIdFaccion(1);
+		this.setIdFaccion(2);
 		this.setHPMax(obtenerValorEntre(130,160));
 		this.setHP(this.getHPMax());
 		this.setSPMax(0);
