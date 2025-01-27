@@ -17,7 +17,7 @@ public class NiñoCheung extends Unidad {
 		this.setHP(this.getHPMax());
 		this.setSP(0);
 		this.setSPMax(0);
-		this.setAtq(obtenerValorEntre(13,17));
+		this.setAtq(obtenerValorEntre(12,15));
 		this.setDef(obtenerValorEntre(2,6));
 		this.setPCRT(0.05);
 		this.setDCRT(10);

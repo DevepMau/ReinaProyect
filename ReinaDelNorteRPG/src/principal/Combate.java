@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 
 import unidades.PayadorPicante;
+import unidades.PuñoFurioso;
 import unidades.AlumnoModelo;
 import unidades.ShaolinEscolar;
 import unidades.CebadorDeMate;
@@ -70,11 +71,13 @@ public class Combate {
 		acciones[1] = "HABILIDAD";
 		acciones[2] = "USAR OBJETO";
 		//unidades.put(0, new DragonPirotecnico(zonas.get(0), false, pdj));
+		//unidades.put(0, new HeroeFederal(zonas.get(0), false, pdj));
 		//unidades.put(1, new AlumnoModelo(zonas.get(0), false, pdj));
-		unidades.put(2, new ShaolinEscolar(zonas.get(0), false, pdj));
+		//unidades.put(2, new ShaolinEscolar(zonas.get(0), false, pdj));
 		//unidades.put(3, new MedicoTradicionalista(zonas.get(0), false, pdj));
-		unidades.put(4, new NiñoCheung(zonas.get(0), true, pdj));
-		unidades.put(5, new NiñoCheung(zonas.get(0), true, pdj));
+		unidades.put(4, new PuñoFurioso(zonas.get(0), true, pdj));
+		unidades.put(5, new PuñoFurioso(zonas.get(0), false, pdj));
+		//unidades.put(5, new PuñoFurioso(zonas.get(0), true, pdj));
 		//unidades.put(6, new MedicoTradicionalista(zonas.get(0), true, pdj));
 		//unidades.put(7, new AlumnoModelo(zonas.get(0), true, pdj));
 

@@ -35,6 +35,7 @@ public class Unidad {
 	private boolean estaActivo = true;
 	private boolean estaVivo = true;
 	private boolean realizaUnCritico;
+	private boolean realizandoDobleGolpe;
 	private boolean realizaUnaCuracion;
 	private boolean estaEsquivando;
 	private boolean tomandoUnMate;
@@ -44,6 +45,7 @@ public class Unidad {
 	private boolean estaDesmotivado;
 	private boolean estaLisiado;
 	private boolean estaKO;
+	private boolean interruptor = false;
 	//VARIABLES PARA LA SACUDIDA/////////////////////////////////////
 	private boolean enSacudida = false;
 	private int duracionSacudida = 0; // Duración en frames
@@ -132,6 +134,7 @@ public class Unidad {
             } else {
                 setearSacudida(false);
                 realizaUnaCuracion = false;
+                realizandoDobleGolpe = false;
                 estaEsquivando = false;
                 tomandoUnMate = false;
                 esUnaHabilidad = false;
@@ -245,6 +248,12 @@ public class Unidad {
         	Image KO = configurarImagen("/efectos/stun", 3);
         	g2.drawImage(KO, dibujarX+10, dibujarY, null);
         }
+        else if(this.realizandoDobleGolpe) {
+        	Color c = new Color(255, 155, 155);
+        	g2.setColor(c);
+        	g2.drawString(dañoRecibido, getPosX()+84, desplazarDañoRecibido-48);
+        	g2.drawString(dañoRecibido, getPosX()+64, desplazarDañoRecibido-28);
+        }
         else {
         	g2.setColor(Color.WHITE);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
@@ -315,7 +324,28 @@ public class Unidad {
 				objetivo.evadirAtaque();
 			}
 		}
-	}	
+	}
+	public void recibirDobleGolpe(int daño, boolean isCritical) {
+	    // Primera aplicación de daño y sacudida
+		boolean primerCritical = false;
+		if(isCritical) {
+			int i = elegirAleatorio(2);
+			if(i == 0) {
+				primerCritical = true;
+			}
+		}
+		recibirGolpeRapido(((daño+daño/2)/2), primerCritical);
+	    // Simular una pausa breve entre las dos sacudidas
+	    new Thread(() -> {
+	        try {
+	            Thread.sleep(200); // Pausa de 100 ms entre los golpes
+	        } catch (InterruptedException e) {
+	            e.printStackTrace();
+	        }
+	        // Segunda aplicación de daño y sacudida
+	        recibirDaño(daño, isCritical);
+	    }).start();
+	}
 	public void evadirAtaque() {
 		pdj.ReproducirSE(6);
 		estaEsquivando = true;
@@ -348,6 +378,14 @@ public class Unidad {
 	    setDuracionSacudida(20);
 	    pdj.ReproducirSE(4);
 	}
+	public void restaurarSPMudo(int energia) {
+		if((this.getSP() + energia) > this.getSPMax()) {
+			this.setSP(this.getSPMax());
+		}
+		else {
+			this.setSP(this.getSP() + energia);
+		}
+	}
 	public void sumarSP(Unidad unidad, int sp) {
 		int i = sp + unidad.getSP();
 		if(i > unidad.getSPMax()) {
@@ -367,6 +405,23 @@ public class Unidad {
 				this.recibirDaño(1, false);
 			}
 		}
+	}
+	public void recibirGolpeRapido(int daño, boolean isCritical) {
+		int SEId = 2;
+		this.setHP(this.getHP() - daño);
+		if(isCritical) {
+			dañoRecibido = "CRITICAL " + daño +"!";
+			this.realizaUnCritico = true;
+			SEId = 3;
+		}
+		else {
+			dañoRecibido = "" + daño;
+		}
+		this.setVidaPerdida(this.getVidaPerdida() + daño);
+	    setearSacudida(true);
+	    setDuracionSacudida(10);
+	    pdj.ReproducirSE(SEId);
+	    
 	}
 	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {}
 	public void sumarNeocreditos(int neocreditos) {}
@@ -646,6 +701,8 @@ public class Unidad {
 	public boolean isObjetivoUnico() {return objetivoUnico;}
 	public void setObjetivoUnico(boolean singleTarget) {this.objetivoUnico = singleTarget;}
 	//GETTERS & SETTERS DE EFECTOS//////////////////////////////////////////////
+	public boolean getRealizandoDobleGolpe() {return this.realizandoDobleGolpe;}
+	public void setRealizandoDobleGolpe(boolean boo) {this.realizandoDobleGolpe = boo;}
 	public boolean getTomandoUnMate() {return tomandoUnMate;}
 	public void setTomandoUnMate(boolean esMate) {this.tomandoUnMate = esMate;}
 	public boolean getEstaMotivado() {return estaMotivado;}
