@@ -22,6 +22,7 @@ import unidades.DragonPirotecnico;
 import unidades.GauchoModerno;
 import unidades.HeroeFederal;
 import unidades.MedicoTradicionalista;
+import unidades.NiñoCheung;
 import unidades.Unidad;
 
 public class Combate {
@@ -71,10 +72,10 @@ public class Combate {
 		//unidades.put(0, new DragonPirotecnico(zonas.get(0), false, pdj));
 		//unidades.put(1, new AlumnoModelo(zonas.get(0), false, pdj));
 		unidades.put(2, new ShaolinEscolar(zonas.get(0), false, pdj));
-		unidades.put(3, new MedicoTradicionalista(zonas.get(0), false, pdj));
-		//unidades.put(4, new DragonPirotecnico(zonas.get(0), true, pdj));
-		unidades.put(5, new ShaolinEscolar(zonas.get(0), true, pdj));
-		unidades.put(6, new MedicoTradicionalista(zonas.get(0), true, pdj));
+		//unidades.put(3, new MedicoTradicionalista(zonas.get(0), false, pdj));
+		unidades.put(4, new NiñoCheung(zonas.get(0), true, pdj));
+		unidades.put(5, new NiñoCheung(zonas.get(0), true, pdj));
+		//unidades.put(6, new MedicoTradicionalista(zonas.get(0), true, pdj));
 		//unidades.put(7, new AlumnoModelo(zonas.get(0), true, pdj));
 
 	}

@@ -29,7 +29,7 @@ public class DragonPirotecnico extends Unidad{
 		this.setDCRT(1);
 		this.setEva(0);
 		this.setVel(obtenerValorEntre(5,7));
-		this.cargaExplosiva = 5;
+		this.cargaExplosiva = 0;
 		this.listaDeHabilidades[0] = "AÑO NUEVO";
 		this.generarCuerpo();
 	}
