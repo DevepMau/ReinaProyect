@@ -61,6 +61,8 @@ public class Unidad {
 	private int habilidadElegida = -1;
 	private boolean objetivoUnico = true;
 	private int alturaPorClase = 0;
+	private int alturaDeAccesorio = 0;
+	private int alturaDeBarraHP = 0;
 	private int idFaccion;
 	private int idTez;
 	//ESTADISTICAS DE LA UNIDAD/////////////////////////////////////
@@ -357,7 +359,7 @@ public class Unidad {
 	}
 	public void reflejarDaño(Unidad unidad, int daño) {
 		if(unidad.getClase() == "Shaolin Escolar") {
-			int i = (daño/3);
+			int i = (daño/2);
 			if(i > 1) {
 				this.recibirDaño(i, false);
 			}
@@ -379,7 +381,7 @@ public class Unidad {
 	    int hp = calcularBarraHP();
 	    int altura = -pdj.tamañoDeBaldosa - (pdj.tamañoDeBaldosa / 8) + 16;
 	    int posX = getPosX() + 10;
-	    int posY = getPosY() - 10 + altura;
+	    int posY = getPosY() - 10 + altura + this.alturaDeBarraHP;
 
 	    //MEDIR ANCHO DE TEXTO
 	    FontMetrics metrics = g2.getFontMetrics();
@@ -402,15 +404,15 @@ public class Unidad {
 	    // Dibujar la barra de vida
 	    Color c = new Color(0, 0, 0, 200);
 	    g2.setColor(c);
-	    g2.fillRoundRect(posX, getPosY() + altura, barraHP, pdj.tamañoDeBaldosa / 5, 5, 5);
+	    g2.fillRoundRect(posX, getPosY() + altura + this.alturaDeBarraHP, barraHP, pdj.tamañoDeBaldosa / 5, 5, 5);
 
 	    g2.setColor(Color.red);
-	    g2.fillRoundRect(posX, getPosY() + altura, hp, pdj.tamañoDeBaldosa / 5, 5, 5);
+	    g2.fillRoundRect(posX, getPosY() + altura + this.alturaDeBarraHP, hp, pdj.tamañoDeBaldosa / 5, 5, 5);
 
 	    c = new Color(255, 255, 255);
 	    g2.setColor(c);
 	    g2.setStroke(new BasicStroke(2));
-	    g2.drawRoundRect(posX, getPosY() + altura, barraHP, pdj.tamañoDeBaldosa / 5, 5, 5);
+	    g2.drawRoundRect(posX, getPosY() + altura + this.alturaDeBarraHP, barraHP, pdj.tamañoDeBaldosa / 5, 5, 5);
 	}
 	
 	public void efectosVisualesPersonalizados(Graphics2D g2){}
@@ -550,6 +552,27 @@ public class Unidad {
 					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
 					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
 				}
+				else if(this.clase == "Shaolin Escolar") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-shaolin-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-shaolin",3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
+					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-shaolin-"+this.idTez, 3);
+				}
+				else if(this.clase == "Medico Tradicionalista") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/quimicos-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-1",3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
+					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
+				}
+				else if(this.clase == "Dragon Pirotecnico") {
+					imagenesBody[4] = configurarImagen("/imagenes/accesorios/dragon", 3);
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/cañon-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-dragon",3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
+					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
+					alturaDeAccesorio = 5;
+					this.alturaDeBarraHP = -20;
+				}
 			}
 			else {
 				if(this.clase == "Alumno Modelo") {
@@ -558,6 +581,28 @@ public class Unidad {
 					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
 					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
 				}
+				else if(this.clase == "Shaolin Escolar") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-shaolin-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
+					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
+				}
+				else if(this.clase == "Medico Tradicionalista") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/quimicos-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
+					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
+				}
+				else if(this.clase == "Dragon Pirotecnico") {
+					imagenesBody[4] = configurarImagen("/imagenes/accesorios/dragon", 3);
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/cañon-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-dragon-"+this.idTez,3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
+					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
+					alturaDeAccesorio = 5;
+					this.alturaDeBarraHP = -20;
+				}
+				
 			}
 		}
 	}
@@ -579,7 +624,7 @@ public class Unidad {
 		g2.drawImage(imagenesBody[2], posX, posY+46, null);
 		g2.drawImage(imagenesBody[1], posX, posY+28+dezplazamiento, null);
 		g2.drawImage(imagenesBody[0], posX, posY+dezplazamiento*2, null);
-		g2.drawImage(imagenesBody[4], posX-1, posY-20+dezplazamiento*2, null);
+		g2.drawImage(imagenesBody[4], posX-1, posY+this.alturaDeAccesorio-20+dezplazamiento*2, null);
 		g2.drawImage(imagenesBody[3], posX, posY+24+dezplazamiento, null);
 	}
 	public void mostrarMuerte(Graphics2D g2, int posX, int posY, int dezplazamiento) {
@@ -636,8 +681,11 @@ public class Unidad {
 	public void setHabilidadElegida(int habilidadElegida) {this.habilidadElegida = habilidadElegida;}
 	public String getAccion() {return tipoDeAccion;}
 	public void setAccion(String accion) {this.tipoDeAccion = accion;}
+	public int getAlturaBarraHP() {return this.alturaDeBarraHP;}
+	public void setAlturaBarraHP(int altura) {this.alturaDeBarraHP = altura;}
 	//GETTERS & SETTERS STATS BASE/////////////////////////////////////////////
 	public int getGenero() {return genero;}
+	public void setGenero(int i) {this.genero = i;}
 	public int getIdFaccion() {return idFaccion;}
 	public void setIdFaccion(int idFaccion) {this.idFaccion = idFaccion;}
 	public String getClase() {return clase;}

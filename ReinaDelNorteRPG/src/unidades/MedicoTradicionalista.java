@@ -27,7 +27,7 @@ public class MedicoTradicionalista extends Unidad {
 		this.setDef(obtenerValorEntre(5,9));
 		this.setVel(obtenerValorEntre(2,8));
 		this.setPCRT(0);
-		this.neocreditos = 100;
+		this.neocreditos = 0;
 		this.spHabilidad1 = 10;
 		this.habilidades[0] = "CURAR";
 		this.habilidades[1] = "TONICO IMPERIA";
@@ -36,13 +36,12 @@ public class MedicoTradicionalista extends Unidad {
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
 		int accion = elegirAleatorio(6);
-		if(accion <= 4 && cumpleReqDeHab1()) {
-			if(cumpleReqDeHab2()) {
-				this.setHabilidadElegida(1);
-			}
-			else {
-				this.setHabilidadElegida(0);
-			}
+		if(this.neocreditos == 100) {
+			this.setHabilidadElegida(1);
+			usarHabilidadEnemigo(aliados, enemigos);
+		}
+		else if(accion <= 4 && cumpleReqDeHab1()) {
+			this.setHabilidadElegida(0);
 			usarHabilidadEnemigo(aliados, enemigos);
 			
 		}
@@ -73,10 +72,11 @@ public class MedicoTradicionalista extends Unidad {
 	}
 	public void usarHabilidadEnemigo(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
 		if(this.getHabilidadElegida() == 0) {
-			if(!enemigos.isEmpty()) {
+			if(!aliados.isEmpty()) {
 				this.setSP(this.getSP() - this.spHabilidad1);
-				Unidad unidad = elegirObjetivo(enemigos);
+				Unidad unidad = elegirObjetivo(aliados);
 				curar(unidad);
+				this.pasivaDeClase(aliados, enemigos);
 			}
 		}
 		else {
@@ -132,7 +132,8 @@ public class MedicoTradicionalista extends Unidad {
 		this.setSP(this.getSP() - this.spHabilidad1);
 		if(unidad != null) {
 			unidad.restaurarHP(unidad.getHPMax()/4);
-			this.sumarNeocreditos(unidad.getHPMax()/8);
+			this.sumarNeocreditos(unidad.getHPMax()/4);
+			this.dañoCausado = unidad.getHPMax()/8;
 		}
 	}
 	public void tonicoImperial(Unidad unidad) {
@@ -158,6 +159,18 @@ public class MedicoTradicionalista extends Unidad {
 		this.setEstaGanandoSP(true);
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
+	public Unidad elegirObjetivo(ArrayList<Unidad> unidades) {
+	    Unidad unidadSeleccionada = null;
+	    int menorPorcentajeHP = Integer.MAX_VALUE;
+	    for (Unidad unidad : unidades) {
+	    	int porcentajeHP = (unidad.getHP() * 100) / unidad.getHPMax();;
+	        if (porcentajeHP < menorPorcentajeHP) {
+	            menorPorcentajeHP = porcentajeHP;
+	            unidadSeleccionada = unidad;
+	        }
+	    }
+	    return unidadSeleccionada;
+	}
 	public boolean cumpleReqDeHab1() {
 		if(this.getSP() > 0) {
 			if(this.getSP() >= this.spHabilidad1) {
@@ -207,13 +220,25 @@ public class MedicoTradicionalista extends Unidad {
 	public void efectosVisualesPersonalizados(Graphics2D g2) {
 		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18f));
 		g2.setColor(Color.white);
-		g2.drawString("NC: "+this.neocreditos, this.getPosX()+8, this.getPosY()-11);
+		g2.drawRect(this.getPosX()+7, this.getPosY()-24, 24, 18);
+		if(this.neocreditos < 10) {
+			g2.drawString("00"+this.neocreditos, this.getPosX()+9, this.getPosY()-9);
+		}
+		else if(this.neocreditos >= 10 && this.neocreditos < 100) {
+			g2.drawString("0"+this.neocreditos, this.getPosX()+9, this.getPosY()-9);
+		}
+		else {
+			g2.setColor(Color.orange);
+			g2.drawString(""+this.neocreditos, this.getPosX()+9, this.getPosY()-9);
+		}
 	}
 	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
 		if(!aliados.isEmpty()) {
 			for(Unidad unidad : aliados) {
 				if(unidad.getIdFaccion() == 2) {
-					unidad.sumarNeocreditos(this.getDañoCaudado()/2);
+					if(!this.equals(unidad)) {
+						unidad.sumarNeocreditos(this.getDañoCaudado());
+					}
 				}
 			}
 		}

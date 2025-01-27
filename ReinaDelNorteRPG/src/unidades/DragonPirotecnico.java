@@ -29,13 +29,13 @@ public class DragonPirotecnico extends Unidad{
 		this.setDCRT(1);
 		this.setEva(0);
 		this.setVel(obtenerValorEntre(5,7));
-		this.cargaExplosiva =5;
+		this.cargaExplosiva = 5;
 		this.listaDeHabilidades[0] = "AÑO NUEVO";
 		this.generarCuerpo();
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
-		if(cumpleReqDeHab1()) {
+		if(cumpleReqDeHab2()) {
 			setHabilidadElegida(0);
 			usarHabilidadEnemigo(enemigos);
 		}
@@ -124,7 +124,32 @@ public class DragonPirotecnico extends Unidad{
 	public void efectosVisualesPersonalizados(Graphics2D g2) {
 		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18f));
 		g2.setColor(Color.white);
-		g2.drawString("CE: "+this.cargaExplosiva, this.getPosX()+8, this.getPosY()-11);
+		if(this.cargaExplosiva == 1) {
+			g2.fillRoundRect(this.getPosX()+8, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
+		}
+		else if(this.cargaExplosiva == 2) {
+			g2.fillRoundRect(this.getPosX()+8, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
+			g2.fillRoundRect(this.getPosX()+18, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
+		}
+		else if(this.cargaExplosiva == 3) {
+			g2.fillRoundRect(this.getPosX()+8, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
+			g2.fillRoundRect(this.getPosX()+18, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
+			g2.fillRoundRect(this.getPosX()+28, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
+		}
+		else if(this.cargaExplosiva == 4) {
+			g2.fillRoundRect(this.getPosX()+8, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
+			g2.fillRoundRect(this.getPosX()+18, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
+			g2.fillRoundRect(this.getPosX()+28, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
+			g2.fillRoundRect(this.getPosX()+38, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
+		}
+		else if(this.cargaExplosiva >= 5) {
+			g2.setColor(Color.RED);
+			g2.fillRoundRect(this.getPosX()+8, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
+			g2.fillRoundRect(this.getPosX()+18, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
+			g2.fillRoundRect(this.getPosX()+28, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
+			g2.fillRoundRect(this.getPosX()+38, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
+			g2.fillRoundRect(this.getPosX()+48, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
+		}
 	}
 	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
 		if(!enemigos.isEmpty()) {

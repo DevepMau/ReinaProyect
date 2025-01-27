@@ -68,22 +68,15 @@ public class Combate {
 		acciones[0] = "ATACAR";
 		acciones[1] = "HABILIDAD";
 		acciones[2] = "USAR OBJETO";
-		//unidades.put(0, new CebadorDeMate(zonas.get(0), true, pdj));
-		//unidades.put(1, new HeroeFederal(zonas.get(0), true, pdj));
-		//unidades.put(2, new PayadorPicante(zonas.get(0), true, pdj));
-		//unidades.put(3, new DragonPirotecnico(zonas.get(0), false, pdj));
-		//unidades.put(4, new GauchoModerno(zonas.get(0), true, pdj));
-		//unidades.put(5, new GauchoModerno(zonas.get(0), false, pdj));
-		//unidades.put(6, new PayadorPicante(zonas.get(0), true, pdj));	
-		//unidades.put(7, new CebadorDeMate(zonas.get(0), false, pdj));	
-		//unidades.put(8, new RespetableCiudadano(zonas.get(0), false, pdj));
-		//unidades.put(6, new RespetableCiudadano(zonas.get(0), false, pdj));
-		unidades.put(2, new AlumnoModelo(zonas.get(0), true, pdj));
-		unidades.put(5, new AlumnoModelo(zonas.get(0), true, pdj));
-		unidades.put(4, new AlumnoModelo(zonas.get(0), true, pdj));
-		unidades.put(3, new AlumnoModelo(zonas.get(0), true, pdj));
-		//unidades.put(1, new DragonPirotecnico(zonas.get(0), true, pdj));
-		//unidades.put(2, new MedicoTradicionalista(zonas.get(0), false, pdj));
+		//unidades.put(0, new DragonPirotecnico(zonas.get(0), false, pdj));
+		//unidades.put(1, new AlumnoModelo(zonas.get(0), false, pdj));
+		unidades.put(2, new ShaolinEscolar(zonas.get(0), false, pdj));
+		unidades.put(3, new MedicoTradicionalista(zonas.get(0), false, pdj));
+		//unidades.put(4, new DragonPirotecnico(zonas.get(0), true, pdj));
+		unidades.put(5, new ShaolinEscolar(zonas.get(0), true, pdj));
+		unidades.put(6, new MedicoTradicionalista(zonas.get(0), true, pdj));
+		//unidades.put(7, new AlumnoModelo(zonas.get(0), true, pdj));
+
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////////////////
 	public void actualizar() {
@@ -265,6 +258,7 @@ public class Combate {
 		    			//SI SE ELIGIO UN OBJETIVO, SE USA LA HABILIDAD///////////////////////
 		    			if(unidadSeleccionada != null || unidadesObjetivo != null) {
 			    			unidades.get(idTurno).usarHabilidad(unidadSeleccionada, unidadesObjetivo);
+			    			unidades.get(idTurno).pasivaDeClase(aliados, enemigos);
 			    			unidades.get(idTurno).setEstaActivo(false);
 		    				unidades.get(idTurno).setHabilidadElegida(-1);
 			    			if(idUnidad >= unidades.size()-1) {

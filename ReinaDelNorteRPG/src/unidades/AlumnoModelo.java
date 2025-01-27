@@ -73,7 +73,7 @@ public class AlumnoModelo extends Unidad{
 			}
 			if(!isMiss) {
 				objetivo.recibirDaño(daño, isCritical);
-				this.dañoCausado = daño*2;
+				this.dañoCausado = daño*3;
 				this.sumarNeocreditos(this.dañoCausado);
 			}
 			else {
@@ -102,7 +102,7 @@ public class AlumnoModelo extends Unidad{
 			}
 			if(!isMiss) {
 				unidad.recibirDaño(daño, isCritical);
-				this.dañoCausado = daño*2;
+				this.dañoCausado = daño*3;
 				this.sumarNeocreditos(this.dañoCausado);
 				
 			}
@@ -183,13 +183,26 @@ public class AlumnoModelo extends Unidad{
 	public void efectosVisualesPersonalizados(Graphics2D g2) {
 		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18f));
 		g2.setColor(Color.white);
-		g2.drawString("NC: "+this.neocreditos, this.getPosX()+8, this.getPosY()-11);
+		g2.drawRect(this.getPosX()+7, this.getPosY()-24, 24, 18);
+		if(this.neocreditos < 10) {
+			g2.drawString("00"+this.neocreditos, this.getPosX()+9, this.getPosY()-9);
+		}
+		else if(this.neocreditos >= 10 && this.neocreditos < 100) {
+			g2.drawString("0"+this.neocreditos, this.getPosX()+9, this.getPosY()-9);
+		}
+		else {
+			g2.setColor(Color.orange);
+			g2.drawString(""+this.neocreditos, this.getPosX()+9, this.getPosY()-9);
+		}
+		
 	}
 	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
 		if(!aliados.isEmpty()) {
 			for(Unidad unidad : aliados) {
 				if(unidad.getIdFaccion() == 2) {
-					unidad.sumarNeocreditos(this.getDañoCaudado()/2);
+					if(!this.equals(unidad)) {
+						unidad.sumarNeocreditos(this.getDañoCaudado());
+					}
 				}
 			}
 		}
