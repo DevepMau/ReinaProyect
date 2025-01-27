@@ -68,6 +68,7 @@ public class MedicoTradicionalista extends Unidad {
 				objetivo.evadirAtaque();
 			}
 			this.reflejarDaño(objetivo, daño);
+			this.robarVida(daño, objetivo);
 		}
 	}
 	public void usarHabilidadEnemigo(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
@@ -108,6 +109,7 @@ public class MedicoTradicionalista extends Unidad {
 				unidad.evadirAtaque();
 			}
 			this.reflejarDaño(unidad, daño);
+			this.robarVida(daño, unidad);
 		}
 	}
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {	
@@ -119,7 +121,6 @@ public class MedicoTradicionalista extends Unidad {
 				this.neocreditos = 0;
 				for(Unidad unidadObjetivo : unidades) {
 					if(unidadObjetivo.getGenero() == this.generoMayoritario(unidades)){
-						System.out.println(this.generoMayoritario(unidades));
 						tonicoImperial(unidadObjetivo);
 					}
 				}

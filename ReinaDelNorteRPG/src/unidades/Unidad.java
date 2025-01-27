@@ -35,7 +35,7 @@ public class Unidad {
 	private boolean estaActivo = true;
 	private boolean estaVivo = true;
 	private boolean realizaUnCritico;
-	private boolean realizandoDobleGolpe;
+	private boolean estaMarcado;
 	private boolean realizaUnaCuracion;
 	private boolean estaEsquivando;
 	private boolean tomandoUnMate;
@@ -45,7 +45,6 @@ public class Unidad {
 	private boolean estaDesmotivado;
 	private boolean estaLisiado;
 	private boolean estaKO;
-	private boolean interruptor = false;
 	//VARIABLES PARA LA SACUDIDA/////////////////////////////////////
 	private boolean enSacudida = false;
 	private int duracionSacudida = 0; // Duración en frames
@@ -134,7 +133,6 @@ public class Unidad {
             } else {
                 setearSacudida(false);
                 realizaUnaCuracion = false;
-                realizandoDobleGolpe = false;
                 estaEsquivando = false;
                 tomandoUnMate = false;
                 esUnaHabilidad = false;
@@ -165,6 +163,10 @@ public class Unidad {
         	mostrarMuerte(g2, dibujarX+10, dibujarY-20, imageMov);
         }
         //MOSTRAR DAÑO RECIBIDO Y EFECTOS////////////////////////////
+        if(this.estaMarcado) {
+        	Image marca = configurarImagen("/efectos/mark", 4);
+        	g2.drawImage(marca, dibujarX, dibujarY, null);
+        }
         if(this.realizaUnaCuracion) {
             g2.setColor(Color.green);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
@@ -248,12 +250,6 @@ public class Unidad {
         	Image KO = configurarImagen("/efectos/stun", 3);
         	g2.drawImage(KO, dibujarX+10, dibujarY, null);
         }
-        else if(this.realizandoDobleGolpe) {
-        	Color c = new Color(255, 155, 155);
-        	g2.setColor(c);
-        	g2.drawString(dañoRecibido, getPosX()+84, desplazarDañoRecibido-48);
-        	g2.drawString(dañoRecibido, getPosX()+64, desplazarDañoRecibido-28);
-        }
         else {
         	g2.setColor(Color.WHITE);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
@@ -305,6 +301,7 @@ public class Unidad {
 				unidad.evadirAtaque();
 			}
 			this.reflejarDaño(unidad, daño);
+			robarVida(daño, unidad);
 		}
 	}
 	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
@@ -323,6 +320,8 @@ public class Unidad {
 			else {
 				objetivo.evadirAtaque();
 			}
+			this.reflejarDaño(objetivo, daño);
+			robarVida(daño, objetivo);
 		}
 	}
 	public void recibirDobleGolpe(int daño, boolean isCritical) {
@@ -364,6 +363,18 @@ public class Unidad {
 		setearSacudida(true);
 	    setDuracionSacudida(20);
 	    pdj.ReproducirSE(4);
+	}
+	public void restaurarHPMudo(int curacion) {
+		if((this.getHP() + curacion) > this.getHPMax()) {
+			this.setHP(this.getHPMax());
+		}
+		else {
+			this.setHP(this.getHP() + curacion);
+		}
+		curaRecibida = "+" + curacion;
+		realizaUnaCuracion = true;
+		setearSacudida(true);
+	    setDuracionSacudida(20);
 	}
 	public void restaurarSP(int energia) {
 		if((this.getSP() + energia) > this.getSPMax()) {
@@ -422,6 +433,11 @@ public class Unidad {
 	    setDuracionSacudida(10);
 	    pdj.ReproducirSE(SEId);
 	    
+	}
+	public void robarVida(int daño, Unidad unidad) {
+		if(unidad.getEstaMarcado()) {
+			this.restaurarHPMudo(daño-(daño/4));
+		}
 	}
 	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {}
 	public void sumarNeocreditos(int neocreditos) {}
@@ -701,8 +717,8 @@ public class Unidad {
 	public boolean isObjetivoUnico() {return objetivoUnico;}
 	public void setObjetivoUnico(boolean singleTarget) {this.objetivoUnico = singleTarget;}
 	//GETTERS & SETTERS DE EFECTOS//////////////////////////////////////////////
-	public boolean getRealizandoDobleGolpe() {return this.realizandoDobleGolpe;}
-	public void setRealizandoDobleGolpe(boolean boo) {this.realizandoDobleGolpe = boo;}
+	public boolean getEstaMarcado() {return this.estaMarcado;}
+	public void setEstaMArcado(boolean boo) {this.estaMarcado = boo;}
 	public boolean getTomandoUnMate() {return tomandoUnMate;}
 	public void setTomandoUnMate(boolean esMate) {this.tomandoUnMate = esMate;}
 	public boolean getEstaMotivado() {return estaMotivado;}

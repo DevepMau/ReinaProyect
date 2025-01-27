@@ -61,6 +61,7 @@ public class DragonPirotecnico extends Unidad{
 	                unidadAledaña.recibirDaño(daño / 3, false);
 	            }
 	        }
+			this.robarVida(daño, objetivo);
 		}
 	}
 	//METODOS DE JUGADOR////////////////////////////////////////////////////////////
@@ -75,6 +76,7 @@ public class DragonPirotecnico extends Unidad{
 			this.dañoCausado = daño/3;
 			this.cargaExplosiva++;
 			this.unidadObjetivo = unidad;
+			this.robarVida(daño, unidad);
 		}
 	}
 	//HABILIDADES///////////////////////////////////////////////////////////////////

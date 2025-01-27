@@ -58,6 +58,7 @@ public class GauchoModerno extends Unidad {
 				objetivo.evadirAtaque();
 			}
 			this.reflejarDaño(objetivo, daño);
+			this.robarVida(daño, objetivo);
 		}
 	}
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
@@ -85,6 +86,7 @@ public class GauchoModerno extends Unidad {
 				unidad.evadirAtaque();
 			}
 			this.reflejarDaño(unidad, daño);
+			this.robarVida(daño, unidad);
 		}
 	}
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {	

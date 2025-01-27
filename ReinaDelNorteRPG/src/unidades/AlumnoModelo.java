@@ -80,6 +80,7 @@ public class AlumnoModelo extends Unidad{
 				objetivo.evadirAtaque();
 			}
 			this.reflejarDaño(objetivo, daño);
+			this.robarVida(daño, objetivo);
 		}
 	}	
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
@@ -110,6 +111,7 @@ public class AlumnoModelo extends Unidad{
 				unidad.evadirAtaque();
 			}
 			this.reflejarDaño(unidad, daño);
+			this.robarVida(daño, unidad);
 		}
 	}
 	//HABILIDADES////////////////////////////////////////////////////////////////////////

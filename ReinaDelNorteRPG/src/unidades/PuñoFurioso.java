@@ -78,6 +78,7 @@ public class PuñoFurioso extends Unidad {
 				unidad.evadirAtaque();
 			}
 			this.reflejarDaño(unidad, daño);
+			this.robarVida(daño, unidad);
 		}
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
@@ -99,6 +100,7 @@ public class PuñoFurioso extends Unidad {
 				objetivo.evadirAtaque();
 			}
 			this.reflejarDaño(objetivo, daño);
+			this.robarVida(daño, objetivo);
 		}
 	}
 	public Unidad elegirObjetivoConMayorHP(ArrayList<Unidad> unidades) {

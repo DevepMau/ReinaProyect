@@ -60,6 +60,7 @@ public class NiñoCheung extends Unidad {
 			else {
 				objetivo.evadirAtaque();
 			}
+			this.robarVida(daño, objetivo);
 		}
 	}
 	public void configurarTipoDeaccion() {
