@@ -68,9 +68,9 @@ public class HeroeFederal extends Unidad{
 			}
 			unidad.recibirDaño(daño, false);
 			unidad.setVelMod(unidad.getVelMod() - (unidad.getVel()+unidad.getVelMod()));
+			unidad.setearSacudida(true);
+			unidad.setDuracionSacudida(20);
 		}
-		unidad.setearSacudida(true);
-		unidad.setDuracionSacudida(20);
 	}
 	public void ganarSP(int daño) {
 		if((this.getSP()+(daño*2)) > this.getSPMax()){

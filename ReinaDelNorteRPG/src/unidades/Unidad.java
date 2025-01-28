@@ -231,9 +231,9 @@ public class Unidad {
         else if(this.estaDesmotivado) {
         	g2.setColor(Color.WHITE);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
-            g2.drawString(dañoRecibido, getPosX()+84, desplazarDañoRecibido-48);
-            g2.setColor(Color.CYAN);
-            g2.drawString("& DOWN!", getPosX()+104, desplazarDañoRecibido-48);
+            g2.drawString(dañoRecibido, getPosX()+104, desplazarDañoRecibido-28);
+            g2.setColor(Color.BLUE);
+            g2.drawString("DOWN!", getPosX()+104, desplazarDañoRecibido-48);
         }
         else if(this.estaGanandoSP) {
         	g2.setColor(Color.cyan);
@@ -325,7 +325,6 @@ public class Unidad {
 		}
 	}
 	public void recibirDobleGolpe(int daño, boolean isCritical) {
-	    // Primera aplicación de daño y sacudida
 		boolean primerCritical = false;
 		if(isCritical) {
 			int i = elegirAleatorio(2);
@@ -334,14 +333,12 @@ public class Unidad {
 			}
 		}
 		recibirGolpeRapido(((daño+daño/2)/2), primerCritical);
-	    // Simular una pausa breve entre las dos sacudidas
 	    new Thread(() -> {
 	        try {
-	            Thread.sleep(200); // Pausa de 100 ms entre los golpes
+	            Thread.sleep(200);
 	        } catch (InterruptedException e) {
 	            e.printStackTrace();
 	        }
-	        // Segunda aplicación de daño y sacudida
 	        recibirDaño(daño, isCritical);
 	    }).start();
 	}
@@ -407,7 +404,7 @@ public class Unidad {
 		}
 	}
 	public void reflejarDaño(Unidad unidad, int daño) {
-		if(unidad.getClase() == "Shaolin Escolar") {
+		if(unidad.getClase() == "Shaolin Escolar" || unidad.getClase() == "Aspirante A Dragon") {
 			int i = (daño/2);
 			if(i > 1) {
 				this.recibirDaño(i, false);
@@ -433,6 +430,31 @@ public class Unidad {
 	    setDuracionSacudida(10);
 	    pdj.ReproducirSE(SEId);
 	    
+	}
+	public void recibirGolpesMúltiples(int daño,int cant, boolean isCritical) {
+	    // Número de golpes
+	    int numGolpes = cant;
+	    // Crear un hilo para manejar los golpes consecutivos
+	    new Thread(() -> {
+	        for (int i = 0; i < numGolpes; i++) {
+	            try {
+	                // Pausa entre cada golpe (200 ms)
+	                Thread.sleep(200);
+	            } catch (InterruptedException e) {
+	                e.printStackTrace();
+	            }
+
+	            // Calcular si este golpe es crítico
+	            boolean golpeCritico = false;
+	            if (isCritical) {
+	                golpeCritico = elegirAleatorio(2) == 0; // 50% probabilidad de crítico
+	            }
+
+	            // Aplicar daño reducido para los golpes iniciales
+	            int dañoActual = (i == numGolpes - 1) ? daño : (daño-(daño/4));
+	            recibirGolpeRapido(dañoActual/2, golpeCritico);
+	        }
+	    }).start();
 	}
 	public void robarVida(int daño, Unidad unidad) {
 		if(unidad.getEstaMarcado()) {

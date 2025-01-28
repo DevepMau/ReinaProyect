@@ -4,15 +4,16 @@ import java.util.ArrayList;
 import principal.PanelDeJuego;
 import principal.Zona;
 
-public class CoreografoDeCombate extends Unidad {
+public class MaestroDelChi extends Unidad {
 	
-	private String[] habilidades = new String[1];
+	private String[] habilidades = new String[2];
 	private int spHabilidad1;
+	private int cargas;
 
-	public CoreografoDeCombate(Zona zona, boolean aliado, PanelDeJuego pdj) {
+	public MaestroDelChi(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
 		this.setNombre("Especialista");
-		this.setClase("Coreografo De Combate");
+		this.setClase("Maestro Del Chi");
 		this.setIdFaccion(3);
 		this.setHPMax(obtenerValorEntre(40,70));
 		this.setHP(this.getHPMax());
@@ -24,14 +25,20 @@ public class CoreografoDeCombate extends Unidad {
 		this.setPCRT(0.25);
 		this.setDCRT(1.5);
 		this.setEva(0.25);
-		this.spHabilidad1 = 30;
+		this.spHabilidad1 = 20;
+		this.cargas = 0;
 		this.habilidades[0] = "MARCAR";
+		this.habilidades[1] = "EXPLOTAR";
 		this.generarCuerpo();
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
 		int accion = elegirAleatorio(4);
-		if(accion <= 2 && cumpleReqDeHab1() && this.haySinMarcar(enemigos)) {
+		if(!this.haySinMarcar(enemigos)) {
+			this.setHabilidadElegida(1);
+			usarHabilidadEnemigo(aliados, enemigos);
+		}
+		else if(accion <= 2 && cumpleReqDeHab1() && this.haySinMarcar(enemigos)) {
 			this.setHabilidadElegida(0);
 			usarHabilidadEnemigo(aliados, enemigos);
 			
@@ -70,6 +77,13 @@ public class CoreografoDeCombate extends Unidad {
 				marcar(unidad);
 			}
 		}
+		else {
+			if(!enemigos.isEmpty()) {
+				for(Unidad unidad : enemigos) {
+					explotar(unidad);
+				}
+			}
+		}
 	}
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
 	public void realizarAtaque(Unidad unidad) {
@@ -95,6 +109,11 @@ public class CoreografoDeCombate extends Unidad {
 		if(this.getHabilidadElegida() == 0) {
 			marcar(unidad);
 		}
+		else {
+			for(Unidad unidadObjetivo : unidades) {
+				explotar(unidadObjetivo);
+			}
+		}
 	}
 	//HABILIDADES////////////////////////////////////////////////////////////////////////
 	public void marcar(Unidad unidad) {
@@ -104,8 +123,30 @@ public class CoreografoDeCombate extends Unidad {
 			unidad.setEstaMArcado(true);
 			unidad.setearSacudida(true);
 			unidad.setDuracionSacudida(20);
+			this.cargas++;
 		}
 	}
+	
+	public void explotar(Unidad unidad) {
+		int daño = (this.getAtq()+this.getAtqMod()+(unidad.getVel()/2));
+		if(unidad != null) {
+			pdj.ReproducirSE(8);
+			if(unidad.getEstaMarcado()) {
+				unidad.setearSacudida(true);
+				unidad.setDuracionSacudida(20);
+				unidad.setEstaDesmotivado(true);
+				unidad.setearSacudida(true);
+				unidad.setDuracionSacudida(20);
+				unidad.setEstaMArcado(false);
+				unidad.setVelMod(unidad.getVelMod() - obtenerValorEntre(1,5));
+				unidad.setDefMod(unidad.getDefMod() - obtenerValorEntre(1,3));
+				unidad.recibirDaño(daño, false);
+				this.cargas = 0;
+			}
+			
+		}
+	}
+	
 	public void ganarSP(int daño) {
 		if((this.getSP()+(daño*2)) > this.getSPMax()){
 			this.setSP(this.getSPMax());
@@ -129,20 +170,15 @@ public class CoreografoDeCombate extends Unidad {
 		return false;
 	}
 	public Unidad elegirObjetivoSinMarcar(ArrayList<Unidad> unidades) {
-	    // Crear una lista temporal para almacenar las unidades no marcadas
 	    ArrayList<Unidad> unidadesSinMarcar = new ArrayList<>();
-	    // Filtrar las unidades no marcadas
 	    for (Unidad unidad : unidades) {
 	        if (!unidad.getEstaMarcado()) {
 	            unidadesSinMarcar.add(unidad);
 	        }
 	    }
-	    // Verificar si hay unidades disponibles
 	    if (!unidadesSinMarcar.isEmpty()) {
 	        return unidadesSinMarcar.get(this.elegirAleatorio(unidadesSinMarcar.size()));
 	    }
-
-	    // Si no hay unidades no marcadas, devolver null
 	    return null;
 	}
 	public void configurarTipoDeaccion() {
@@ -151,7 +187,7 @@ public class CoreografoDeCombate extends Unidad {
 			this.setObjetivoUnico(true);
 		}
 		else {
-			this.setAccion("APOYAR");
+			this.setAccion("ATACAR");
 			this.setObjetivoUnico(false);
 		}
 	}
@@ -160,6 +196,12 @@ public class CoreografoDeCombate extends Unidad {
 			if(this.getSP() >= this.spHabilidad1) {
 				return true;
 			}
+		}
+		return false;
+	}
+	public boolean cumpleReqDeHab2() {
+		if(this.cargas > 0) {
+			return true;
 		}
 		return false;
 	}
