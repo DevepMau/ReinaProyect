@@ -324,24 +324,6 @@ public class Unidad {
 			robarVida(daño, objetivo);
 		}
 	}
-	public void recibirDobleGolpe(int daño, boolean isCritical) {
-		boolean primerCritical = false;
-		if(isCritical) {
-			int i = elegirAleatorio(2);
-			if(i == 0) {
-				primerCritical = true;
-			}
-		}
-		recibirGolpeRapido(((daño+daño/2)/2), primerCritical);
-	    new Thread(() -> {
-	        try {
-	            Thread.sleep(200);
-	        } catch (InterruptedException e) {
-	            e.printStackTrace();
-	        }
-	        recibirDaño(daño, isCritical);
-	    }).start();
-	}
 	public void evadirAtaque() {
 		pdj.ReproducirSE(6);
 		estaEsquivando = true;
@@ -432,27 +414,21 @@ public class Unidad {
 	    
 	}
 	public void recibirGolpesMúltiples(int daño,int cant, boolean isCritical) {
-	    // Número de golpes
 	    int numGolpes = cant;
-	    // Crear un hilo para manejar los golpes consecutivos
 	    new Thread(() -> {
 	        for (int i = 0; i < numGolpes; i++) {
 	            try {
-	                // Pausa entre cada golpe (200 ms)
 	                Thread.sleep(200);
 	            } catch (InterruptedException e) {
 	                e.printStackTrace();
 	            }
-
-	            // Calcular si este golpe es crítico
 	            boolean golpeCritico = false;
 	            if (isCritical) {
 	                golpeCritico = elegirAleatorio(2) == 0; // 50% probabilidad de crítico
 	            }
-
 	            // Aplicar daño reducido para los golpes iniciales
 	            int dañoActual = (i == numGolpes - 1) ? daño : (daño-(daño/4));
-	            recibirGolpeRapido(dañoActual/2, golpeCritico);
+	            recibirGolpeRapido(dañoActual, golpeCritico);
 	        }
 	    }).start();
 	}

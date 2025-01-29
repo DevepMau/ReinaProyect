@@ -13,11 +13,11 @@ public class NiñoCheung extends Unidad {
 		this.setNombre("");
 		this.setClase("Niño Cheung");
 		this.setIdFaccion(3);
-		this.setHPMax(obtenerValorEntre(50,80));
+		this.setHPMax(obtenerValorEntre(60,90));
 		this.setHP(this.getHPMax());
 		this.setSP(0);
 		this.setSPMax(0);
-		this.setAtq(obtenerValorEntre(12,15));
+		this.setAtq(obtenerValorEntre(13,16));
 		this.setDef(obtenerValorEntre(2,6));
 		this.setPCRT(0.05);
 		this.setDCRT(10);

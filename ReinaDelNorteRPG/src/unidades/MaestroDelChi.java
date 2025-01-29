@@ -141,6 +141,7 @@ public class MaestroDelChi extends Unidad {
 				unidad.setVelMod(unidad.getVelMod() - obtenerValorEntre(1,5));
 				unidad.setDefMod(unidad.getDefMod() - obtenerValorEntre(1,3));
 				unidad.recibirDaño(daño, false);
+				this.restaurarHPMudo(daño/2);
 				this.cargas = 0;
 			}
 			

@@ -16,8 +16,8 @@ public class PuñoFurioso extends Unidad {
 		this.setIdFaccion(3);
 		this.setHPMax(obtenerValorEntre(70,100));
 		this.setHP(this.getHPMax());
-		this.setSP(0);
 		this.setSPMax(obtenerValorEntre(20,30));
+		this.setSP(this.getSPMax());
 		this.setAtq(obtenerValorEntre(11,16));
 		this.setDef(obtenerValorEntre(5,8));
 		this.setPCRT(0.25);
@@ -63,7 +63,6 @@ public class PuñoFurioso extends Unidad {
 	public void dobleGolpe(Unidad unidad) {
 		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());   
 		if(unidad != null) {
-			boolean isMiss = Math.random() <= (unidad.getEva() + unidad.getEvaMod());
 			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod()));
 	    	if(this.getHPMax() < unidad.getHPMax()) {
 	    		daño += (unidad.getHPMax()/10);
@@ -71,12 +70,7 @@ public class PuñoFurioso extends Unidad {
 			if (isCritical) {
 				daño *= (this.getDCRT() + this.getDcrtMod());
 			}
-			if(!isMiss) {
-				unidad.recibirDobleGolpe(daño, isCritical);
-			}
-			else {
-				unidad.evadirAtaque();
-			}
+			unidad.recibirGolpesMúltiples(daño, 2, isCritical);
 			this.reflejarDaño(unidad, daño);
 			this.robarVida(daño, unidad);
 		}

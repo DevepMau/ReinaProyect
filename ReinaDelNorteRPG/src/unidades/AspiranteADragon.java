@@ -21,8 +21,8 @@ public class AspiranteADragon extends Unidad{
 		this.setHP(this.getHPMax());
 		this.setSPMax(0);
 		this.setSP(this.getSPMax());
-		this.setAtq(obtenerValorEntre(11,15));
-		this.setDef(obtenerValorEntre(6,10));
+		this.setAtq(obtenerValorEntre(12,15));
+		this.setDef(obtenerValorEntre(4,7));
 		this.setPCRT(0.5);
 		this.setDCRT(2);
 		this.setEva(0.5);
