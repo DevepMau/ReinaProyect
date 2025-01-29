@@ -73,21 +73,25 @@ public class Combate {
 		acciones[1] = "HABILIDAD";
 		acciones[2] = "USAR OBJETO";
 		//Nietos////////////////////////////////////////////////////////
-		unidades.put(0, new CebadorDeMate(zonas.get(0), false, pdj));
+		//unidades.put(0, new CebadorDeMate(zonas.get(0), false, pdj));
 		//unidades.put(1, new GauchoModerno(zonas.get(0), true, pdj));
 		//unidades.put(2, new PayadorPicante(zonas.get(0), false, pdj));
-		//unidades.put(3, new HeroeFederal(zonas.get(0), false, pdj));
+		unidades.put(4, new HeroeFederal(zonas.get(0), true, pdj));
 		//Dragon////////////////////////////////////////////////////////
-		unidades.put(3, new AlumnoModelo(zonas.get(0), false, pdj));
+		//unidades.put(3, new AlumnoModelo(zonas.get(0), false, pdj));
 		//unidades.put(1, new ShaolinEscolar(zonas.get(0), false, pdj));
 		//unidades.put(2, new MedicoTradicionalista(zonas.get(0), false, pdj));
 		//unidades.put(3, new DragonPirotecnico(zonas.get(0), false, pdj));
 		//Puño/////////////////////////////////////////////////////////
-		//unidades.put(0, new NiñoCheung(zonas.get(0), true, pdj));
+		//unidades.put(0, new NiñoCheung(zonas.get(0), false, pdj));
 		//unidades.put(1, new PuñoFurioso(zonas.get(0), false, pdj));
-		unidades.put(5, new MaestroDelChi(zonas.get(0), false, pdj));
-		unidades.put(4, new AspiranteADragon(zonas.get(0), true, pdj));
-
+		//unidades.put(5, new MaestroDelChi(zonas.get(0), false, pdj));
+		//unidades.put(4, new AspiranteADragon(zonas.get(0), false, pdj));
+		///////////////////////////////////////////////////////////////
+		unidades.put(0, new NiñoCheung(zonas.get(0), false, pdj));
+		unidades.put(1, new PuñoFurioso(zonas.get(0), false, pdj));
+		unidades.put(2, new MaestroDelChi(zonas.get(0), false, pdj));
+		unidades.put(3, new AspiranteADragon(zonas.get(0), false, pdj));
 
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////////////////

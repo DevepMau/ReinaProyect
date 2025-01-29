@@ -574,12 +574,24 @@ public class Unidad {
 		return equipo;
 	}
 	
+	public String elegirColor() {
+		int i = elegirAleatorio(2);
+		String equipo = "";
+		if(i == 0) {
+			equipo = "amarillo";
+		}
+		else {
+			equipo = "negro";
+		}
+		return equipo;
+	}
+	
 	public void generarCuerpo() {
 		definirIdTez();
 		cargarDummy();
 		if(this.idFaccion == 1) {
 			imagenesBody[4] = configurarImagen("/imagenes/accesorios/boina1",3);
-			String equipo = elegirEquipo();
+			String color = elegirEquipo();
 			if(this.getGenero() == 1) {
 				//SI ES HOMBRE/////////////////////////////////////////////////////////////////////////
 				if(this.clase == "Heroe Federal") {
@@ -590,7 +602,7 @@ public class Unidad {
 					alturaPorClase = -10;
 				}
 				else if(this.clase == "Cebador De Mate") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/mates-"+equipo+"-"+this.idTez, 3);
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/mates-"+color+"-"+this.idTez, 3);
 					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-1",3);
 					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
 					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
@@ -618,7 +630,7 @@ public class Unidad {
 					alturaPorClase = -10;
 				}
 				if(this.clase == "Cebador De Mate") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/mates-"+equipo+"-"+this.idTez, 3);
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/mates-"+color+"-"+this.idTez, 3);
 					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
 					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
 					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
@@ -638,6 +650,7 @@ public class Unidad {
 			}
 		}
 		else if(this.idFaccion == 2) {
+			//SI ES HOMBRE/////////////////////////////////////////////////////////////////////////
 			if(this.getGenero() == 1) {
 				if(this.clase == "Alumno Modelo") {
 					imagenesBody[3] = configurarImagen("/imagenes/unisex/libro-"+this.idTez, 3);
@@ -668,6 +681,7 @@ public class Unidad {
 				}
 			}
 			else {
+				//SI ES MUJER/////////////////////////////////////////////////////////////////////////
 				if(this.clase == "Alumno Modelo") {
 					imagenesBody[3] = configurarImagen("/imagenes/unisex/libro-"+this.idTez, 3);
 					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
@@ -695,10 +709,67 @@ public class Unidad {
 					alturaDeAccesorio = 5;
 					this.alturaDeBarraHP = -20;
 				}
-				
+			}
+		}
+		else if(this.idFaccion == 3) {
+			String color = elegirColor();
+			//SI ES HOMBRE/////////////////////////////////////////////////////////////////////////
+			if(this.getGenero() == 1) {
+				if(this.clase == "Niño Cheung") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-pose-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-pose",3);
+					imagenesBody[1] = configurarImagen("/imagenes/hombre/cuerpo-chino-boy", 3);
+					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
+				}
+				else if(this.clase == "Puño Furioso") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/nunchaku-"+color+"-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-pose",3);
+					imagenesBody[1] = configurarImagen("/imagenes/hombre/camiseta-"+this.idTez, 3);
+					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
+				}
+				else if(this.clase == "Maestro Del Chi") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-pose-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/hombre/piernas-maestro-boy",3);
+					imagenesBody[1] = configurarImagen("/imagenes/hombre/cuerpo-maestro-boy", 3);
+					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
+				}
+				else if(this.clase == "Aspirante A Dragon") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/nunchaku-rojo-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/unisex/piernas-amarillo",3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo-amarillo", 3);
+					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
+				}
+			}
+			else {
+				//SI ES MUJER/////////////////////////////////////////////////////////////////////////
+				if(this.clase == "Niño Cheung") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-pose-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-pose-"+this.idTez,3);
+					imagenesBody[1] = configurarImagen("/imagenes/mujer/cuerpo-chino-girl", 3);
+					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
+				}
+				else if(this.clase == "Puño Furioso") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/nunchaku-"+color+"-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-pose",3);
+					imagenesBody[1] = configurarImagen("/imagenes/mujer/cuerpo-top-"+this.idTez, 3);
+					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-coleta-"+this.idTez, 3);
+				}
+				else if(this.clase == "Maestro Del Chi") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-pose-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/mujer/piernas-maestro-girl-"+this.idTez,3);
+					imagenesBody[1] = configurarImagen("/imagenes/mujer/cuerpo-maestro-girl", 3);
+					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
+				}
+				else if(this.clase == "Aspirante A Dragon") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/nunchaku-rojo-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/unisex/piernas-amarillo",3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo-amarillo", 3);
+					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-bollos-"+this.idTez, 3);
+				}
 			}
 		}
 	}
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public void cargarDummy() {
 		imagenesBody[4] = null;
 		imagenesBody[3] = configurarImagen("/imagenes/dummy/dummy-manos",3);
