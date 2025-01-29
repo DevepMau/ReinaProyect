@@ -66,6 +66,7 @@ public class Unidad {
 	private int alturaDeBarraHP = 0;
 	private int idFaccion;
 	private int idTez;
+	private int escudos = 0;
 	//ESTADISTICAS DE LA UNIDAD/////////////////////////////////////
 	private String nombre;
 	private String clase;
@@ -154,6 +155,7 @@ public class Unidad {
 	public void dibujar(Graphics2D g2) {
         this.g2 = g2;  
         dibujarVida();
+        dibujarEscudos(g2);
         int dibujarX = getPosX() + desplazamientoSacudidaX;
         int dibujarY = getPosY() + desplazamientoSacudidaY;
         if(isAlive()) {
@@ -271,7 +273,6 @@ public class Unidad {
 	}	
 	public void recibirDaño(int daño, boolean isCritical) {
 		int SEId = 2;
-		this.setHP(this.getHP() - daño);
 		if(isCritical) {
 			dañoRecibido = "CRITICAL " + daño +"!";
 			this.realizaUnCritico = true;
@@ -280,10 +281,17 @@ public class Unidad {
 		else {
 			dañoRecibido = "" + daño;
 		}
-		this.setVidaPerdida(this.getVidaPerdida() + daño);
-	    setearSacudida(true);
+		setearSacudida(true);
 	    setDuracionSacudida(20);
-	    pdj.ReproducirSE(SEId);
+		if(this.escudos > 0) {
+			escudos--;
+			pdj.ReproducirSE(9);
+		}
+		else {
+			this.setHP(this.getHP() - daño);
+			this.setVidaPerdida(this.getVidaPerdida() + daño);
+			pdj.ReproducirSE(SEId);
+		}
 	    
 	}
 	public void realizarAtaque(Unidad unidad) {
@@ -398,7 +406,6 @@ public class Unidad {
 	}
 	public void recibirGolpeRapido(int daño, boolean isCritical) {
 		int SEId = 2;
-		this.setHP(this.getHP() - daño);
 		if(isCritical) {
 			dañoRecibido = "CRITICAL " + daño +"!";
 			this.realizaUnCritico = true;
@@ -407,11 +414,17 @@ public class Unidad {
 		else {
 			dañoRecibido = "" + daño;
 		}
-		this.setVidaPerdida(this.getVidaPerdida() + daño);
-	    setearSacudida(true);
+		setearSacudida(true);
 	    setDuracionSacudida(10);
-	    pdj.ReproducirSE(SEId);
-	    
+		if(this.escudos > 0) {
+			escudos--;
+			pdj.ReproducirSE(9);
+		}
+		else {
+			this.setHP(this.getHP() - daño);
+			this.setVidaPerdida(this.getVidaPerdida() + daño);
+			pdj.ReproducirSE(SEId);
+		}
 	}
 	public void recibirGolpesMúltiples(int daño,int cant, boolean isCritical) {
 	    int numGolpes = cant;
@@ -482,6 +495,27 @@ public class Unidad {
 	    g2.setColor(c);
 	    g2.setStroke(new BasicStroke(2));
 	    g2.drawRoundRect(posX, getPosY() + altura + this.alturaDeBarraHP, barraHP, pdj.tamañoDeBaldosa / 5, 5, 5);
+	}
+	
+	public void dibujarEscudos(Graphics2D g2) {
+	    int altura = -pdj.tamañoDeBaldosa - (pdj.tamañoDeBaldosa / 8) + 16;
+	    int posX = getPosX() + 85;
+	    int posY = getPosY() - 8 + altura + this.alturaDeBarraHP;
+
+	    if (this.escudos > 0) {
+	        // Dibujar el rectángulo del escudo
+	        g2.setColor(Color.gray);
+	        g2.fillRect(posX, posY, 18, 16);
+	        g2.setColor(Color.WHITE);
+	        g2.drawString("" + this.escudos, posX + 5, posY + 16);
+
+	        // Dibujar el triángulo apuntando hacia abajo
+	        int[] xPoints = {posX, posX + 9, posX + 18}; // Puntos X
+	        int[] yPoints = {posY + 16, posY + 24, posY + 16}; // Puntos Y
+
+	        g2.setColor(Color.gray);
+	        g2.fillPolygon(xPoints, yPoints, 3);
+	    }
 	}
 	
 	public void efectosVisualesPersonalizados(Graphics2D g2){}
@@ -825,6 +859,8 @@ public class Unidad {
 	public void setAccion(String accion) {this.tipoDeAccion = accion;}
 	public int getAlturaBarraHP() {return this.alturaDeBarraHP;}
 	public void setAlturaBarraHP(int altura) {this.alturaDeBarraHP = altura;}
+	public int getEscudos() {return this.escudos;}
+	public void setEscudos(int cant) {this.escudos = cant;}
 	//GETTERS & SETTERS STATS BASE/////////////////////////////////////////////
 	public int getGenero() {return genero;}
 	public void setGenero(int i) {this.genero = i;}

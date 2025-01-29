@@ -22,6 +22,7 @@ public class Sonido {
 		urlSonidos[6] = getClass().getResource("/sonidos/side-step.wav");
 		urlSonidos[7] = getClass().getResource("/sonidos/motivated.wav");
 		urlSonidos[8] = getClass().getResource("/sonidos/unmotivated.wav");
+		urlSonidos[9] = getClass().getResource("/sonidos/break-shield.wav");
 
 	}
 
