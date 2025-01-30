@@ -67,7 +67,7 @@ public class HeroeFederal extends Unidad{
 			else {
 				unidad.setEstaLisiado(true);
 			}
-			unidad.recibirDaño(daño, false);
+			unidad.recibirDaño(daño, false, 20);
 			unidad.setVelMod(unidad.getVelMod() - (unidad.getVel()+unidad.getVelMod()));
 			unidad.setearSacudida(true);
 			unidad.setDuracionSacudida(20);

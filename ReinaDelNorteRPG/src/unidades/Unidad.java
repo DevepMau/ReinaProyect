@@ -72,6 +72,7 @@ public class Unidad {
 	private int faltasCometidas = 0;
 	private int neocreditos;
 	private int dañoCausado = 0;
+	private int puñosAcumulados;
 	//ESTADISTICAS DE LA UNIDAD/////////////////////////////////////
 	private String nombre;
 	private String clase;
@@ -287,7 +288,7 @@ public class Unidad {
 		}
 	}
 	
-	public void recibirDaño(int daño, boolean isCritical) {
+	public void recibirDaño(int daño, boolean isCritical, int duracionSacudida) {
 		int SEId = 2;
 		if(isCritical) {
 			dañoRecibido = "CRITICAL " + daño +"!";
@@ -298,7 +299,7 @@ public class Unidad {
 			dañoRecibido = "" + daño;
 		}
 		setearSacudida(true);
-	    setDuracionSacudida(20);
+	    setDuracionSacudida(duracionSacudida);
 		if(this.escudos > 0) {
 			escudos--;
 			pdj.ReproducirSE(9);
@@ -315,19 +316,23 @@ public class Unidad {
 		Unidad protector = this.getProtector(enemigos);
 		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());
 		if(unidad != null) {
-			boolean isMiss = Math.random() <= (unidad.getEva() + unidad.getEvaMod());	 
-			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod())); 	 
+			boolean isMiss = Math.random() <= (unidad.getEva() + unidad.getEvaMod());
+			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod())); 
+			if(this.getClase() == "Puño Furioso" && this.getHPMax() < unidad.getHPMax()) {
+				System.out.println("puño");
+				daño += (unidad.getHPMax()/5);
+			}	 
 			if (isCritical) {
 				daño *= (this.getDCRT() + this.getDcrtMod());
 			}
 			if(!isMiss) {
 				int random = this.elegirAleatorio(2);
 				if(protector != null && random == 1) {
-					protector.recibirDaño(daño, isCritical);
+					protector.recibirDaño(daño, isCritical, 20);
 					contarFaltas(protector);
 				}
 				else {
-					unidad.recibirDaño(daño, isCritical);
+					unidad.recibirDaño(daño, isCritical, 20);
 					contarFaltas(unidad);
 				}
 				if(this.getTipo() == "Especialista") {
@@ -367,18 +372,21 @@ public class Unidad {
 		if(objetivo != null) {
 			boolean isMiss = Math.random() <= (objetivo.getEva() + objetivo.getEvaMod());
 			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (objetivo.getDef() + objetivo.getDefMod()));
-	    	 
+			if(this.getClase() == "Puño Furioso" && this.getHPMax() < objetivo.getHPMax()) {
+				System.out.println("puño");
+				daño += (objetivo.getHPMax()/5);
+			} 
 			if (isCritical) {
 				daño *= (this.getDCRT() + this.getDcrtMod());
 			}
 			if(!isMiss) {
 				int random = this.elegirAleatorio(2);
 				if(protector != null && random == 1) {
-					protector.recibirDaño(daño, isCritical);
+					protector.recibirDaño(daño, isCritical, 20);
 					contarFaltas(protector);
 				}
 				else {
-					objetivo.recibirDaño(daño, isCritical);
+					objetivo.recibirDaño(daño, isCritical, 20);
 					contarFaltas(objetivo);
 				}
 				if(this.getTipo() == "Especialista") {
@@ -393,7 +401,6 @@ public class Unidad {
 				if(this.getIdFaccion() == 2 && this.getClase() != "Dragon Pirotecnico") {
 					int NC = daño;
 					if(this.getClase() == "Alumno Modelo") {
-						System.out.println("ok");
 						NC = daño*3;
 						
 					}
@@ -454,10 +461,10 @@ public class Unidad {
 		if(unidad.getClase() == "Shaolin Escolar" || unidad.getClase() == "Aspirante A Dragon") {
 			int i = (daño/2);
 			if(i > 1) {
-				this.recibirDaño(i, false);
+				this.recibirDaño(i, false, 20);
 			}
 			else {
-				this.recibirDaño(1, false);
+				this.recibirDaño(1, false, 20);
 			}
 		}
 	}
@@ -476,15 +483,24 @@ public class Unidad {
 	                golpeCritico = elegirAleatorio(2) == 0; // 50% probabilidad de crítico
 	            }
 	            // Aplicar daño reducido para los golpes iniciales
-	            int dañoActual = (i == numGolpes - 1) ? daño : (daño-(daño/4));
-	            recibirDaño(dañoActual, golpeCritico);
+	            int dañoActual = (i == numGolpes - 1) ? daño : (daño/2);
+	            recibirDaño(dañoActual, golpeCritico, 10);
 	        }
 	    }).start();
 	}
 	
 	public void robarVida(int daño, Unidad unidad) {
 		if(unidad.getEstaMarcado()) {
+			if(this.getClase() == "Aspirante A Dragon") {
+				this.restaurarHP(daño);
+			}
+			else {
+				this.restaurarHP(daño-(daño/4));
+			}
 			this.restaurarHP(daño-(daño/4));
+			this.setRealizandoCuracion(true);
+			this.setDuracionSacudida(20);
+			this.setearSacudida(true);
 		}
 	}
 	
@@ -603,7 +619,21 @@ public class Unidad {
 	//METODOS DE ELECCION/////////////////////////////////////////////////////
 	public Unidad elegirObjetivo(ArrayList<Unidad> unidades) {
 	    if (!unidades.isEmpty()) {
-	        return unidades.get((int) (Math.random() * unidades.size()));
+	    	if(this.getClase() == "Puño Furioso") {
+				Unidad unidadSeleccionada = null;
+			    int mayorPorcentajeHP = Integer.MIN_VALUE;
+			    for (Unidad unidad : unidades) {
+			    	int HPUnidad = unidad.getHPMax();
+			        if (HPUnidad > mayorPorcentajeHP) {
+			        	mayorPorcentajeHP = HPUnidad;
+			            unidadSeleccionada = unidad;
+			        }
+			    }
+			    return unidadSeleccionada;
+			}
+	    	else {
+	    		return unidades.get((int) (Math.random() * unidades.size()));
+	    	}
 	    }
 	    return null;
 	}
@@ -958,6 +988,8 @@ public class Unidad {
 	public void setNeocreditos(int neocreditos) {this.neocreditos = neocreditos;}
 	public int getDañoCausado() {return dañoCausado;}
 	public void setDañoCausado(int dañoCausado) {this.dañoCausado = dañoCausado;}
+	public int getPuñosAcumulados() {return puñosAcumulados;}
+	public void setPuñosAcumulados(int puñosAcumulados) {this.puñosAcumulados = puñosAcumulados;}
 	//GETTERS & SETTERS STATS BASE/////////////////////////////////////////////
 	public String getTipo() {return tipo;}
 	public void setTipo(String st) {this.tipo = st;}

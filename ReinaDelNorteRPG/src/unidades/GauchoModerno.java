@@ -29,9 +29,9 @@ public class GauchoModerno extends Unidad {
 		this.generarCuerpo();
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
-	public void recibirDaño(int daño, boolean isCritical) {
+	public void recibirDaño(int daño, boolean isCritical, int duracionSacudida) {
 	    int hpAnterior = this.getHP();
-	    super.recibirDaño(daño, isCritical);
+	    super.recibirDaño(daño, isCritical, duracionSacudida);
 	    int hpPerdido = hpAnterior - this.getHP();
 	    this.acumuladorDeVidaPrdida += hpPerdido;
 	    if(acumuladorDeVidaPrdida >= 10) {
@@ -63,7 +63,7 @@ public class GauchoModerno extends Unidad {
 		if(unidad != null) {
 			if(!isMiss) {
 				int daño = (this.getAtqMod()*4);
-				unidad.recibirDaño(daño, false);
+				unidad.recibirDaño(daño, false, 20);
 				unidad.setearSacudida(true);
 				unidad.setDuracionSacudida(20);
 				unidad.setEsUnaHabilidad(true);

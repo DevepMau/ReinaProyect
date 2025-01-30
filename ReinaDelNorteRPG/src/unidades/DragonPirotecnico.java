@@ -54,12 +54,12 @@ public class DragonPirotecnico extends Unidad{
 		Unidad objetivo = elegirObjetivo(unidades); 
 		if(objetivo != null) {
 			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (objetivo.getDef() + objetivo.getDefMod()));
-			objetivo.recibirDaño(daño, true);
+			objetivo.recibirDaño(daño, true, 20);
 			contarFaltas(objetivo);
 			this.cargaExplosiva++;
 			for (Unidad unidadAledaña : unidades) {
 	            if (!unidadAledaña.equals(objetivo)) { // Evitar aplicar daño a la unidad objetivo
-	                unidadAledaña.recibirDaño(daño / 3, false);
+	                unidadAledaña.recibirDaño(daño / 3, false, 20);
 	            }
 	        }
 			this.robarVida(daño, objetivo);
@@ -73,12 +73,12 @@ public class DragonPirotecnico extends Unidad{
 	public void realizarAtaque(Unidad unidad, ArrayList<Unidad> unidades) {
 		if(unidad != null) {
 			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod())); 	 
-			unidad.recibirDaño(daño, true);
+			unidad.recibirDaño(daño, true, 20);
 			contarFaltas(unidad);
 			this.cargaExplosiva++;
 			for (Unidad unidadAledaña : unidades) {
 	            if (!unidadAledaña.equals(unidad)) { // Evitar aplicar daño a la unidad objetivo
-	                unidadAledaña.recibirDaño(daño / 3, false);
+	                unidadAledaña.recibirDaño(daño / 3, false, 20);
 	            }
 	        }
 			this.robarVida(daño, unidad);
@@ -89,10 +89,10 @@ public class DragonPirotecnico extends Unidad{
 	    int dañoExplosion = ((this.getAtq() + this.getAtqMod()))*2;
 	    if (!unidades.isEmpty()) {
 	        Unidad unidad = elegirObjetivoMasFuerte(unidades);
-	        unidad.recibirDaño(dañoExplosion, true);
+	        unidad.recibirDaño(dañoExplosion, true, 20);
 	        for (Unidad unidadAledaña : unidades) {
 	            if (!unidadAledaña.equals(unidad)) { // Evitar aplicar daño a la unidad objetivo
-	                unidadAledaña.recibirDaño(dañoExplosion / 2, false);
+	                unidadAledaña.recibirDaño(dañoExplosion / 2, false, 20);
 	            }
 	        }
 	    }

@@ -12,7 +12,8 @@ public class MaestroDelChi extends Unidad {
 
 	public MaestroDelChi(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
-		this.setNombre("Especialista");
+		this.setNombre("");
+		this.setTipo("Especialista");
 		this.setClase("Maestro Del Chi");
 		this.setIdFaccion(3);
 		this.setHPMax(obtenerValorEntre(40,70));
@@ -49,32 +50,9 @@ public class MaestroDelChi extends Unidad {
 		this.pasivaDeClase(aliados, enemigos);
 	}
 	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////
-	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
-		Unidad objetivo = elegirObjetivo(unidades);
-		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());  
-		if(objetivo != null) {
-			boolean isMiss = Math.random() <= (objetivo.getEva() + objetivo.getEvaMod());
-			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (objetivo.getDef() + objetivo.getDefMod()));
-	    	 
-			if (isCritical) {
-				daño *= (this.getDCRT() + this.getDcrtMod());
-			}
-			if(!isMiss) {
-				objetivo.recibirDaño(daño, isCritical);
-				this.restaurarSP(daño*2);
-				contarFaltas(objetivo);
-			}
-			else {
-				objetivo.evadirAtaque();
-			}
-			this.reflejarDaño(objetivo, daño);
-			this.robarVida(daño, objetivo);
-		}
-	}
 	public void usarHabilidadEnemigo(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
 		if(this.getHabilidadElegida() == 0) {
 			if(!enemigos.isEmpty()) {
-				this.setSP(this.getSP() - this.spHabilidad1);
 				Unidad unidad = elegirObjetivoSinMarcar(enemigos);
 				marcar(unidad);
 			}
@@ -88,26 +66,6 @@ public class MaestroDelChi extends Unidad {
 		}
 	}
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
-	public void realizarAtaque(Unidad unidad) {
-		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());
-		if(unidad != null) {
-			boolean isMiss = Math.random() <= (unidad.getEva() + unidad.getEvaMod());	 
-			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod())); 	 
-			if (isCritical) {
-				daño *= (this.getDCRT() + this.getDcrtMod());
-			}
-			if(!isMiss) {
-				unidad.recibirDaño(daño, isCritical);
-				this.restaurarSP(daño*2);
-				contarFaltas(unidad);
-			}
-			else {
-				unidad.evadirAtaque();
-			}
-			this.reflejarDaño(unidad, daño);
-			this.robarVida(daño, unidad);
-		}
-	}
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {	
 		if(this.getHabilidadElegida() == 0) {
 			marcar(unidad);
@@ -143,24 +101,12 @@ public class MaestroDelChi extends Unidad {
 				unidad.setEstaMArcado(false);
 				unidad.setVelMod(unidad.getVelMod() - obtenerValorEntre(1,5));
 				unidad.setDefMod(unidad.getDefMod() - obtenerValorEntre(1,3));
-				unidad.recibirDaño(daño, false);
-				this.restaurarHPMudo(daño/2);
+				unidad.recibirDaño(daño, false, 20);
+				this.restaurarHP(daño/2);
 				this.cargas = 0;
 			}
 			
 		}
-	}
-	
-	public void ganarSP(int daño) {
-		if((this.getSP()+(daño*2)) > this.getSPMax()){
-			this.setSP(this.getSPMax());
-		}
-		else {
-			this.setSP(this.getSP() + daño*2);
-		}
-		this.setearSacudida(true);
-		this.setDuracionSacudida(20);
-		this.setEstaGanandoSP(true);
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
 	public boolean haySinMarcar(ArrayList<Unidad> unidades) {

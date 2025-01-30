@@ -85,7 +85,7 @@ public class PayadorPicante extends Unidad {
 		if(unidad != null) {
 			this.setSP(this.getSP() - this.spHabilidad1);
 			pdj.ReproducirSE(3);
-			unidad.recibirDaño(daño, false);
+			unidad.recibirDaño(daño, false, 20);
 			unidad.setearSacudida(true);
 			unidad.setDuracionSacudida(20);
 			unidad.setEstaDesmotivado(true);

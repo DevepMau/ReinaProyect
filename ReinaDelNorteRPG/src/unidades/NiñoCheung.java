@@ -11,6 +11,7 @@ public class NiñoCheung extends Unidad {
 	public NiñoCheung(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
 		this.setNombre("");
+		this.setTipo("Recluta");
 		this.setClase("Niño Cheung");
 		this.setIdFaccion(3);
 		this.setHPMax(obtenerValorEntre(60,90));
@@ -32,39 +33,9 @@ public class NiñoCheung extends Unidad {
 		this.pasivaDeClase(aliados, enemigos);
 	}
 	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////
-	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
-		Unidad objetivo = elegirObjetivo(unidades);
-		this.ataqueNormal(objetivo);
-	}
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
-	public void realizarAtaque(Unidad unidad) {
-		this.ataqueNormal(unidad);
-	}
 	//HABILIDADES////////////////////////////////////////////////////////////////////////
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
-	public void ataqueNormal(Unidad objetivo) {
-		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());   
-		if(objetivo != null) {
-			boolean isMiss = Math.random() <= (objetivo.getEva() + objetivo.getEvaMod());
-			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (objetivo.getDef() + objetivo.getDefMod()));
-	    	 
-			if (isCritical) {
-				daño *= (this.getDCRT() + this.getDcrtMod());
-				this.reflejarDaño(objetivo, daño/10);
-			}
-			else {
-				this.reflejarDaño(objetivo, daño);
-			}
-			if(!isMiss) {
-				objetivo.recibirDaño(daño, isCritical);
-				contarFaltas(objetivo);
-			}
-			else {
-				objetivo.evadirAtaque();
-			}
-			this.robarVida(daño, objetivo);
-		}
-	}
 	public void configurarTipoDeaccion() {
 		if(this.getHabilidadElegida() == 0) {
 			this.setAccion("ATACAR");

@@ -9,12 +9,12 @@ import principal.Zona;
 
 public class AspiranteADragon extends Unidad{
 	
-	private int cargas;
 	private String[] listaDeHabilidades = new String[1];
 
 	public AspiranteADragon(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
-		this.setNombre("Elite");
+		this.setNombre("");
+		this.setTipo("Elite");
 		this.setClase("Aspirante A Dragon");
 		this.setIdFaccion(3);
 		this.setHPMax(obtenerValorEntre(100,130));
@@ -27,7 +27,7 @@ public class AspiranteADragon extends Unidad{
 		this.setDCRT(2);
 		this.setEva(0.5);
 		this.setVel(obtenerValorEntre(15,20));
-		this.cargas = 1;
+		this.setPuñosAcumulados(1);
 		this.listaDeHabilidades[0] = "COMBO LETAL";
 		this.generarCuerpo();
 	}
@@ -43,24 +43,24 @@ public class AspiranteADragon extends Unidad{
 		this.pasivaDeClase(aliados, enemigos);
 	}
 	
-	public void recibirDaño(int daño, boolean isCritical) {
-		super.recibirDaño(daño, isCritical);
-		if(this.cargas < 5) {
-			cargas++;
+	public void recibirDaño(int daño, boolean isCritical, int duracionSacudida) {
+		super.recibirDaño(daño, isCritical, duracionSacudida);
+		if(this.getPuñosAcumulados() < 5) {
+			this.setPuñosAcumulados(this.getPuñosAcumulados() + 1);
 		}
 	}
 	public void evadirAtaque() {
 		super.evadirAtaque();
-		if(this.cargas < 5) {
-			cargas++;
+		if(this.getPuñosAcumulados() < 5) {
+			this.setPuñosAcumulados(this.getPuñosAcumulados() + 1);
 		}
 	}
 	//METODOS DE ENEMIGO////////////////////////////////////////////////////////////
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
 		if(this.getHabilidadElegida() == 0) {
-			if(this.cargas >= 5) {
-				this.setAtqMod(this.getAtqMod() + this.obtenerValorEntre(1, this.cargas));
-				this.setVelMod(this.getVelMod() + this.obtenerValorEntre(1, this.cargas));
+			if(this.getPuñosAcumulados() >= 5) {
+				this.setAtqMod(this.getAtqMod() + this.obtenerValorEntre(1, this.getPuñosAcumulados()));
+				this.setVelMod(this.getVelMod() + this.obtenerValorEntre(1, this.getPuñosAcumulados()));
 				this.setPcrtMod(this.getPcrtMod() + 0.05);
 				this.setEvaMod(this.getEvaMod() + 0.05);
 			}
@@ -70,9 +70,9 @@ public class AspiranteADragon extends Unidad{
 	}
 	//METODOS DE JUGADOR////////////////////////////////////////////////////////////
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {
-		if(this.cargas >= 5) {
-			this.setAtqMod(this.getAtqMod() + this.obtenerValorEntre(1, this.cargas));
-			this.setVelMod(this.getVelMod() + this.obtenerValorEntre(1, this.cargas));
+		if(this.getPuñosAcumulados() >= 5) {
+			this.setAtqMod(this.getAtqMod() + this.obtenerValorEntre(1, this.getPuñosAcumulados()));
+			this.setVelMod(this.getVelMod() + this.obtenerValorEntre(1, this.getPuñosAcumulados()));
 			this.setPcrtMod(this.getPcrtMod() + 0.05);
 			this.setEvaMod(this.getEvaMod() + 0.05);
 		}
@@ -89,29 +89,29 @@ public class AspiranteADragon extends Unidad{
 			if (isCritical) {
 				daño *= (this.getDCRT() + this.getDcrtMod());
 			}
-			unidad.recibirGolpesMúltiples(daño,cargas , isCritical);
+			unidad.recibirGolpesMúltiples(daño, this.getPuñosAcumulados() , isCritical);
 			contarFaltas(unidad);
 			this.reflejarDaño(unidad, daño);
 			this.robarVida(daño, unidad);
-			this.cargas = 1;
+			this.setPuñosAcumulados(1);
 		}
 	}
 	//METODOS AUXILIARES////////////////////////////////////////////////////////////
 	public void efectosVisualesPersonalizados(Graphics2D g2) {
 		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18f));
 		g2.setColor(Color.white);
-		if(this.cargas == 2) {
+		if(this.getPuñosAcumulados() == 2) {
 			g2.drawString("+", this.getPosX()+8, this.getPosY()-12+this.getAlturaBarraHP());
 			g2.fillRoundRect(this.getPosX()+16, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
 		}
-		else if(this.cargas == 3) {
+		else if(this.getPuñosAcumulados() == 3) {
 			g2.setColor(Color.white);
 			g2.drawString("+", this.getPosX()+8, this.getPosY()-12+this.getAlturaBarraHP());
 			g2.setColor(Color.yellow);
 			g2.fillRoundRect(this.getPosX()+16, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
 			g2.fillRoundRect(this.getPosX()+26, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
 		}
-		else if(this.cargas == 4) {
+		else if(this.getPuñosAcumulados() == 4) {
 			g2.setColor(Color.white);
 			g2.drawString("+", this.getPosX()+8, this.getPosY()-12+this.getAlturaBarraHP());
 			g2.setColor(Color.ORANGE);
@@ -119,7 +119,7 @@ public class AspiranteADragon extends Unidad{
 			g2.fillRoundRect(this.getPosX()+26, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
 			g2.fillRoundRect(this.getPosX()+36, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
 		}
-		else if(this.cargas >= 5) {
+		else if(this.getPuñosAcumulados() >= 5) {
 			g2.setColor(Color.white);
 			g2.drawString("+", this.getPosX()+8, this.getPosY()-12+this.getAlturaBarraHP());
 			g2.setColor(Color.RED);
@@ -154,7 +154,7 @@ public class AspiranteADragon extends Unidad{
 	    return unidadSeleccionada;
 	}
 	public boolean cumpleReqDeHab1() {
-		if(this.cargas > 1) {
+		if(this.getPuñosAcumulados() > 1) {
 			return true;
 		}
 		return false;

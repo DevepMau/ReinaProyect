@@ -81,7 +81,7 @@ public class AlumnoModelo extends Unidad{
 		if(!unidades.isEmpty()) {
 			for(Unidad unidad : unidades) {
 				pdj.ReproducirSE(3);
-				unidad.recibirDaño(unidad.getHPMax()/10, false);
+				unidad.recibirDaño(unidad.getHPMax()/10, false, 20);
 				unidad.setEstaActivo(false);
 				unidad.setEstaKO(true);
 				unidad.setearSacudida(true);

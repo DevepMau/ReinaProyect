@@ -12,6 +12,7 @@ public class PuñoFurioso extends Unidad {
 	public PuñoFurioso(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
 		this.setNombre("");
+		this.setTipo("Combatiente");
 		this.setClase("Puño Furioso");
 		this.setIdFaccion(3);
 		this.setHPMax(obtenerValorEntre(70,100));
@@ -39,23 +40,16 @@ public class PuñoFurioso extends Unidad {
 		}
 		this.pasivaDeClase(aliados, enemigos);
 	}
-	public void recibirDaño(int daño, boolean isCritical) {
-		super.recibirDaño(daño, isCritical);
-		this.restaurarSPMudo(daño/2);
+	public void recibirDaño(int daño, boolean isCritical, int duracionSacudida) {
+		super.recibirDaño(daño, isCritical, duracionSacudida);
+		this.restaurarSP(daño/2);
 	}
 	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////
-	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
-		Unidad objetivo = elegirObjetivo(unidades);
-		this.ataqueNormal(objetivo);
-	}
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
 		Unidad objetivo = elegirObjetivoConMayorHP(unidades);
 		dobleGolpe(objetivo);
 	}
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
-	public void realizarAtaque(Unidad unidad) {
-		this.ataqueNormal(unidad);
-	}
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {
 		dobleGolpe(unidad);
 		this.setSP(this.getSP() - this.spHabilidad1);
@@ -77,28 +71,6 @@ public class PuñoFurioso extends Unidad {
 		}
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
-	public void ataqueNormal(Unidad objetivo) {
-		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());   
-		if(objetivo != null) {
-			boolean isMiss = Math.random() <= (objetivo.getEva() + objetivo.getEvaMod());
-			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (objetivo.getDef() + objetivo.getDefMod()));
-	    	if(this.getHPMax() < objetivo.getHPMax()) {
-	    		daño += (objetivo.getHPMax()/10);
-	    	}
-			if (isCritical) {
-				daño *= (this.getDCRT() + this.getDcrtMod());
-			}
-			if(!isMiss) {
-				objetivo.recibirDaño(daño, isCritical);
-				contarFaltas(objetivo);
-			}
-			else {
-				objetivo.evadirAtaque();
-			}
-			this.reflejarDaño(objetivo, daño);
-			this.robarVida(daño, objetivo);
-		}
-	}
 	public Unidad elegirObjetivoConMayorHP(ArrayList<Unidad> unidades) {
 		Unidad unidadSeleccionada = null;
 	    int mayorPorcentajeHP = Integer.MIN_VALUE;

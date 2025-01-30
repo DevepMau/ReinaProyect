@@ -38,10 +38,10 @@ public class ShaolinEscolar extends Unidad {
 		realizarAtaqueEnemigo(enemigos);
 		this.pasivaDeClase(aliados, enemigos);
 	}
-	public void recibirDaño(int daño, boolean isCritical) {
+	public void recibirDaño(int daño, boolean isCritical, int duracionSacudida) {
 		int valor = 6;
 	    int hpAnterior = this.getHP();
-	    super.recibirDaño(daño, isCritical);
+	    super.recibirDaño(daño, isCritical, 20);
 	    int hpPerdido = hpAnterior - this.getHP();
 	    this.acumuladorDeVidaPrdida += hpPerdido;
 	    if(acumuladorDeVidaPrdida >= valor) {
