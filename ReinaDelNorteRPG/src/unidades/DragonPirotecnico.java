@@ -9,14 +9,13 @@ import principal.Zona;
 
 public class DragonPirotecnico extends Unidad{
 	
-	private Unidad unidadObjetivo = null;
 	private int cargaExplosiva;
-	private int dañoCausado = 0;
 	private String[] listaDeHabilidades = new String[1];
 
 	public DragonPirotecnico(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
-		this.setNombre("Elite");
+		this.setNombre("");
+		this.setTipo("Elite");
 		this.setClase("Dragon Pirotecnico");
 		this.setIdFaccion(2);
 		this.setHPMax(obtenerValorEntre(130,160));
@@ -71,14 +70,17 @@ public class DragonPirotecnico extends Unidad{
 		FestejoDeAñoNuevo(unidades);
 		this.cargaExplosiva = 0;
 	}
-	public void realizarAtaque(Unidad unidad) {
+	public void realizarAtaque(Unidad unidad, ArrayList<Unidad> unidades) {
 		if(unidad != null) {
 			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod())); 	 
 			unidad.recibirDaño(daño, true);
 			contarFaltas(unidad);
-			this.dañoCausado = daño/3;
 			this.cargaExplosiva++;
-			this.unidadObjetivo = unidad;
+			for (Unidad unidadAledaña : unidades) {
+	            if (!unidadAledaña.equals(unidad)) { // Evitar aplicar daño a la unidad objetivo
+	                unidadAledaña.recibirDaño(daño / 3, false);
+	            }
+	        }
 			this.robarVida(daño, unidad);
 		}
 	}
@@ -157,21 +159,7 @@ public class DragonPirotecnico extends Unidad{
 		}
 	}
 	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
-		if(!enemigos.isEmpty()) {
-			for(Unidad unidad : enemigos) {
-				if(unidad.getClase() == "Delegada") {
-					this.setMostrarFaltas(true);
-				}
-			}
-		}
-		if(!enemigos.isEmpty()) {
-			for(Unidad unidad : enemigos) {
-				if (!unidad.equals(this.unidadObjetivo)) { // Evitar aplicar daño a la unidad objetivo
-					unidad.recibirDaño(this.dañoCausado, false);
-	            }
-			}
-			this.dañoCausado = 0;
-		}
+		super.pasivaDeClase(aliados, enemigos);
 	}
 	public void configurarTipoDeaccion() {
 		if(this.getHabilidadElegida() == 0) {

@@ -70,6 +70,8 @@ public class Unidad {
 	private int idTez;
 	private int escudos = 0;
 	private int faltasCometidas = 0;
+	private int neocreditos;
+	private int dañoCausado = 0;
 	//ESTADISTICAS DE LA UNIDAD/////////////////////////////////////
 	private String nombre;
 	private String clase;
@@ -337,6 +339,18 @@ public class Unidad {
 				if(this.getClase() == "Gaucho Moderno") {
 					this.setPcrtMod(this.getPcrtMod()+0.05);
 				}
+				if(this.getIdFaccion() == 2 && this.getClase() != "Dragon Pirotecnico") {
+					int NC = daño;
+					if(this.getClase() == "Alumno Modelo") {
+						NC = daño*3;
+						
+					}
+					else {
+						NC = this.obtenerValorEntre(1, daño);
+					}
+					this.setDañoCausado(NC);
+					this.sumarNeocreditos(daño);
+				}
 			}
 			else {
 				unidad.evadirAtaque();
@@ -375,6 +389,19 @@ public class Unidad {
 				}
 				if(this.getClase() == "Gaucho Moderno") {
 					this.setPcrtMod(this.getPcrtMod()+0.05);
+				}
+				if(this.getIdFaccion() == 2 && this.getClase() != "Dragon Pirotecnico") {
+					int NC = daño;
+					if(this.getClase() == "Alumno Modelo") {
+						System.out.println("ok");
+						NC = daño*3;
+						
+					}
+					else {
+						NC = this.obtenerValorEntre(1, daño);
+					}
+					this.setDañoCausado(NC);
+					this.sumarNeocreditos(daño);
 				}
 			}
 			else {
@@ -477,7 +504,16 @@ public class Unidad {
 		}
 	}
 	
-	public void sumarNeocreditos(int neocreditos) {}
+	public void sumarNeocreditos(int neocreditos) {
+		int i = neocreditos + this.neocreditos;
+		if(i > 100) {
+			this.neocreditos = 100;
+		}
+		else {
+			this.neocreditos += neocreditos;
+		}
+	}
+	
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {}	
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {}	
 	//METODOS VISUALES/////////////////////////////////////////////////////////
@@ -869,6 +905,8 @@ public class Unidad {
 	public boolean isObjetivoUnico() {return objetivoUnico;}
 	public void setObjetivoUnico(boolean singleTarget) {this.objetivoUnico = singleTarget;}
 	//GETTERS & SETTERS DE EFECTOS//////////////////////////////////////////////
+	public boolean getRealizaCuracion() {return this.realizaUnaCuracion;}
+	public void setRealizandoCuracion(boolean boo) {this.realizaUnaCuracion = boo;}
 	public boolean getEstaMarcado() {return this.estaMarcado;}
 	public void setEstaMArcado(boolean boo) {this.estaMarcado = boo;}
 	public boolean getTomandoUnMate() {return tomandoUnMate;}
@@ -916,6 +954,10 @@ public class Unidad {
 	public void setFaltasCometidas(int cant) {this.faltasCometidas = cant;}
 	public boolean getMostrarFaltas() {return this.mostrarFaltas;}
 	public void setMostrarFaltas(boolean boo) {this.mostrarFaltas = boo;}
+	public int getNeocreditos() {return neocreditos;}
+	public void setNeocreditos(int neocreditos) {this.neocreditos = neocreditos;}
+	public int getDañoCausado() {return dañoCausado;}
+	public void setDañoCausado(int dañoCausado) {this.dañoCausado = dañoCausado;}
 	//GETTERS & SETTERS STATS BASE/////////////////////////////////////////////
 	public String getTipo() {return tipo;}
 	public void setTipo(String st) {this.tipo = st;}

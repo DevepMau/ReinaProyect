@@ -11,12 +11,11 @@ public class MedicoTradicionalista extends Unidad {
 	
 	private String[] habilidades = new String[2];
 	private int spHabilidad1;
-	private int neocreditos;
-	private int dañoCausado = 0;
 
 	public MedicoTradicionalista(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
-		this.setNombre("Especialista");
+		this.setNombre("");
+		this.setTipo("Especialista");
 		this.setClase("Medico Tradicionalista");
 		this.setIdFaccion(2);
 		this.setHPMax(obtenerValorEntre(40,70));
@@ -27,7 +26,7 @@ public class MedicoTradicionalista extends Unidad {
 		this.setDef(obtenerValorEntre(5,9));
 		this.setVel(obtenerValorEntre(2,8));
 		this.setPCRT(0);
-		this.neocreditos = 0;
+		this.setNeocreditos(0);
 		this.spHabilidad1 = 10;
 		this.habilidades[0] = "CURAR";
 		this.habilidades[1] = "TONICO IMPERIA";
@@ -36,7 +35,7 @@ public class MedicoTradicionalista extends Unidad {
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
 		int accion = elegirAleatorio(6);
-		if(this.neocreditos == 100) {
+		if(this.getNeocreditos() == 100) {
 			this.setHabilidadElegida(1);
 			usarHabilidadEnemigo(aliados, enemigos);
 		}
@@ -51,28 +50,6 @@ public class MedicoTradicionalista extends Unidad {
 		this.pasivaDeClase(aliados, enemigos);
 	}
 	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////
-	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
-		Unidad objetivo = elegirObjetivo(unidades);
-		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());  
-		if(objetivo != null) {
-			boolean isMiss = Math.random() <= (objetivo.getEva() + objetivo.getEvaMod());
-			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (objetivo.getDef() + objetivo.getDefMod()));
-	    	 
-			if (isCritical) {
-				daño *= (this.getDCRT() + this.getDcrtMod());
-			}
-			if(!isMiss) {
-				objetivo.recibirDaño(daño, isCritical);
-				this.restaurarSP(daño*2);
-				contarFaltas(objetivo);
-			}
-			else {
-				objetivo.evadirAtaque();
-			}
-			this.reflejarDaño(objetivo, daño);
-			this.robarVida(daño, objetivo);
-		}
-	}
 	public void usarHabilidadEnemigo(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
 		if(this.getHabilidadElegida() == 0) {
 			if(!aliados.isEmpty()) {
@@ -84,7 +61,7 @@ public class MedicoTradicionalista extends Unidad {
 		}
 		else {
 			if(!aliados.isEmpty()) {
-				this.neocreditos = 0;
+				this.setNeocreditos(0);
 				for(Unidad unidad : aliados) {
 					if(unidad.getGenero() == this.generoMayoritario(aliados)){
 						System.out.println(this.generoMayoritario(aliados));
@@ -95,33 +72,13 @@ public class MedicoTradicionalista extends Unidad {
 		}
 	}
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
-	public void realizarAtaque(Unidad unidad) {
-		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());
-		if(unidad != null) {
-			boolean isMiss = Math.random() <= (unidad.getEva() + unidad.getEvaMod());	 
-			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod())); 	 
-			if (isCritical) {
-				daño *= (this.getDCRT() + this.getDcrtMod());
-			}
-			if(!isMiss) {
-				unidad.recibirDaño(daño, isCritical);
-				this.restaurarSP(daño*2);
-				contarFaltas(unidad);
-			}
-			else {
-				unidad.evadirAtaque();
-			}
-			this.reflejarDaño(unidad, daño);
-			this.robarVida(daño, unidad);
-		}
-	}
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {	
 		if(this.getHabilidadElegida() == 0) {
 			curar(unidad);
 		}
 		else {
 			if(!unidades.isEmpty()) {
-				this.neocreditos = 0;
+				this.setNeocreditos(0);
 				for(Unidad unidadObjetivo : unidades) {
 					if(unidadObjetivo.getGenero() == this.generoMayoritario(unidades)){
 						tonicoImperial(unidadObjetivo);
@@ -135,9 +92,13 @@ public class MedicoTradicionalista extends Unidad {
 	public void curar(Unidad unidad) {
 		this.setSP(this.getSP() - this.spHabilidad1);
 		if(unidad != null) {
+			pdj.ReproducirSE(4);
 			unidad.restaurarHP(unidad.getHPMax()/4);
+			unidad.setRealizandoCuracion(true);
+			unidad.setearSacudida(true);
+			unidad.setDuracionSacudida(20);
 			this.sumarNeocreditos(unidad.getHPMax()/4);
-			this.dañoCausado = unidad.getHPMax()/8;
+			this.setDañoCausado(unidad.getHPMax()/10);
 		}
 	}
 	public void tonicoImperial(Unidad unidad) {
@@ -184,19 +145,10 @@ public class MedicoTradicionalista extends Unidad {
 		return false;
 	}
 	public boolean cumpleReqDeHab2() {
-		if(this.neocreditos == 100) {
+		if(this.getNeocreditos() == 100) {
 			return true;
 		}
 		return false;
-	}
-	public void sumarNeocreditos(int neocreditos) {
-		int i = neocreditos + this.neocreditos;
-		if(i > 100) {
-			this.neocreditos = 100;
-		}
-		else {
-			this.neocreditos += neocreditos;
-		}
 	}
 	public void configurarTipoDeaccion() {
 		if(this.getHabilidadElegida() == 0) {
@@ -225,33 +177,28 @@ public class MedicoTradicionalista extends Unidad {
 		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18f));
 		g2.setColor(Color.white);
 		g2.drawRect(this.getPosX()+7, this.getPosY()-24, 24, 18);
-		if(this.neocreditos < 10) {
-			g2.drawString("00"+this.neocreditos, this.getPosX()+9, this.getPosY()-9);
+		if(this.getNeocreditos() < 10) {
+			g2.drawString("00"+this.getNeocreditos(), this.getPosX()+9, this.getPosY()-9);
 		}
-		else if(this.neocreditos >= 10 && this.neocreditos < 100) {
-			g2.drawString("0"+this.neocreditos, this.getPosX()+9, this.getPosY()-9);
+		else if(this.getNeocreditos() >= 10 && this.getNeocreditos() < 100) {
+			g2.drawString("0"+ this.getNeocreditos(), this.getPosX()+9, this.getPosY()-9);
 		}
 		else {
 			g2.setColor(Color.orange);
-			g2.drawString(""+this.neocreditos, this.getPosX()+9, this.getPosY()-9);
+			g2.drawString(""+ this.getNeocreditos(), this.getPosX()+9, this.getPosY()-9);
 		}
 	}
 	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
+		super.pasivaDeClase(aliados, enemigos);
 		if(!aliados.isEmpty()) {
 			for(Unidad unidad : aliados) {
 				if(unidad.getIdFaccion() == 2) {
 					if(!this.equals(unidad)) {
-						unidad.sumarNeocreditos(this.getDañoCaudado());
+						unidad.sumarNeocreditos(this.getDañoCausado());
 					}
 				}
 			}
 		}
-	}
-	public int getDañoCaudado() {
-		return this.dañoCausado;
-	}
-	public void setDañoCausado(int daño) {
-		this.dañoCausado = daño;
 	}
 	public String[] getListaDeHabilidades() {return habilidades;}
 	public void setListaDeHabilidades(String[] habilidades) {this.habilidades = habilidades;}
