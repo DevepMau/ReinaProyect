@@ -40,6 +40,7 @@ public class AspiranteADragon extends Unidad{
 		else {
 			realizarAtaqueEnemigo(enemigos);
 		}
+		this.pasivaDeClase(aliados, enemigos);
 	}
 	
 	public void recibirDaño(int daño, boolean isCritical) {
@@ -89,6 +90,7 @@ public class AspiranteADragon extends Unidad{
 				daño *= (this.getDCRT() + this.getDcrtMod());
 			}
 			unidad.recibirGolpesMúltiples(daño,cargas , isCritical);
+			contarFaltas(unidad);
 			this.reflejarDaño(unidad, daño);
 			this.robarVida(daño, unidad);
 			this.cargas = 1;

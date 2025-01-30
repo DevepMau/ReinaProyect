@@ -42,6 +42,7 @@ public class DragonPirotecnico extends Unidad{
 		else {
 			realizarAtaqueEnemigo(enemigos);
 		}
+		this.pasivaDeClase(aliados, enemigos);
 	}
 	//METODOS DE ENEMIGO////////////////////////////////////////////////////////////
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
@@ -55,6 +56,7 @@ public class DragonPirotecnico extends Unidad{
 		if(objetivo != null) {
 			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (objetivo.getDef() + objetivo.getDefMod()));
 			objetivo.recibirDaño(daño, true);
+			contarFaltas(objetivo);
 			this.cargaExplosiva++;
 			for (Unidad unidadAledaña : unidades) {
 	            if (!unidadAledaña.equals(objetivo)) { // Evitar aplicar daño a la unidad objetivo
@@ -73,6 +75,7 @@ public class DragonPirotecnico extends Unidad{
 		if(unidad != null) {
 			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod())); 	 
 			unidad.recibirDaño(daño, true);
+			contarFaltas(unidad);
 			this.dañoCausado = daño/3;
 			this.cargaExplosiva++;
 			this.unidadObjetivo = unidad;
@@ -154,6 +157,13 @@ public class DragonPirotecnico extends Unidad{
 		}
 	}
 	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
+		if(!enemigos.isEmpty()) {
+			for(Unidad unidad : enemigos) {
+				if(unidad.getClase() == "Delegada") {
+					this.setMostrarFaltas(true);
+				}
+			}
+		}
 		if(!enemigos.isEmpty()) {
 			for(Unidad unidad : enemigos) {
 				if (!unidad.equals(this.unidadObjetivo)) { // Evitar aplicar daño a la unidad objetivo

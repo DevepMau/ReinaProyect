@@ -37,6 +37,7 @@ public class PuñoFurioso extends Unidad {
 		else {
 			realizarAtaqueEnemigo(enemigos);
 		}
+		this.pasivaDeClase(aliados, enemigos);
 	}
 	public void recibirDaño(int daño, boolean isCritical) {
 		super.recibirDaño(daño, isCritical);
@@ -89,6 +90,7 @@ public class PuñoFurioso extends Unidad {
 			}
 			if(!isMiss) {
 				objetivo.recibirDaño(daño, isCritical);
+				contarFaltas(objetivo);
 			}
 			else {
 				objetivo.evadirAtaque();
@@ -108,8 +110,6 @@ public class PuñoFurioso extends Unidad {
 	        }
 	    }
 	    return unidadSeleccionada;
-	}
-	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
 	}
 	public boolean cumpleReqDeHab1() {
 		if(this.getSP() > 0) {

@@ -4,31 +4,30 @@ import java.util.ArrayList;
 import principal.PanelDeJuego;
 import principal.Zona;
 
-public class MaestroDelChi extends Unidad {
+public class Influencer extends Unidad {
 	
-	private String[] habilidades = new String[2];
+	private String[] habilidades = new String[1];
 	private int spHabilidad1;
 	private int cargas;
 
-	public MaestroDelChi(Zona zona, boolean aliado, PanelDeJuego pdj) {
+	public Influencer(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
 		this.setNombre("Especialista");
-		this.setClase("Maestro Del Chi");
-		this.setIdFaccion(3);
-		this.setHPMax(obtenerValorEntre(40,70));
+		this.setClase("Influencer");
+		this.setIdFaccion(4);
+		this.setHPMax(obtenerValorEntre(120,150));
 		this.setHP(this.getHPMax());
 		this.setSPMax(obtenerValorEntre(60,100));
 		this.setSP(this.getSPMax());
-		this.setAtq(obtenerValorEntre(12,18));
-		this.setDef(obtenerValorEntre(1,7));
-		this.setVel(obtenerValorEntre(14,19));
-		this.setPCRT(0.25);
+		this.setAtq(obtenerValorEntre(4,6));
+		this.setDef(obtenerValorEntre(5,7));
+		this.setVel(obtenerValorEntre(5,12));
+		this.setPCRT(0);
 		this.setDCRT(1.5);
-		this.setEva(0.25);
+		this.setEva(0);
 		this.spHabilidad1 = 20;
 		this.cargas = 0;
-		this.habilidades[0] = "MARCAR";
-		this.habilidades[1] = "EXPLOTAR";
+		this.habilidades[0] = "ETIQUETAR";
 		this.generarCuerpo();
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
@@ -163,28 +162,6 @@ public class MaestroDelChi extends Unidad {
 		this.setEstaGanandoSP(true);
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
-	public boolean haySinMarcar(ArrayList<Unidad> unidades) {
-		if(!unidades.isEmpty()) {
-			for(Unidad unidad : unidades) {
-				if(!unidad.getEstaMarcado()) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	public Unidad elegirObjetivoSinMarcar(ArrayList<Unidad> unidades) {
-	    ArrayList<Unidad> unidadesSinMarcar = new ArrayList<>();
-	    for (Unidad unidad : unidades) {
-	        if (!unidad.getEstaMarcado()) {
-	            unidadesSinMarcar.add(unidad);
-	        }
-	    }
-	    if (!unidadesSinMarcar.isEmpty()) {
-	        return unidadesSinMarcar.get(this.elegirAleatorio(unidadesSinMarcar.size()));
-	    }
-	    return null;
-	}
 	public void configurarTipoDeaccion() {
 		if(this.getHabilidadElegida() == 0) {
 			this.setAccion("ATACAR");

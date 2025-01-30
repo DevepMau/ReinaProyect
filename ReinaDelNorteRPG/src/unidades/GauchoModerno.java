@@ -12,6 +12,7 @@ public class GauchoModerno extends Unidad {
 	public GauchoModerno(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
 		this.setNombre("");
+		this.setTipo("Combatiente");
 		this.setClase("Gaucho Moderno");
 		this.setIdFaccion(1);
 		this.setHPMax(obtenerValorEntre(60,90));
@@ -39,28 +40,11 @@ public class GauchoModerno extends Unidad {
 	        this.acumuladorDeVidaPrdida -= (10*acumuladorDeAtq); 
 	    }
 	}
-	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////
-	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
-		Unidad objetivo = elegirObjetivo(unidades);
-		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());   
-		if(objetivo != null) {
-			boolean isMiss = Math.random() <= (objetivo.getEva() + objetivo.getEvaMod());
-			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (objetivo.getDef() + objetivo.getDefMod()));
-	    	 
-			if (isCritical) {
-				daño *= (this.getDCRT() + this.getDcrtMod());
-			}
-			if(!isMiss) {
-				objetivo.recibirDaño(daño, isCritical);
-				this.setPcrtMod(this.getPcrtMod()+0.05);
-			}
-			else {
-				objetivo.evadirAtaque();
-			}
-			this.reflejarDaño(objetivo, daño);
-			this.robarVida(daño, objetivo);
-		}
+	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
+		super.realizarAccion(enemigos, aliados);
+		this.pasivaDeClase(aliados, enemigos);
 	}
+	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
 		if(this.getHabilidadElegida() == 0) {
 			if(!unidades.isEmpty()) {
@@ -70,25 +54,6 @@ public class GauchoModerno extends Unidad {
 		}
 	}
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
-	public void realizarAtaque(Unidad unidad) {
-		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());
-		if(unidad != null) {
-			boolean isMiss = Math.random() <= (unidad.getEva() + unidad.getEvaMod());	
-			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod())); 	 
-			if (isCritical) {
-				daño *= (this.getDCRT() + this.getDcrtMod());
-			}
-			if(!isMiss) {
-				unidad.recibirDaño(daño, isCritical);
-				this.setPcrtMod(this.getPcrtMod()+0.05);
-			}
-			else {
-				unidad.evadirAtaque();
-			}
-			this.reflejarDaño(unidad, daño);
-			this.robarVida(daño, unidad);
-		}
-	}
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {	
 		saldarDeuda(unidad);
 	}

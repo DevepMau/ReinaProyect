@@ -70,6 +70,7 @@ public class ShaolinEscolar extends Unidad {
 				objetivo.recibirDaño(daño, isCritical);
 				this.dañoCausado = this.obtenerValorEntre(1, daño);
 				this.sumarNeocreditos(daño);
+				contarFaltas(objetivo);
 			}
 			else {
 				objetivo.evadirAtaque();
@@ -95,6 +96,7 @@ public class ShaolinEscolar extends Unidad {
 				unidad.recibirDaño(daño, isCritical);
 				this.dañoCausado = this.obtenerValorEntre(1, daño);
 				this.sumarNeocreditos(daño);
+				contarFaltas(unidad);
 				
 			}
 			else {
@@ -151,6 +153,13 @@ public class ShaolinEscolar extends Unidad {
 		}
 	}
 	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
+		if(!enemigos.isEmpty()) {
+			for(Unidad unidad : enemigos) {
+				if(unidad.getClase() == "Delegada") {
+					this.setMostrarFaltas(true);
+				}
+			}
+		}
 		if(!aliados.isEmpty()) {
 			for(Unidad unidad : aliados) {
 				if(unidad.getIdFaccion() == 2) {

@@ -11,7 +11,8 @@ public class HeroeFederal extends Unidad{
 
 	public HeroeFederal(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
-		this.setNombre("Elite");
+		this.setNombre("");
+		this.setTipo("Elite");
 		this.setClase("Heroe Federal");
 		this.setIdFaccion(1);
 		this.setHPMax(obtenerValorEntre(100,150));
@@ -38,23 +39,23 @@ public class HeroeFederal extends Unidad{
 		else {
 			realizarAtaqueEnemigo(enemigos);
 		}
+		this.pasivaDeClase(aliados, enemigos);
 	}
 	//METODOS DE ENEMIGO////////////////////////////////////////////////////////////
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
 		if(this.getHabilidadElegida() == 0) {
 			Unidad unidad = elegirObjetivoMasFuerte(unidades);
 			expulsar(unidad);	
-			this.setSP(this.getSP() - this.spHabilidad1);
 		}
 	}
 	//METODOS DE JUGADOR////////////////////////////////////////////////////////////
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {
 		expulsar(unidad);
-		this.setSP(this.getSP() - this.spHabilidad1);
 	}
 	//HABILIDADES///////////////////////////////////////////////////////////////////
 	public void expulsar(Unidad unidad) {
 		if(unidad != null) {
+			this.setSP(this.getSP() - this.spHabilidad1);
 			boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());   
 			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod()));
 	    	 
@@ -71,17 +72,6 @@ public class HeroeFederal extends Unidad{
 			unidad.setearSacudida(true);
 			unidad.setDuracionSacudida(20);
 		}
-	}
-	public void ganarSP(int daño) {
-		if((this.getSP()+(daño*2)) > this.getSPMax()){
-			this.setSP(this.getSPMax());
-		}
-		else {
-			this.setSP(this.getSP() + daño*2);
-		}
-		this.setearSacudida(true);
-		this.setDuracionSacudida(20);
-		this.setEstaGanandoSP(true);
 	}
 	//METODOS AUXILIARES////////////////////////////////////////////////////////////
 	public Unidad elegirObjetivo(ArrayList<Unidad> unidades) {

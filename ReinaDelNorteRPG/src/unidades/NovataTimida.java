@@ -49,6 +49,7 @@ public class NovataTimida extends Unidad{
 		else {
 			realizarAtaqueEnemigo(enemigos);
 		}
+		this.pasivaDeClase(aliados, enemigos);
 	}
 	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
@@ -115,7 +116,7 @@ public class NovataTimida extends Unidad{
 		this.setSPMax(this.getSPMax() + 30);
 		this.restaurarSP(this.getSPMax());
 		this.setAtq(this.getAtq() + 5);
-		this.setDef(this.getDef() + 3);
+		this.setDef(this.getDef() + 2);
 		this.setVel(this.getVel() + 5);
 		this.setEva(this.getEva() + 0.05);
 		this.setPCRT(this.getPCRT() + 0.05);
@@ -139,8 +140,6 @@ public class NovataTimida extends Unidad{
 			}
 		}
 		return false;
-	}
-	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
 	}
 	public void configurarTipoDeaccion() {
 		if(this.getHabilidadElegida() == 0) {

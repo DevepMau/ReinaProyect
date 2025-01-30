@@ -48,6 +48,7 @@ public class MedicoTradicionalista extends Unidad {
 		else {
 			realizarAtaqueEnemigo(enemigos);
 		}
+		this.pasivaDeClase(aliados, enemigos);
 	}
 	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////
 	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
@@ -63,6 +64,7 @@ public class MedicoTradicionalista extends Unidad {
 			if(!isMiss) {
 				objetivo.recibirDaño(daño, isCritical);
 				this.restaurarSP(daño*2);
+				contarFaltas(objetivo);
 			}
 			else {
 				objetivo.evadirAtaque();
@@ -104,6 +106,7 @@ public class MedicoTradicionalista extends Unidad {
 			if(!isMiss) {
 				unidad.recibirDaño(daño, isCritical);
 				this.restaurarSP(daño*2);
+				contarFaltas(unidad);
 			}
 			else {
 				unidad.evadirAtaque();

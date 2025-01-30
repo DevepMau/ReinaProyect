@@ -44,6 +44,7 @@ public class Unidad {
 	private boolean estaMotivado;
 	private boolean estaDesmotivado;
 	private boolean estaLisiado;
+	private boolean estaDebilitado;
 	private boolean estaKO;
 	//VARIABLES PARA LA SACUDIDA/////////////////////////////////////
 	private boolean enSacudida = false;
@@ -61,15 +62,18 @@ public class Unidad {
 	private String[] listaDeHabilidades = new String[1];
 	private int habilidadElegida = -1;
 	private boolean objetivoUnico = true;
+	private boolean mostrarFaltas = false;
 	private int alturaPorClase = 0;
 	private int alturaDeAccesorio = 0;
 	private int alturaDeBarraHP = 0;
 	private int idFaccion;
 	private int idTez;
 	private int escudos = 0;
+	private int faltasCometidas = 0;
 	//ESTADISTICAS DE LA UNIDAD/////////////////////////////////////
 	private String nombre;
 	private String clase;
+	private String tipo;
 	private int genero;
 	private int hp;
 	private int hpMax;
@@ -142,6 +146,7 @@ public class Unidad {
                 estaDesmotivado = false;
                 realizaUnCritico = false;
                 estaLisiado = false;
+                estaDebilitado = false;
                 desplazamientoSacudidaX = 0;
                 desplazamientoSacudidaY = 0;
                 desplazarDañoRecibido = getPosY();
@@ -156,6 +161,9 @@ public class Unidad {
         this.g2 = g2;  
         dibujarVida();
         dibujarEscudos(g2);
+        if(getMostrarFaltas()) {
+        	dibujarFaltas(g2);
+        }
         int dibujarX = getPosX() + desplazamientoSacudidaX;
         int dibujarY = getPosY() + desplazamientoSacudidaY;
         if(isAlive()) {
@@ -252,6 +260,11 @@ public class Unidad {
         	Image KO = configurarImagen("/efectos/stun", 3);
         	g2.drawImage(KO, dibujarX+10, dibujarY, null);
         }
+        else if(this.estaDebilitado) {
+        	g2.setColor(Color.pink);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+            g2.drawString("CASTIGADO!", getPosX()+84, desplazarDañoRecibido-48);
+        }
         else {
         	g2.setColor(Color.WHITE);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
@@ -270,7 +283,8 @@ public class Unidad {
 		else {
 			realizarAtaqueEnemigo(enemigos);
 		}
-	}	
+	}
+	
 	public void recibirDaño(int daño, boolean isCritical) {
 		int SEId = 2;
 		if(isCritical) {
@@ -294,7 +308,9 @@ public class Unidad {
 		}
 	    
 	}
-	public void realizarAtaque(Unidad unidad) {
+	
+	public void realizarAtaque(Unidad unidad, ArrayList<Unidad> enemigos) {
+		Unidad protector = this.getProtector(enemigos);
 		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());
 		if(unidad != null) {
 			boolean isMiss = Math.random() <= (unidad.getEva() + unidad.getEvaMod());	 
@@ -303,16 +319,35 @@ public class Unidad {
 				daño *= (this.getDCRT() + this.getDcrtMod());
 			}
 			if(!isMiss) {
-				unidad.recibirDaño(daño, isCritical);
+				int random = this.elegirAleatorio(2);
+				if(protector != null && random == 1) {
+					protector.recibirDaño(daño, isCritical);
+					contarFaltas(protector);
+				}
+				else {
+					unidad.recibirDaño(daño, isCritical);
+					contarFaltas(unidad);
+				}
+				if(this.getTipo() == "Especialista") {
+					this.restaurarSP(daño*2);
+					estaGanandoSP = true;
+					setearSacudida(true);
+				    setDuracionSacudida(20);
+				}
+				if(this.getClase() == "Gaucho Moderno") {
+					this.setPcrtMod(this.getPcrtMod()+0.05);
+				}
 			}
 			else {
 				unidad.evadirAtaque();
 			}
 			this.reflejarDaño(unidad, daño);
-			robarVida(daño, unidad);
+			this.robarVida(daño, unidad);
 		}
 	}
+
 	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
+		Unidad protector = this.getProtector(unidades);
 		Unidad objetivo = elegirObjetivo(unidades);
 		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());  
 		if(objetivo != null) {
@@ -323,7 +358,24 @@ public class Unidad {
 				daño *= (this.getDCRT() + this.getDcrtMod());
 			}
 			if(!isMiss) {
-				objetivo.recibirDaño(daño, isCritical);
+				int random = this.elegirAleatorio(2);
+				if(protector != null && random == 1) {
+					protector.recibirDaño(daño, isCritical);
+					contarFaltas(protector);
+				}
+				else {
+					objetivo.recibirDaño(daño, isCritical);
+					contarFaltas(objetivo);
+				}
+				if(this.getTipo() == "Especialista") {
+					this.restaurarSP(daño*2);
+					estaGanandoSP = true;
+					setearSacudida(true);
+				    setDuracionSacudida(20);
+				}
+				if(this.getClase() == "Gaucho Moderno") {
+					this.setPcrtMod(this.getPcrtMod()+0.05);
+				}
 			}
 			else {
 				objetivo.evadirAtaque();
@@ -332,12 +384,25 @@ public class Unidad {
 			robarVida(daño, objetivo);
 		}
 	}
+	
+	public Unidad getProtector(ArrayList<Unidad> unidades) {
+		if(!unidades.isEmpty()) {
+			for(Unidad unidad : unidades) {
+				if(unidad.getClase() == "Influencer") {
+					return unidad;
+				}
+			}
+		}
+		return null;
+	}
+	
 	public void evadirAtaque() {
 		pdj.ReproducirSE(6);
 		estaEsquivando = true;
 		setearSacudida(true);
 	    setDuracionSacudida(20);
-	}	
+	}
+	
 	public void restaurarHP(int curacion) {
 		if((this.getHP() + curacion) > this.getHPMax()) {
 			this.setHP(this.getHPMax());
@@ -346,23 +411,8 @@ public class Unidad {
 			this.setHP(this.getHP() + curacion);
 		}
 		curaRecibida = "+" + curacion;
-		realizaUnaCuracion = true;
-		setearSacudida(true);
-	    setDuracionSacudida(20);
-	    pdj.ReproducirSE(4);
 	}
-	public void restaurarHPMudo(int curacion) {
-		if((this.getHP() + curacion) > this.getHPMax()) {
-			this.setHP(this.getHPMax());
-		}
-		else {
-			this.setHP(this.getHP() + curacion);
-		}
-		curaRecibida = "+" + curacion;
-		realizaUnaCuracion = true;
-		setearSacudida(true);
-	    setDuracionSacudida(20);
-	}
+	
 	public void restaurarSP(int energia) {
 		if((this.getSP() + energia) > this.getSPMax()) {
 			this.setSP(this.getSPMax());
@@ -371,28 +421,8 @@ public class Unidad {
 			this.setSP(this.getSP() + energia);
 		}
 		curaRecibida = "+" + energia;
-		estaGanandoSP = true;
-		setearSacudida(true);
-	    setDuracionSacudida(20);
-	    pdj.ReproducirSE(4);
 	}
-	public void restaurarSPMudo(int energia) {
-		if((this.getSP() + energia) > this.getSPMax()) {
-			this.setSP(this.getSPMax());
-		}
-		else {
-			this.setSP(this.getSP() + energia);
-		}
-	}
-	public void sumarSP(Unidad unidad, int sp) {
-		int i = sp + unidad.getSP();
-		if(i > unidad.getSPMax()) {
-			unidad.setSP(unidad.getSPMax());
-		}
-		else {
-			unidad.setSP(i);
-		}
-	}
+	
 	public void reflejarDaño(Unidad unidad, int daño) {
 		if(unidad.getClase() == "Shaolin Escolar" || unidad.getClase() == "Aspirante A Dragon") {
 			int i = (daño/2);
@@ -404,28 +434,7 @@ public class Unidad {
 			}
 		}
 	}
-	public void recibirGolpeRapido(int daño, boolean isCritical) {
-		int SEId = 2;
-		if(isCritical) {
-			dañoRecibido = "CRITICAL " + daño +"!";
-			this.realizaUnCritico = true;
-			SEId = 3;
-		}
-		else {
-			dañoRecibido = "" + daño;
-		}
-		setearSacudida(true);
-	    setDuracionSacudida(10);
-		if(this.escudos > 0) {
-			escudos--;
-			pdj.ReproducirSE(9);
-		}
-		else {
-			this.setHP(this.getHP() - daño);
-			this.setVidaPerdida(this.getVidaPerdida() + daño);
-			pdj.ReproducirSE(SEId);
-		}
-	}
+	
 	public void recibirGolpesMúltiples(int daño,int cant, boolean isCritical) {
 	    int numGolpes = cant;
 	    new Thread(() -> {
@@ -441,16 +450,33 @@ public class Unidad {
 	            }
 	            // Aplicar daño reducido para los golpes iniciales
 	            int dañoActual = (i == numGolpes - 1) ? daño : (daño-(daño/4));
-	            recibirGolpeRapido(dañoActual, golpeCritico);
+	            recibirDaño(dañoActual, golpeCritico);
 	        }
 	    }).start();
 	}
+	
 	public void robarVida(int daño, Unidad unidad) {
 		if(unidad.getEstaMarcado()) {
-			this.restaurarHPMudo(daño-(daño/4));
+			this.restaurarHP(daño-(daño/4));
 		}
 	}
-	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {}
+	
+	public void contarFaltas(Unidad unidad) {
+		if(unidad.getGenero() == 0) {
+			this.faltasCometidas++;
+		}
+	}
+	
+	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
+		if(!enemigos.isEmpty()) {
+			for(Unidad unidad : enemigos) {
+				if(unidad.getClase() == "Delegada") {
+					this.setMostrarFaltas(true);
+				}
+			}
+		}
+	}
+	
 	public void sumarNeocreditos(int neocreditos) {}
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {}	
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {}	
@@ -518,6 +544,25 @@ public class Unidad {
 	    }
 	}
 	
+	public void dibujarFaltas(Graphics2D g2) {
+		int altura = -pdj.tamañoDeBaldosa - (pdj.tamañoDeBaldosa / 8) + 16;
+	    int posX = getPosX() + 75;
+	    int posY = getPosY() + 25 + altura + this.alturaDeBarraHP;
+	    
+	    if(this.faltasCometidas == 1) {
+	    	g2.setColor(Color.ORANGE);
+	    	g2.drawString("X", posX, posY);
+	    }
+	    else if(this.faltasCometidas == 2) {
+	    	g2.setColor(Color.ORANGE);
+	    	g2.drawString("X X", posX-10, posY);
+	    }
+	    else if(this.faltasCometidas > 2) {
+	    	g2.setColor(Color.RED);
+	    	g2.drawString("X X X", posX-20, posY);
+	    }
+	}
+	
 	public void efectosVisualesPersonalizados(Graphics2D g2){}
 	//METODOS DE ELECCION/////////////////////////////////////////////////////
 	public Unidad elegirObjetivo(ArrayList<Unidad> unidades) {
@@ -526,10 +571,12 @@ public class Unidad {
 	    }
 	    return null;
 	}
+	
 	public int elegirAleatorio(int i) {
 	    Random random = new Random();
 	    return random.nextInt(i);
 	}	
+	
 	public int obtenerValorEntre(int min, int max) {
 	    if (min > max) {
 	        throw new IllegalArgumentException("El valor mínimo no puede ser mayor que el máximo.");
@@ -541,9 +588,11 @@ public class Unidad {
 		setPosX(zona.x);
 		setPosY(zona.y);
 	}
+	
 	public int calcularBarraHP() {
 		return (getHP()*barraHP)/getHPMax();
 	}
+	
 	public BufferedImage configurarImagen(String rutaImagen, int escala) {
 	    Utilidades uTool = new Utilidades();
 	    BufferedImage imagen = null;
@@ -836,6 +885,8 @@ public class Unidad {
 	public void setEstaLisiado(boolean estaLisiado) {this.estaLisiado = estaLisiado;}
 	public boolean getEstaKO() {return estaKO;}
 	public void setEstaKO(boolean estaKO) {this.estaKO = estaKO;}
+	public boolean getEstaDebilitado() {return this.estaDebilitado;}
+	public void setEstaDebilitado(boolean boo) {this.estaDebilitado = boo;}
 	//GETTER & SETTERS MISCELANEOS///////////////////////////////////////////////
 	public Zona getZona() {return zona;}
 	public void setZona(Zona zona) {this.zona = zona;}
@@ -861,7 +912,13 @@ public class Unidad {
 	public void setAlturaBarraHP(int altura) {this.alturaDeBarraHP = altura;}
 	public int getEscudos() {return this.escudos;}
 	public void setEscudos(int cant) {this.escudos = cant;}
+	public int getFaltasCometidas() {return this.faltasCometidas;}
+	public void setFaltasCometidas(int cant) {this.faltasCometidas = cant;}
+	public boolean getMostrarFaltas() {return this.mostrarFaltas;}
+	public void setMostrarFaltas(boolean boo) {this.mostrarFaltas = boo;}
 	//GETTERS & SETTERS STATS BASE/////////////////////////////////////////////
+	public String getTipo() {return tipo;}
+	public void setTipo(String st) {this.tipo = st;}
 	public int getGenero() {return genero;}
 	public void setGenero(int i) {this.genero = i;}
 	public int getIdFaccion() {return idFaccion;}

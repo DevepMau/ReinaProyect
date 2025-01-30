@@ -29,6 +29,7 @@ public class NiñoCheung extends Unidad {
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
 		realizarAtaqueEnemigo(enemigos);
+		this.pasivaDeClase(aliados, enemigos);
 	}
 	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////
 	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
@@ -56,6 +57,7 @@ public class NiñoCheung extends Unidad {
 			}
 			if(!isMiss) {
 				objetivo.recibirDaño(daño, isCritical);
+				contarFaltas(objetivo);
 			}
 			else {
 				objetivo.evadirAtaque();

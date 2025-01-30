@@ -75,6 +75,7 @@ public class AlumnoModelo extends Unidad{
 				objetivo.recibirDaño(daño, isCritical);
 				this.dañoCausado = daño*3;
 				this.sumarNeocreditos(this.dañoCausado);
+				contarFaltas(objetivo);
 			}
 			else {
 				objetivo.evadirAtaque();
@@ -105,7 +106,7 @@ public class AlumnoModelo extends Unidad{
 				unidad.recibirDaño(daño, isCritical);
 				this.dañoCausado = daño*3;
 				this.sumarNeocreditos(this.dañoCausado);
-				
+				contarFaltas(unidad);	
 			}
 			else {
 				unidad.evadirAtaque();
@@ -199,6 +200,13 @@ public class AlumnoModelo extends Unidad{
 		
 	}
 	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
+		if(!enemigos.isEmpty()) {
+			for(Unidad unidad : enemigos) {
+				if(unidad.getClase() == "Delegada") {
+					this.setMostrarFaltas(true);
+				}
+			}
+		}
 		if(!aliados.isEmpty()) {
 			for(Unidad unidad : aliados) {
 				if(unidad.getIdFaccion() == 2) {
