@@ -11,6 +11,7 @@ public class Delegada extends Unidad {
 	public Delegada(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
 		this.setNombre("");
+		this.setTipo("Combatiente");
 		this.setClase("Delegada");
 		this.setIdFaccion(4);
 		this.setGenero(0);
@@ -54,7 +55,7 @@ public class Delegada extends Unidad {
 	public void reportar(Unidad unidad) {
 		if(unidad != null) {
 			if(unidad.getFaltasCometidas() >= 3) {
-				unidad.recibirDaño((unidad.getAtq() + unidad.getAtqMod()), false);
+				unidad.recibirDaño((unidad.getAtq() + unidad.getAtqMod()), false, 20);
 				unidad.setEstaDebilitado(true);
 				unidad.setAtqMod(unidad.getAtqMod() - obtenerValorEntre(2,4));
 				unidad.setPcrtMod(unidad.getPcrtMod() - 0.05);
@@ -63,12 +64,12 @@ public class Delegada extends Unidad {
 				pdj.ReproducirSE(3);
 			}
 			else if(unidad.getFaltasCometidas() == 2) {
-				unidad.recibirDaño((unidad.getAtq() + unidad.getAtqMod())/2, false);
+				unidad.recibirDaño((unidad.getAtq() + unidad.getAtqMod())/2, false, 20);
 				unidad.setFaltasCometidas(0);
 				pdj.ReproducirSE(3);
 			}
 			else if(unidad.getFaltasCometidas() == 1){
-				unidad.recibirDaño((unidad.getAtq() + unidad.getAtqMod())/3, false);
+				unidad.recibirDaño((unidad.getAtq() + unidad.getAtqMod())/3, false, 20);
 				unidad.setEstaDebilitado(true);
 				unidad.setFaltasCometidas(0);
 				pdj.ReproducirSE(3);

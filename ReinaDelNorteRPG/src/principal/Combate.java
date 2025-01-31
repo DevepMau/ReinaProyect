@@ -25,6 +25,7 @@ import unidades.DragonPirotecnico;
 import unidades.GauchoModerno;
 import unidades.Delegada;
 import unidades.HeroeFederal;
+import unidades.Influencer;
 import unidades.MedicoTradicionalista;
 import unidades.NiñoCheung;
 import unidades.NovataTimida;
@@ -85,24 +86,18 @@ public class Combate {
 		//unidades.put(2, new MedicoTradicionalista(zonas.get(0), false, pdj));
 		//unidades.put(3, new DragonPirotecnico(zonas.get(0), false, pdj));
 		//Puño/////////////////////////////////////////////////////////
-		unidades.put(0, new NiñoCheung(zonas.get(0), false, pdj));
-		unidades.put(1, new PuñoFurioso(zonas.get(0), false, pdj));
-		unidades.put(2, new MaestroDelChi(zonas.get(0), false, pdj));
-		unidades.put(3, new AspiranteADragon(zonas.get(0), false, pdj));
-		unidades.put(4, new NiñoCheung(zonas.get(0), true, pdj));
-		unidades.put(5, new PuñoFurioso(zonas.get(0), true, pdj));
-		unidades.put(6, new MaestroDelChi(zonas.get(0), true, pdj));
-		unidades.put(7, new AspiranteADragon(zonas.get(0), true, pdj));
+		//unidades.put(0, new NiñoCheung(zonas.get(0), false, pdj));
+		//unidades.put(1, new PuñoFurioso(zonas.get(0), false, pdj));
+		//unidades.put(2, new MaestroDelChi(zonas.get(0), false, pdj));
+		//unidades.put(3, new AspiranteADragon(zonas.get(0), false, pdj));
 		///////////////////////////////////////////////////////////////
-		//unidades.put(4, new NiñoCheung(zonas.get(0), true, pdj));
-		//unidades.put(5, new PuñoFurioso(zonas.get(0), true, pdj));
-		//unidades.put(6, new MaestroDelChi(zonas.get(0), true, pdj));
-		//unidades.put(7, new AspiranteADragon(zonas.get(0), true, pdj));
-		//unidades.put(3, new Delegada(zonas.get(0), false, pdj));
-		//unidades.put(7, new Delegada(zonas.get(0), true, pdj));
-		//unidades.put(6, new NovataTimida(zonas.get(0), true, pdj));
-		//unidades.put(1, new NovataTimida(zonas.get(0), false, pdj));
-		//unidades.put(2, new NovataTimida(zonas.get(0), true, pdj));
+		unidades.put(8, new NovataTimida(zonas.get(0), true, pdj));
+		unidades.put(7, new Influencer(zonas.get(0), true, pdj));
+		unidades.put(9, new Delegada(zonas.get(0), true, pdj));
+		unidades.put(4, new NovataTimida(zonas.get(0), false, pdj));
+		unidades.put(5, new Influencer(zonas.get(0), false, pdj));
+		unidades.put(6, new Delegada(zonas.get(0), false, pdj));
+
 
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////////////////

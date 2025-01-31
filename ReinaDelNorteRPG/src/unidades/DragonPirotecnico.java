@@ -98,18 +98,6 @@ public class DragonPirotecnico extends Unidad{
 	    }
 	}
 	//METODOS AUXILIARES////////////////////////////////////////////////////////////
-	public Unidad elegirObjetivo(ArrayList<Unidad> unidades) {
-	    Unidad unidadSeleccionada = null;
-	    int menorPorcentajeHP = Integer.MAX_VALUE;
-	    for (Unidad unidad : unidades) {
-	    	int porcentajeHP = (unidad.getHP() * 100) / unidad.getHPMax();;
-	        if (porcentajeHP < menorPorcentajeHP) {
-	            menorPorcentajeHP = porcentajeHP;
-	            unidadSeleccionada = unidad;
-	        }
-	    }
-	    return unidadSeleccionada;
-	}
 	public Unidad elegirObjetivoMasFuerte(ArrayList<Unidad> unidades) {
 	    Unidad unidadSeleccionada = null;
 	    int mayorPorcentajeATQ = Integer.MIN_VALUE;

@@ -129,18 +129,6 @@ public class AspiranteADragon extends Unidad{
 			g2.fillRoundRect(this.getPosX()+46, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
 		}
 	}
-	public Unidad elegirObjetivo(ArrayList<Unidad> unidades) {
-	    Unidad unidadSeleccionada = null;
-	    int menorPorcentajeHP = Integer.MAX_VALUE;
-	    for (Unidad unidad : unidades) {
-	    	int porcentajeHP = (unidad.getHP() * 100) / unidad.getHPMax();;
-	        if (porcentajeHP < menorPorcentajeHP) {
-	            menorPorcentajeHP = porcentajeHP;
-	            unidadSeleccionada = unidad;
-	        }
-	    }
-	    return unidadSeleccionada;
-	}
 	public Unidad elegirObjetivoMasFuerte(ArrayList<Unidad> unidades) {
 	    Unidad unidadSeleccionada = null;
 	    int mayorPorcentajeATQ = Integer.MIN_VALUE;

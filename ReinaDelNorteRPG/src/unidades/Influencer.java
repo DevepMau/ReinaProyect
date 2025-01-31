@@ -6,41 +6,43 @@ import principal.Zona;
 
 public class Influencer extends Unidad {
 	
-	private String[] habilidades = new String[1];
+	private String[] habilidades = new String[2];
 	private int spHabilidad1;
-	private int cargas;
+	private int spHabilidad2;
 
 	public Influencer(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
-		this.setNombre("Especialista");
+		this.setNombre("");
+		this.setTipo("Especialista");
 		this.setClase("Influencer");
+		this.setGenero(0);
 		this.setIdFaccion(4);
-		this.setHPMax(obtenerValorEntre(120,150));
+		this.setHPMax(obtenerValorEntre(150,200));
 		this.setHP(this.getHPMax());
-		this.setSPMax(obtenerValorEntre(60,100));
+		this.setSPMax(obtenerValorEntre(70,90));
 		this.setSP(this.getSPMax());
 		this.setAtq(obtenerValorEntre(4,6));
-		this.setDef(obtenerValorEntre(5,7));
+		this.setDef(obtenerValorEntre(1,2));
 		this.setVel(obtenerValorEntre(5,12));
 		this.setPCRT(0);
 		this.setDCRT(1.5);
 		this.setEva(0);
-		this.spHabilidad1 = 20;
-		this.cargas = 0;
-		this.habilidades[0] = "ETIQUETAR";
+		this.setCapacidadBloqueo(0.6);
+		this.spHabilidad1 = 10;
+		this.spHabilidad2 = 30;
+		this.habilidades[0] = "DIFAMAR";
+		this.habilidades[1] = "SELFIE GRUPAL";
 		this.generarCuerpo();
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
-		int accion = elegirAleatorio(4);
-		if(!this.haySinMarcar(enemigos)) {
-			this.setHabilidadElegida(1);
+		if(this.getDefMod() >= 4) {
+			setHabilidadElegida(1);
 			usarHabilidadEnemigo(aliados, enemigos);
 		}
-		else if(accion <= 2 && cumpleReqDeHab1() && this.haySinMarcar(enemigos)) {
-			this.setHabilidadElegida(0);
+		else if(cumpleReqDeHab1()) {
+			setHabilidadElegida(0);
 			usarHabilidadEnemigo(aliados, enemigos);
-			
 		}
 		else {
 			realizarAtaqueEnemigo(enemigos);
@@ -48,118 +50,54 @@ public class Influencer extends Unidad {
 		this.pasivaDeClase(aliados, enemigos);
 	}
 	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////
-	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
-		Unidad objetivo = elegirObjetivo(unidades);
-		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());  
-		if(objetivo != null) {
-			boolean isMiss = Math.random() <= (objetivo.getEva() + objetivo.getEvaMod());
-			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (objetivo.getDef() + objetivo.getDefMod()));
-	    	 
-			if (isCritical) {
-				daño *= (this.getDCRT() + this.getDcrtMod());
-			}
-			if(!isMiss) {
-				objetivo.recibirDaño(daño, isCritical);
-				this.restaurarSP(daño*2);
-				contarFaltas(objetivo);
-			}
-			else {
-				objetivo.evadirAtaque();
-			}
-			this.reflejarDaño(objetivo, daño);
-			this.robarVida(daño, objetivo);
-		}
-	}
 	public void usarHabilidadEnemigo(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
 		if(this.getHabilidadElegida() == 0) {
-			if(!enemigos.isEmpty()) {
-				this.setSP(this.getSP() - this.spHabilidad1);
-				Unidad unidad = elegirObjetivoSinMarcar(enemigos);
-				marcar(unidad);
-			}
+			Unidad unidad = elegirObjetivo(enemigos);
+			difamar(unidad);
 		}
 		else {
 			if(!enemigos.isEmpty()) {
-				for(Unidad unidad : enemigos) {
-					explotar(unidad);
-				}
+				selfieGrupal(aliados);
 			}
 		}
 	}
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
-	public void realizarAtaque(Unidad unidad) {
-		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());
-		if(unidad != null) {
-			boolean isMiss = Math.random() <= (unidad.getEva() + unidad.getEvaMod());	 
-			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod())); 	 
-			if (isCritical) {
-				daño *= (this.getDCRT() + this.getDcrtMod());
-			}
-			if(!isMiss) {
-				unidad.recibirDaño(daño, isCritical);
-				this.restaurarSP(daño*2);
-				contarFaltas(unidad);
-			}
-			else {
-				unidad.evadirAtaque();
-			}
-			this.reflejarDaño(unidad, daño);
-			this.robarVida(daño, unidad);
-		}
-	}
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {	
 		if(this.getHabilidadElegida() == 0) {
-			marcar(unidad);
+			difamar(unidad);
 		}
 		else {
-			for(Unidad unidadObjetivo : unidades) {
-				explotar(unidadObjetivo);
-			}
+			selfieGrupal(unidades);
 		}
 	}
 	//HABILIDADES////////////////////////////////////////////////////////////////////////
-	public void marcar(Unidad unidad) {
-		this.setSP(this.getSP() - this.spHabilidad1);
+	public void difamar(Unidad unidad) {
 		if(unidad != null) {
-			pdj.ReproducirSE(8);
-			unidad.setEstaMArcado(true);
+			this.setSP(this.getSP() - this.spHabilidad1);
+			unidad.recibirDaño(this.getDefMod()*2, false, 20);
+			if((unidad.getDef() + unidad.getDefMod()) > 0) {
+				unidad.setDefMod(unidad.getDefMod() -2);
+				this.setDefMod(this.getDefMod() + 1);
+			}
 			unidad.setearSacudida(true);
 			unidad.setDuracionSacudida(20);
-			this.cargas++;
+			unidad.setEstaDesmotivado(true);
 		}
 	}
 	
-	public void explotar(Unidad unidad) {
-		int daño = (this.getAtq()+this.getAtqMod()+(unidad.getVel()/2));
-		if(unidad != null) {
-			pdj.ReproducirSE(8);
-			if(unidad.getEstaMarcado()) {
-				unidad.setearSacudida(true);
-				unidad.setDuracionSacudida(20);
-				unidad.setEstaDesmotivado(true);
-				unidad.setearSacudida(true);
-				unidad.setDuracionSacudida(20);
-				unidad.setEstaMArcado(false);
-				unidad.setVelMod(unidad.getVelMod() - obtenerValorEntre(1,5));
-				unidad.setDefMod(unidad.getDefMod() - obtenerValorEntre(1,3));
-				unidad.recibirDaño(daño, false);
-				this.restaurarHPMudo(daño/2);
-				this.cargas = 0;
+	public void selfieGrupal(ArrayList<Unidad> unidades) {
+		if(!unidades.isEmpty()) {
+			if(this.cumpleReqDeHab2()) {
+				this.setSP(this.getSP() - this.spHabilidad2);
+				for(Unidad unidad : unidades) {
+					pdj.ReproducirSE(9);
+					unidad.setEscudos(unidad.getEscudos() + 1);
+					unidad.setEstaBloqueando(true);
+					unidad.setDuracionSacudida(20);
+					unidad.setearSacudida(true);
+				}
 			}
-			
 		}
-	}
-	
-	public void ganarSP(int daño) {
-		if((this.getSP()+(daño*2)) > this.getSPMax()){
-			this.setSP(this.getSPMax());
-		}
-		else {
-			this.setSP(this.getSP() + daño*2);
-		}
-		this.setearSacudida(true);
-		this.setDuracionSacudida(20);
-		this.setEstaGanandoSP(true);
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
 	public void configurarTipoDeaccion() {
@@ -168,7 +106,7 @@ public class Influencer extends Unidad {
 			this.setObjetivoUnico(true);
 		}
 		else {
-			this.setAccion("ATACAR");
+			this.setAccion("APOYAR");
 			this.setObjetivoUnico(false);
 		}
 	}
@@ -181,8 +119,10 @@ public class Influencer extends Unidad {
 		return false;
 	}
 	public boolean cumpleReqDeHab2() {
-		if(this.cargas > 0) {
-			return true;
+		if(this.getSP() > 0) {
+			if(this.getSP() >= this.spHabilidad2) {
+				return true;
+			}
 		}
 		return false;
 	}

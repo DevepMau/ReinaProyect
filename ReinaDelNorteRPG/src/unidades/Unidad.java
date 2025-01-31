@@ -46,6 +46,7 @@ public class Unidad {
 	private boolean estaLisiado;
 	private boolean estaDebilitado;
 	private boolean estaKO;
+	private boolean estaBloqueando;
 	//VARIABLES PARA LA SACUDIDA/////////////////////////////////////
 	private boolean enSacudida = false;
 	private int duracionSacudida = 0; // Duración en frames
@@ -97,6 +98,7 @@ public class Unidad {
 	private double evaMod = 0;
 	private double pcrtMod = 0;
 	private double dcrtMod = 0;
+	private double capacidadBloqueo;
 	private int vidaPerdida = 0;
 	////////////////////////////////////////////////////////////////
 	public Unidad(Zona zona,boolean aliado, PanelDeJuego pdj) {
@@ -150,6 +152,7 @@ public class Unidad {
                 realizaUnCritico = false;
                 estaLisiado = false;
                 estaDebilitado = false;
+                estaBloqueando = false;
                 desplazamientoSacudidaX = 0;
                 desplazamientoSacudidaY = 0;
                 desplazarDañoRecibido = getPosY();
@@ -268,6 +271,12 @@ public class Unidad {
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
             g2.drawString("CASTIGADO!", getPosX()+84, desplazarDañoRecibido-48);
         }
+        else if(this.estaBloqueando) {
+        	g2.setColor(Color.GRAY);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
+            g2.drawString("BLOCK", getPosX()+84, desplazarDañoRecibido-48);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+        }
         else {
         	g2.setColor(Color.WHITE);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
@@ -319,17 +328,24 @@ public class Unidad {
 			boolean isMiss = Math.random() <= (unidad.getEva() + unidad.getEvaMod());
 			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod())); 
 			if(this.getClase() == "Puño Furioso" && this.getHPMax() < unidad.getHPMax()) {
-				System.out.println("puño");
 				daño += (unidad.getHPMax()/5);
 			}	 
 			if (isCritical) {
 				daño *= (this.getDCRT() + this.getDcrtMod());
 			}
 			if(!isMiss) {
-				int random = this.elegirAleatorio(2);
-				if(protector != null && random == 1) {
-					protector.recibirDaño(daño, isCritical, 20);
-					contarFaltas(protector);
+				if(protector != null) {
+					if(protector.puedeBloquear()) {
+						protector.recibirDaño(daño/2, false, 20);
+						protector.setEstaBloqueando(true);
+						protector.setDefMod(protector.getDefMod() + 1);
+						pdj.ReproducirSE(9);
+						contarFaltas(protector);
+					}
+					else {
+						unidad.recibirDaño(daño, isCritical, 20);
+						contarFaltas(unidad);
+					}
 				}
 				else {
 					unidad.recibirDaño(daño, isCritical, 20);
@@ -373,17 +389,24 @@ public class Unidad {
 			boolean isMiss = Math.random() <= (objetivo.getEva() + objetivo.getEvaMod());
 			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (objetivo.getDef() + objetivo.getDefMod()));
 			if(this.getClase() == "Puño Furioso" && this.getHPMax() < objetivo.getHPMax()) {
-				System.out.println("puño");
 				daño += (objetivo.getHPMax()/5);
 			} 
 			if (isCritical) {
 				daño *= (this.getDCRT() + this.getDcrtMod());
 			}
 			if(!isMiss) {
-				int random = this.elegirAleatorio(2);
-				if(protector != null && random == 1) {
-					protector.recibirDaño(daño, isCritical, 20);
-					contarFaltas(protector);
+				if(protector != null) {
+					if(protector.puedeBloquear()) {
+						protector.recibirDaño(daño/2, false, 20);
+						protector.setEstaBloqueando(true);
+						protector.setDefMod(protector.getDefMod() + 1);
+						pdj.ReproducirSE(9);
+						contarFaltas(protector);
+					}
+					else {
+						objetivo.recibirDaño(daño, isCritical, 20);
+						contarFaltas(objetivo);
+					}
 				}
 				else {
 					objetivo.recibirDaño(daño, isCritical, 20);
@@ -428,6 +451,10 @@ public class Unidad {
 			}
 		}
 		return null;
+	}
+	
+	public boolean puedeBloquear() {
+		return Math.random() <= (this.getCapacidadBloqueo());  
 	}
 	
 	public void evadirAtaque() {
@@ -618,9 +645,9 @@ public class Unidad {
 	public void efectosVisualesPersonalizados(Graphics2D g2){}
 	//METODOS DE ELECCION/////////////////////////////////////////////////////
 	public Unidad elegirObjetivo(ArrayList<Unidad> unidades) {
+		Unidad unidadSeleccionada = null;
 	    if (!unidades.isEmpty()) {
 	    	if(this.getClase() == "Puño Furioso") {
-				Unidad unidadSeleccionada = null;
 			    int mayorPorcentajeHP = Integer.MIN_VALUE;
 			    for (Unidad unidad : unidades) {
 			    	int HPUnidad = unidad.getHPMax();
@@ -631,6 +658,17 @@ public class Unidad {
 			    }
 			    return unidadSeleccionada;
 			}
+	    	else if(this.getTipo() == "Elite") {
+	    		int menorPorcentajeHP = Integer.MAX_VALUE;
+	    	    for (Unidad unidad : unidades) {
+	    	    	int porcentajeHP = (unidad.getHP() * 100) / unidad.getHPMax();;
+	    	        if (porcentajeHP < menorPorcentajeHP) {
+	    	            menorPorcentajeHP = porcentajeHP;
+	    	            unidadSeleccionada = unidad;
+	    	        }
+	    	    }
+	    	    return unidadSeleccionada;
+	    	}
 	    	else {
 	    		return unidades.get((int) (Math.random() * unidades.size()));
 	    	}
@@ -955,6 +993,12 @@ public class Unidad {
 	public void setEstaKO(boolean estaKO) {this.estaKO = estaKO;}
 	public boolean getEstaDebilitado() {return this.estaDebilitado;}
 	public void setEstaDebilitado(boolean boo) {this.estaDebilitado = boo;}
+	public boolean isEstaBloqueando() {
+		return estaBloqueando;
+	}
+	public void setEstaBloqueando(boolean estaBloqueando) {
+		this.estaBloqueando = estaBloqueando;
+	}
 	//GETTER & SETTERS MISCELANEOS///////////////////////////////////////////////
 	public Zona getZona() {return zona;}
 	public void setZona(Zona zona) {this.zona = zona;}
@@ -1038,5 +1082,7 @@ public class Unidad {
 	public void setPcrtMod(double pcrtMod) { this.pcrtMod = pcrtMod;}
 	public double getDcrtMod() { return dcrtMod;}
 	public void setDcrtMod(double dcrtMod) { this.dcrtMod = dcrtMod;}
+	public double getCapacidadBloqueo() {return capacidadBloqueo;}
+	public void setCapacidadBloqueo(double capacidadBloqueo) {this.capacidadBloqueo = capacidadBloqueo;}
 
 }

@@ -1,6 +1,5 @@
 package unidades;
 
-import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import principal.PanelDeJuego;
@@ -15,6 +14,7 @@ public class NovataTimida extends Unidad{
 	public NovataTimida(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
 		this.setNombre("");
+		this.setTipo("Recluta");
 		this.setClase("Novata Timida");
 		this.setIdFaccion(4);
 		this.setGenero(0);
@@ -80,8 +80,8 @@ public class NovataTimida extends Unidad{
 		}
 	}
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
-	public void realizarAtaque(Unidad unidad) {
-		super.realizarAtaque(unidad);
+	public void realizarAtaque(Unidad unidad, ArrayList<Unidad> unidades) {
+		super.realizarAtaque(unidad, unidades);
 		if(this.cargas == 2) {
 			if(this.getClase() != "Novata Confiable") {
 				evolucionar();
@@ -112,7 +112,7 @@ public class NovataTimida extends Unidad{
 			this.setClase("Novata Confiable");
 		}
 		this.setHPMax(this.getHPMax() + this.getHPMax()/4);
-		this.restaurarHPMudo(this.getHPMax()/4);
+		this.restaurarHP(this.getHPMax()/4);
 		this.setSPMax(this.getSPMax() + 30);
 		this.restaurarSP(this.getSPMax());
 		this.setAtq(this.getAtq() + 5);
@@ -126,7 +126,7 @@ public class NovataTimida extends Unidad{
 		if(unidad != null) {
 			this.setSP(this.getSP() - this.spHabilidad1);
 			int daño = Math.max(1, ((this.getAtq()) + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod()));
-			unidad.recibirDaño(daño, true);
+			unidad.recibirDaño(daño, true, 20);
 			this.setEscudos(this.getEscudos() + 1);
 		}	
 	}
