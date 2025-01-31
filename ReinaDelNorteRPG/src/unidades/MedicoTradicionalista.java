@@ -64,7 +64,6 @@ public class MedicoTradicionalista extends Unidad {
 				this.setNeocreditos(0);
 				for(Unidad unidad : aliados) {
 					if(unidad.getGenero() == this.generoMayoritario(aliados)){
-						System.out.println(this.generoMayoritario(aliados));
 						tonicoImperial(unidad);
 					}
 				}
@@ -86,7 +85,6 @@ public class MedicoTradicionalista extends Unidad {
 				}
 			}	
 		}
-		
 	}
 	//HABILIDADES////////////////////////////////////////////////////////////////////////
 	public void curar(Unidad unidad) {

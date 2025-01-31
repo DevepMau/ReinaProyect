@@ -27,8 +27,8 @@ public class Influencer extends Unidad {
 		this.setPCRT(0);
 		this.setDCRT(1.5);
 		this.setEva(0);
-		this.setCapacidadBloqueo(0.6);
-		this.spHabilidad1 = 10;
+		this.setCapacidadBloqueo(0.5);
+		this.spHabilidad1 = 15;
 		this.spHabilidad2 = 30;
 		this.habilidades[0] = "DIFAMAR";
 		this.habilidades[1] = "SELFIE GRUPAL";
@@ -74,11 +74,9 @@ public class Influencer extends Unidad {
 	public void difamar(Unidad unidad) {
 		if(unidad != null) {
 			this.setSP(this.getSP() - this.spHabilidad1);
-			unidad.recibirDaño(this.getDefMod()*2, false, 20);
-			if((unidad.getDef() + unidad.getDefMod()) > 0) {
-				unidad.setDefMod(unidad.getDefMod() -2);
-				this.setDefMod(this.getDefMod() + 1);
-			}
+			unidad.recibirDaño(((this.getDef()+this.getDefMod())), false, 20);
+			unidad.setDefMod(unidad.getDefMod() -1);
+			this.setDefMod(this.getDefMod() + 1);
 			unidad.setearSacudida(true);
 			unidad.setDuracionSacudida(20);
 			unidad.setEstaDesmotivado(true);
@@ -119,7 +117,7 @@ public class Influencer extends Unidad {
 		return false;
 	}
 	public boolean cumpleReqDeHab2() {
-		if(this.getSP() > 0) {
+		if(this.getDefMod() >= 4) {
 			if(this.getSP() >= this.spHabilidad2) {
 				return true;
 			}

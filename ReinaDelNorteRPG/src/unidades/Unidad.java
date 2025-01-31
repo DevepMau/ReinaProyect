@@ -47,6 +47,7 @@ public class Unidad {
 	private boolean estaDebilitado;
 	private boolean estaKO;
 	private boolean estaBloqueando;
+	private boolean estaEnamorado;
 	//VARIABLES PARA LA SACUDIDA/////////////////////////////////////
 	private boolean enSacudida = false;
 	private int duracionSacudida = 0; // Duración en frames
@@ -74,6 +75,8 @@ public class Unidad {
 	private int neocreditos;
 	private int dañoCausado = 0;
 	private int puñosAcumulados;
+	private int cargarEnamoramiento = 0;
+	private int contador = 5;
 	//ESTADISTICAS DE LA UNIDAD/////////////////////////////////////
 	private String nombre;
 	private String clase;
@@ -166,6 +169,9 @@ public class Unidad {
 	public void dibujar(Graphics2D g2) {
         this.g2 = g2;  
         dibujarVida();
+        if(isEstaEnamorado()) {
+        	dibujarCorazon(g2);
+        }
         dibujarEscudos(g2);
         if(getMostrarFaltas()) {
         	dibujarFaltas(g2);
@@ -345,14 +351,22 @@ public class Unidad {
 					else {
 						unidad.recibirDaño(daño, isCritical, 20);
 						contarFaltas(unidad);
+						if(this.getClase() == "Idol Galactica") {
+							unidad.setEstaEnamorado(true);
+							this.setCargarEnamoramiento(this.getCargarEnamoramiento() + 1);
+						}
 					}
 				}
 				else {
 					unidad.recibirDaño(daño, isCritical, 20);
 					contarFaltas(unidad);
+					if(this.getClase() == "Idol Galactica") {
+						unidad.setEstaEnamorado(true);
+						this.setCargarEnamoramiento(this.getCargarEnamoramiento() + 1);
+					}
 				}
 				if(this.getTipo() == "Especialista") {
-					this.restaurarSP(daño*2);
+					this.restaurarSP(daño*3);
 					estaGanandoSP = true;
 					setearSacudida(true);
 				    setDuracionSacudida(20);
@@ -406,14 +420,22 @@ public class Unidad {
 					else {
 						objetivo.recibirDaño(daño, isCritical, 20);
 						contarFaltas(objetivo);
+						if(this.getClase() == "Idol Galactica") {
+							objetivo.setEstaEnamorado(true);
+							this.setCargarEnamoramiento(this.getCargarEnamoramiento() + 1);
+						}
 					}
 				}
 				else {
 					objetivo.recibirDaño(daño, isCritical, 20);
 					contarFaltas(objetivo);
+					if(this.getClase() == "Idol Galactica") {
+						objetivo.setEstaEnamorado(true);
+						this.setCargarEnamoramiento(this.getCargarEnamoramiento() + 1);
+					}
 				}
 				if(this.getTipo() == "Especialista") {
-					this.restaurarSP(daño*2);
+					this.restaurarSP(daño*3);
 					estaGanandoSP = true;
 					setearSacudida(true);
 				    setDuracionSacudida(20);
@@ -455,8 +477,7 @@ public class Unidad {
 	
 	public boolean puedeBloquear() {
 		return Math.random() <= (this.getCapacidadBloqueo());  
-	}
-	
+	}	
 	public void evadirAtaque() {
 		pdj.ReproducirSE(6);
 		estaEsquivando = true;
@@ -538,6 +559,7 @@ public class Unidad {
 	}
 	
 	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
+		this.restaurarSP(3);
 		if(!enemigos.isEmpty()) {
 			for(Unidad unidad : enemigos) {
 				if(unidad.getClase() == "Delegada") {
@@ -558,7 +580,8 @@ public class Unidad {
 	}
 	
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {}	
-	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {}	
+	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {}
+	//METODOS DE DIBUJO///////////////////////////////////////////////////////
 	//METODOS VISUALES/////////////////////////////////////////////////////////
 	public void dibujarVida() {
 	    g2.setFont(g2.getFont().deriveFont(Font.BOLD, 15f));
@@ -640,9 +663,16 @@ public class Unidad {
 	    	g2.setColor(Color.RED);
 	    	g2.drawString("X X X", posX-20, posY);
 	    }
-	}
-	
+	}	
+	public void dibujarCorazon(Graphics2D g2) {
+		int altura = -pdj.tamañoDeBaldosa - (pdj.tamañoDeBaldosa / 8) + 16;
+	    int posX = getPosX();
+	    int posY = getPosY() + altura + this.alturaDeBarraHP;
+	    Image corazon = configurarImagen("/efectos/heart", 4);
+	    g2.drawImage(corazon, posX, posY+this.alturaDeAccesorio-20+imageMov*2, null);
+	}	
 	public void efectosVisualesPersonalizados(Graphics2D g2){}
+	//METODOS DE VARIOS///////////////////////////////////////////////////////
 	//METODOS DE ELECCION/////////////////////////////////////////////////////
 	public Unidad elegirObjetivo(ArrayList<Unidad> unidades) {
 		Unidad unidadSeleccionada = null;
@@ -680,7 +710,6 @@ public class Unidad {
 	    Random random = new Random();
 	    return random.nextInt(i);
 	}	
-	
 	public int obtenerValorEntre(int min, int max) {
 	    if (min > max) {
 	        throw new IllegalArgumentException("El valor mínimo no puede ser mayor que el máximo.");
@@ -991,14 +1020,12 @@ public class Unidad {
 	public void setEstaLisiado(boolean estaLisiado) {this.estaLisiado = estaLisiado;}
 	public boolean getEstaKO() {return estaKO;}
 	public void setEstaKO(boolean estaKO) {this.estaKO = estaKO;}
+	public boolean isEstaEnamorado() {return estaEnamorado;}
+	public void setEstaEnamorado(boolean estaEnamorado) {this.estaEnamorado = estaEnamorado;}
 	public boolean getEstaDebilitado() {return this.estaDebilitado;}
 	public void setEstaDebilitado(boolean boo) {this.estaDebilitado = boo;}
-	public boolean isEstaBloqueando() {
-		return estaBloqueando;
-	}
-	public void setEstaBloqueando(boolean estaBloqueando) {
-		this.estaBloqueando = estaBloqueando;
-	}
+	public boolean isEstaBloqueando() {return estaBloqueando;}
+	public void setEstaBloqueando(boolean estaBloqueando) {this.estaBloqueando = estaBloqueando;}
 	//GETTER & SETTERS MISCELANEOS///////////////////////////////////////////////
 	public Zona getZona() {return zona;}
 	public void setZona(Zona zona) {this.zona = zona;}
@@ -1034,6 +1061,18 @@ public class Unidad {
 	public void setDañoCausado(int dañoCausado) {this.dañoCausado = dañoCausado;}
 	public int getPuñosAcumulados() {return puñosAcumulados;}
 	public void setPuñosAcumulados(int puñosAcumulados) {this.puñosAcumulados = puñosAcumulados;}
+	public int getCargarEnamoramiento() {
+		return cargarEnamoramiento;
+	}
+	public void setCargarEnamoramiento(int cargarEnamoramiento) {
+		this.cargarEnamoramiento = cargarEnamoramiento;
+	}
+	public int getContador() {
+		return contador;
+	}
+	public void setContador(int contador) {
+		this.contador = contador;
+	}
 	//GETTERS & SETTERS STATS BASE/////////////////////////////////////////////
 	public String getTipo() {return tipo;}
 	public void setTipo(String st) {this.tipo = st;}
