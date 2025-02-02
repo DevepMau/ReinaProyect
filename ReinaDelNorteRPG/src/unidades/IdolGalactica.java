@@ -101,7 +101,6 @@ public class IdolGalactica extends Unidad{
 	}
 	public void romperCorazones(Unidad unidad) {
 		int daño = (this.getAtq()+((this.getAtq()/2)*(this.getCargarEnamoramiento()+1)));
-		System.out.println(daño);
 		if(unidad != null) {
 			pdj.ReproducirSE(8);
 			if(unidad.isEstaEnamorado()) {

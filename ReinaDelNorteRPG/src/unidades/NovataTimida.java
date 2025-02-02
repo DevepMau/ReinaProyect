@@ -120,6 +120,7 @@ public class NovataTimida extends Unidad{
 		this.setVel(this.getVel() + 5);
 		this.setEva(this.getEva() + 0.05);
 		this.setPCRT(this.getPCRT() + 0.05);
+		this.generarCuerpo();
 		this.cargas = 0;
 	}
 	public void iniciativa(Unidad unidad) {

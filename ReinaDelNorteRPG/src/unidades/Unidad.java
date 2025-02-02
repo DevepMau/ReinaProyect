@@ -69,7 +69,7 @@ public class Unidad {
 	private int alturaDeAccesorio = 0;
 	private int alturaDeBarraHP = 0;
 	private int idFaccion;
-	private int idTez;
+	private int idTez = 0;
 	private int escudos = 0;
 	private int faltasCometidas = 0;
 	private int neocreditos;
@@ -740,14 +740,16 @@ public class Unidad {
 	}
 	
 	public void definirIdTez() {
-		if(this.idFaccion == 1) {
-			this.idTez = obtenerValorEntre(1,3);
-		}
-		else if(this.idFaccion == 2) {
-			this.idTez = obtenerValorEntre(4,5);
-		}
-		else {
-			this.idTez = obtenerValorEntre(1,5);
+		if(this.idTez == 0) {
+			if(this.idFaccion == 1) {
+				this.idTez = obtenerValorEntre(1,3);
+			}
+			else if(this.idFaccion == 2) {
+				this.idTez = obtenerValorEntre(4,5);
+			}
+			else {
+				this.idTez = obtenerValorEntre(1,5);
+			}
 		}
 	}
 	
@@ -915,8 +917,8 @@ public class Unidad {
 				}
 				else if(this.clase == "Puño Furioso") {
 					imagenesBody[3] = configurarImagen("/imagenes/unisex/nunchaku-"+color+"-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-pose",3);
-					imagenesBody[1] = configurarImagen("/imagenes/hombre/camiseta-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/unisex/cortos-pose-"+this.idTez,3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo-chaqueta", 3);
 					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
 				}
 				else if(this.clase == "Maestro Del Chi") {
@@ -942,8 +944,8 @@ public class Unidad {
 				}
 				else if(this.clase == "Puño Furioso") {
 					imagenesBody[3] = configurarImagen("/imagenes/unisex/nunchaku-"+color+"-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-pose",3);
-					imagenesBody[1] = configurarImagen("/imagenes/mujer/cuerpo-top-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/unisex/cortos-pose-"+this.idTez,3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo-chaqueta", 3);
 					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-coleta-"+this.idTez, 3);
 				}
 				else if(this.clase == "Maestro Del Chi") {
@@ -957,6 +959,50 @@ public class Unidad {
 					imagenesBody[2] = configurarImagen("/imagenes/unisex/piernas-amarillo",3);
 					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo-amarillo", 3);
 					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-bollos-"+this.idTez, 3);
+				}
+			}
+		}
+		else if(this.idFaccion == 4) {
+			if(this.getGenero() == 0) {
+				if(this.clase == "Novata Timida") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-timida-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
+					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-timida-"+this.idTez, 3);
+				}
+				else if(this.clase == "Novata Cauta") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
+					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
+				}
+				else if(this.clase == "Novata Confiable") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-seña-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
+					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-coleta-"+this.idTez, 3);
+				}
+				else if(this.clase == "Delegada") {
+					imagenesBody[4] = configurarImagen("/imagenes/accesorios/mano-de-lente-"+this.idTez,3);
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-libreta-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
+					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-delegada-"+this.idTez, 3);
+				}
+				else if(this.clase == "Influencer") {
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-celular-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
+					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
+					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-influencer-"+this.idTez, 3);
+				}
+				else if(this.clase == "Idol Galactica") {
+					//imagenesBody[4] = configurarImagen("/imagenes/accesorios/dragon", 3);
+					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-idol-"+this.idTez, 3);
+					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-olanes",3);
+					imagenesBody[1] = configurarImagen("/imagenes/mujer/cuerpo-idol", 3);
+					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-idol-"+this.idTez, 3);
+					//alturaDeAccesorio = 5;
+					//this.alturaDeBarraHP = -20;
 				}
 			}
 		}
@@ -1061,18 +1107,10 @@ public class Unidad {
 	public void setDañoCausado(int dañoCausado) {this.dañoCausado = dañoCausado;}
 	public int getPuñosAcumulados() {return puñosAcumulados;}
 	public void setPuñosAcumulados(int puñosAcumulados) {this.puñosAcumulados = puñosAcumulados;}
-	public int getCargarEnamoramiento() {
-		return cargarEnamoramiento;
-	}
-	public void setCargarEnamoramiento(int cargarEnamoramiento) {
-		this.cargarEnamoramiento = cargarEnamoramiento;
-	}
-	public int getContador() {
-		return contador;
-	}
-	public void setContador(int contador) {
-		this.contador = contador;
-	}
+	public int getCargarEnamoramiento() {return cargarEnamoramiento;}
+	public void setCargarEnamoramiento(int cargarEnamoramiento) {this.cargarEnamoramiento = cargarEnamoramiento;}
+	public int getContador() {return contador;}
+	public void setContador(int contador) {this.contador = contador;}
 	//GETTERS & SETTERS STATS BASE/////////////////////////////////////////////
 	public String getTipo() {return tipo;}
 	public void setTipo(String st) {this.tipo = st;}
