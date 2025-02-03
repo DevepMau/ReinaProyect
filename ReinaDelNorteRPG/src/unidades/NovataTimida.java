@@ -115,9 +115,9 @@ public class NovataTimida extends Unidad{
 		this.restaurarHP(this.getHPMax()/4);
 		this.setSPMax(this.getSPMax() + 30);
 		this.restaurarSP(this.getSPMax());
-		this.setAtq(this.getAtq() + 5);
-		this.setDef(this.getDef() + 2);
-		this.setVel(this.getVel() + 5);
+		this.setAtq(this.getAtq() + 3);
+		this.setDef(this.getDef() + 1);
+		this.setVel(this.getVel() + 3);
 		this.setEva(this.getEva() + 0.05);
 		this.setPCRT(this.getPCRT() + 0.05);
 		this.generarCuerpo();
@@ -129,6 +129,7 @@ public class NovataTimida extends Unidad{
 			int daño = Math.max(1, ((this.getAtq()) + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod()));
 			unidad.recibirDaño(daño, true, 20);
 			this.setEscudos(this.getEscudos() + 1);
+			contarFaltas(unidad, 1);
 		}	
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////

@@ -55,7 +55,7 @@ public class DragonPirotecnico extends Unidad{
 		if(objetivo != null) {
 			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (objetivo.getDef() + objetivo.getDefMod()));
 			objetivo.recibirDaño(daño, true, 20);
-			contarFaltas(objetivo);
+			contarFaltas(objetivo, 2);
 			this.cargaExplosiva++;
 			for (Unidad unidadAledaña : unidades) {
 	            if (!unidadAledaña.equals(objetivo)) { // Evitar aplicar daño a la unidad objetivo
@@ -74,7 +74,7 @@ public class DragonPirotecnico extends Unidad{
 		if(unidad != null) {
 			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod())); 	 
 			unidad.recibirDaño(daño, true, 20);
-			contarFaltas(unidad);
+			contarFaltas(unidad, 2);
 			this.cargaExplosiva++;
 			for (Unidad unidadAledaña : unidades) {
 	            if (!unidadAledaña.equals(unidad)) { // Evitar aplicar daño a la unidad objetivo

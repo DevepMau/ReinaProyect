@@ -163,7 +163,9 @@ public class MedicoTradicionalista extends Unidad {
 	    int genero = 0;
 	    for (Unidad unidad : unidades) {
 	        if (unidad.getGenero() == 1) {
-	            conteoMasculino++;
+	        	if(unidad.isAlive()) {
+	        		conteoMasculino++;
+	        	}
 	        }
 	    }
 	   if(conteoMasculino >= unidades.size() / 2) {

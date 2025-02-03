@@ -91,6 +91,7 @@ public class PayadorPicante extends Unidad {
 			unidad.setEstaDesmotivado(true);
 			unidad.setVelMod(unidad.getVelMod() - obtenerValorEntre(1,5));
 			unidad.setDefMod(unidad.getDefMod() - obtenerValorEntre(1,3));
+			contarFaltas(unidad, 1);
 		}
 	}
 	public void motivar(Unidad unidad) {

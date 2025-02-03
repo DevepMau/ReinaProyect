@@ -28,19 +28,20 @@ public class Influencer extends Unidad {
 		this.setDCRT(1.5);
 		this.setEva(0);
 		this.setCapacidadBloqueo(0.5);
-		this.spHabilidad1 = 15;
-		this.spHabilidad2 = 30;
+		this.spHabilidad1 = 10;
+		this.spHabilidad2 = 20;
 		this.habilidades[0] = "DIFAMAR";
 		this.habilidades[1] = "SELFIE GRUPAL";
 		this.generarCuerpo();
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
-		if(this.getDefMod() >= 4) {
+		int accion = elegirAleatorio(3);
+		if(cumpleReqDeHab2()) {
 			setHabilidadElegida(1);
 			usarHabilidadEnemigo(aliados, enemigos);
 		}
-		else if(cumpleReqDeHab1()) {
+		else if(cumpleReqDeHab1() && accion == 0) {
 			setHabilidadElegida(0);
 			usarHabilidadEnemigo(aliados, enemigos);
 		}
@@ -56,7 +57,7 @@ public class Influencer extends Unidad {
 			difamar(unidad);
 		}
 		else {
-			if(!enemigos.isEmpty()) {
+			if(!aliados.isEmpty()) {
 				selfieGrupal(aliados);
 			}
 		}
@@ -80,6 +81,7 @@ public class Influencer extends Unidad {
 			unidad.setearSacudida(true);
 			unidad.setDuracionSacudida(20);
 			unidad.setEstaDesmotivado(true);
+			contarFaltas(unidad, 1);
 		}
 	}
 	

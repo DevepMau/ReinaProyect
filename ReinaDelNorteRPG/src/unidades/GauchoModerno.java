@@ -67,6 +67,7 @@ public class GauchoModerno extends Unidad {
 				unidad.setearSacudida(true);
 				unidad.setDuracionSacudida(20);
 				unidad.setEsUnaHabilidad(true);
+				contarFaltas(unidad, 3);
 			}
 			else {
 				unidad.evadirAtaque();

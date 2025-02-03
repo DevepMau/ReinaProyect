@@ -55,16 +55,19 @@ public class Delegada extends Unidad {
 	public void reportar(Unidad unidad) {
 		if(unidad != null) {
 			if(unidad.getFaltasCometidas() >= 3) {
-				unidad.recibirDaño((unidad.getAtq() + unidad.getAtqMod()), false, 20);
+				unidad.recibirDaño((unidad.getAtq() + unidad.getAtqMod() + this.getAtqMod()), false, 20);
 				unidad.setEstaDebilitado(true);
 				unidad.setAtqMod(unidad.getAtqMod() - obtenerValorEntre(2,4));
 				unidad.setPcrtMod(unidad.getPcrtMod() - 0.05);
 				unidad.setEvaMod(unidad.getEvaMod() - 0.05);
 				unidad.setFaltasCometidas(0);
+				this.setAtqMod(this.getAtqMod() + 1);
+				this.setVelMod(this.getVelMod() + 1);
 				pdj.ReproducirSE(3);
 			}
 			else if(unidad.getFaltasCometidas() == 2) {
 				unidad.recibirDaño((unidad.getAtq() + unidad.getAtqMod())/2, false, 20);
+				this.setAtqMod(this.getAtqMod() + 1);
 				unidad.setFaltasCometidas(0);
 				pdj.ReproducirSE(3);
 			}

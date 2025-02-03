@@ -65,7 +65,9 @@ public class PuñoFurioso extends Unidad {
 			if (isCritical) {
 				daño *= (this.getDCRT() + this.getDcrtMod());
 			}
+			contarFaltas(unidad, 2);
 			unidad.recibirGolpesMúltiples(daño, 2, isCritical);
+			unidad.setDefMod(unidad.getDefMod() -2);
 			this.reflejarDaño(unidad, daño);
 			this.robarVida(daño, unidad);
 		}

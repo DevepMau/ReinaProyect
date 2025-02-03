@@ -16,7 +16,7 @@ public class IdolGalactica extends Unidad{
 		this.setClase("Idol Galactica");
 		this.setGenero(0);
 		this.setIdFaccion(4);
-		this.setHPMax(obtenerValorEntre(100,150));
+		this.setHPMax(obtenerValorEntre(80,110));
 		this.setHP(this.getHPMax());
 		this.setSPMax(obtenerValorEntre(90,120));
 		this.setSP(this.getSPMax());
@@ -24,8 +24,8 @@ public class IdolGalactica extends Unidad{
 		this.setDef(obtenerValorEntre(3,6));
 		this.setPCRT(0.5);
 		this.setDCRT(2);
-		this.setEva(0.33);
-		this.setVel(obtenerValorEntre(20,25));
+		this.setEva(0.3);
+		this.setVel(obtenerValorEntre(15,20));
 		this.spHabilidad1 = 20;
 		this.listaDeHabilidades[0] = "ANIMAR";
 		this.listaDeHabilidades[1] = "ROMPE-CORAZON";
@@ -33,16 +33,11 @@ public class IdolGalactica extends Unidad{
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
-		int accion = elegirAleatorio(5);
-		if(!this.haySinMarcar(enemigos)) {
-			this.setHabilidadElegida(1);
-			usarHabilidadEnemigo(aliados, enemigos);
-		}
-		else if(accion <= 1 && this.cumpleReqDeHab1()) {
+		if(this.hayUnidadMuyHerida(aliados)) {
 			this.setHabilidadElegida(0);
 			usarHabilidadEnemigo(aliados, enemigos);
 		}
-		else if(accion == 2 && this.getCargarEnamoramiento() > 0) {
+		else if(!this.haySinMarcar(enemigos)) {
 			this.setHabilidadElegida(1);
 			usarHabilidadEnemigo(aliados, enemigos);
 		}
@@ -92,6 +87,7 @@ public class IdolGalactica extends Unidad{
 		this.setSP(this.getSP() - this.spHabilidad1);
 		if(unidad != null) {
 			pdj.ReproducirSE(4);
+			unidad.setAtqMod(unidad.getAtqMod() + 1);
 			unidad.setVelMod(unidad.getVelMod() + 5);
 			unidad.restaurarHP(unidad.getHPMax()/4);
 			unidad.setRealizandoCuracion(true);
@@ -113,12 +109,21 @@ public class IdolGalactica extends Unidad{
 		}
 	}
 	//METODOS AUXILIARES////////////////////////////////////////////////////////////
+	public boolean hayUnidadMuyHerida(ArrayList<Unidad> unidades) {
+	    for (Unidad unidad : unidades) {
+	        int porcentajeHP = (unidad.getHP() * 100) / unidad.getHPMax();
+	        if (porcentajeHP < 50) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
 	public Unidad elegirObjetivo(ArrayList<Unidad> unidades) {
 	    Unidad unidadSeleccionada = null;
 	    int menorPorcentajeHP = Integer.MAX_VALUE;
 	    for (Unidad unidad : unidades) {
 	    	int porcentajeHP = (unidad.getHP() * 100) / unidad.getHPMax();;
-	        if (porcentajeHP < menorPorcentajeHP) {
+	        if (porcentajeHP < menorPorcentajeHP && !unidad.isEstaEnamorado()) {
 	            menorPorcentajeHP = porcentajeHP;
 	            unidadSeleccionada = unidad;
 	        }

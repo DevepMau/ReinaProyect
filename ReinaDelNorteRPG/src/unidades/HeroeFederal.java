@@ -63,9 +63,11 @@ public class HeroeFederal extends Unidad{
 				daño *= (this.getDCRT() + this.getDcrtMod());
 				unidad.setEstaActivo(false);
 				unidad.setEstaKO(true);
+				contarFaltas(unidad, 3);
 			}
 			else {
 				unidad.setEstaLisiado(true);
+				contarFaltas(unidad, 1);
 			}
 			unidad.recibirDaño(daño, false, 20);
 			unidad.setVelMod(unidad.getVelMod() - (unidad.getVel()+unidad.getVelMod()));

@@ -90,7 +90,7 @@ public class AspiranteADragon extends Unidad{
 				daño *= (this.getDCRT() + this.getDcrtMod());
 			}
 			unidad.recibirGolpesMúltiples(daño, this.getPuñosAcumulados() , isCritical);
-			contarFaltas(unidad);
+			contarFaltas(unidad, this.getPuñosAcumulados());
 			this.reflejarDaño(unidad, daño);
 			this.robarVida(daño, unidad);
 			this.setPuñosAcumulados(1);

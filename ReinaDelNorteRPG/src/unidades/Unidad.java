@@ -334,7 +334,7 @@ public class Unidad {
 			boolean isMiss = Math.random() <= (unidad.getEva() + unidad.getEvaMod());
 			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod())); 
 			if(this.getClase() == "Puño Furioso" && this.getHPMax() < unidad.getHPMax()) {
-				daño += (unidad.getHPMax()/5);
+				daño += (unidad.getHPMax()/10);
 			}	 
 			if (isCritical) {
 				daño *= (this.getDCRT() + this.getDcrtMod());
@@ -346,11 +346,11 @@ public class Unidad {
 						protector.setEstaBloqueando(true);
 						protector.setDefMod(protector.getDefMod() + 1);
 						pdj.ReproducirSE(9);
-						contarFaltas(protector);
+						contarFaltas(protector, 1);
 					}
 					else {
 						unidad.recibirDaño(daño, isCritical, 20);
-						contarFaltas(unidad);
+						contarFaltas(unidad, 1);
 						if(this.getClase() == "Idol Galactica") {
 							unidad.setEstaEnamorado(true);
 							this.setCargarEnamoramiento(this.getCargarEnamoramiento() + 1);
@@ -359,7 +359,7 @@ public class Unidad {
 				}
 				else {
 					unidad.recibirDaño(daño, isCritical, 20);
-					contarFaltas(unidad);
+					contarFaltas(unidad, 1);
 					if(this.getClase() == "Idol Galactica") {
 						unidad.setEstaEnamorado(true);
 						this.setCargarEnamoramiento(this.getCargarEnamoramiento() + 1);
@@ -403,7 +403,7 @@ public class Unidad {
 			boolean isMiss = Math.random() <= (objetivo.getEva() + objetivo.getEvaMod());
 			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (objetivo.getDef() + objetivo.getDefMod()));
 			if(this.getClase() == "Puño Furioso" && this.getHPMax() < objetivo.getHPMax()) {
-				daño += (objetivo.getHPMax()/5);
+				daño += (objetivo.getHPMax()/10);
 			} 
 			if (isCritical) {
 				daño *= (this.getDCRT() + this.getDcrtMod());
@@ -415,11 +415,11 @@ public class Unidad {
 						protector.setEstaBloqueando(true);
 						protector.setDefMod(protector.getDefMod() + 1);
 						pdj.ReproducirSE(9);
-						contarFaltas(protector);
+						contarFaltas(protector, 1);
 					}
 					else {
 						objetivo.recibirDaño(daño, isCritical, 20);
-						contarFaltas(objetivo);
+						contarFaltas(objetivo ,1);
 						if(this.getClase() == "Idol Galactica") {
 							objetivo.setEstaEnamorado(true);
 							this.setCargarEnamoramiento(this.getCargarEnamoramiento() + 1);
@@ -428,7 +428,7 @@ public class Unidad {
 				}
 				else {
 					objetivo.recibirDaño(daño, isCritical, 20);
-					contarFaltas(objetivo);
+					contarFaltas(objetivo, 1);
 					if(this.getClase() == "Idol Galactica") {
 						objetivo.setEstaEnamorado(true);
 						this.setCargarEnamoramiento(this.getCargarEnamoramiento() + 1);
@@ -532,6 +532,9 @@ public class Unidad {
 	            }
 	            // Aplicar daño reducido para los golpes iniciales
 	            int dañoActual = (i == numGolpes - 1) ? daño : (daño/2);
+	            if(dañoActual == 0) {
+	            	dañoActual = 1;
+	            }
 	            recibirDaño(dañoActual, golpeCritico, 10);
 	        }
 	    }).start();
@@ -552,9 +555,10 @@ public class Unidad {
 		}
 	}
 	
-	public void contarFaltas(Unidad unidad) {
+	public void contarFaltas(Unidad unidad, int cant) {
 		if(unidad.getGenero() == 0) {
-			this.faltasCometidas++;
+			this.setFaltasCometidas(this.getFaltasCometidas() + cant);
+			//this.faltasCometidas++;
 		}
 	}
 	
@@ -579,7 +583,8 @@ public class Unidad {
 		}
 	}
 	
-	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {}	
+	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
+	}	
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {}
 	//METODOS DE DIBUJO///////////////////////////////////////////////////////
 	//METODOS VISUALES/////////////////////////////////////////////////////////
@@ -740,16 +745,19 @@ public class Unidad {
 	}
 	
 	public void definirIdTez() {
-		if(this.idTez == 0) {
-			if(this.idFaccion == 1) {
-				this.idTez = obtenerValorEntre(1,3);
-			}
-			else if(this.idFaccion == 2) {
-				this.idTez = obtenerValorEntre(4,5);
-			}
-			else {
+		if(this.idFaccion == 1) {
+			this.idTez = obtenerValorEntre(1,3);
+		}
+		else if(this.idFaccion == 2) {
+			this.idTez = obtenerValorEntre(4,5);
+		}
+		else if(this.idFaccion == 4) {
+			if(this.clase != "Novata Cauta" && this.clase != "Novata Confiable") {
 				this.idTez = obtenerValorEntre(1,5);
 			}
+		}
+		else {
+			this.idTez = obtenerValorEntre(1,5);
 		}
 	}
 	
