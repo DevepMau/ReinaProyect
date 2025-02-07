@@ -1,12 +1,14 @@
 package unidades;
 
 import java.util.ArrayList;
+
+import principal.Habilidades;
 import principal.PanelDeJuego;
 import principal.Zona;
 
 public class CebadorDeMate extends Unidad{
 	
-	private int spHabilidad1;
+	private int costeHabilidad1;
 	private String[] listaDeHabilidades = new String[1];
 
 	public CebadorDeMate(Zona zona, boolean aliado, PanelDeJuego pdj) {
@@ -15,17 +17,17 @@ public class CebadorDeMate extends Unidad{
 		this.setTipo("Recluta");
 		this.setClase("Cebador De Mate");
 		this.setIdFaccion(1);
-		this.setHPMax(obtenerValorEntre(40,60));
+		this.setHPMax(obtenerValorEntre(500,750));
 		this.setHP(this.getHPMax());
 		this.setSPMax(obtenerValorEntre(25,50));
 		this.setSP(this.getSPMax());
-		this.setAtq(obtenerValorEntre(8,12));
+		this.setAtq(obtenerValorEntre(7,12));
 		this.setDef(obtenerValorEntre(1,5));
 		this.setPCRT(0);
 		this.setDCRT(1.5);
 		this.setEva(0);
 		this.setVel(obtenerValorEntre(10,20));
-		this.spHabilidad1 = 7;
+		this.costeHabilidad1 = 7;
 		this.listaDeHabilidades[0] = "CEBAR UN MATE";
 		this.generarCuerpo();
 	}
@@ -35,7 +37,7 @@ public class CebadorDeMate extends Unidad{
 		if(accion <= 2 && cumpleReqDeHab1()) {
 			this.setHabilidadElegida(0);
 			usarHabilidadEnemigo(aliados);
-			this.setSP(this.getSP() - this.spHabilidad1);
+			this.setSP(this.getSP() - this.costeHabilidad1);
 			
 		}
 		else {
@@ -56,61 +58,56 @@ public class CebadorDeMate extends Unidad{
 	}
 	//HABILIDADES////////////////////////////////////////////////////////////////////////
 	public void cebarMate(Unidad unidad) {
-		this.setSP(this.getSP() - this.spHabilidad1);
-		int opcion = elegirAleatorio(5);
+		this.setSP(this.getSP() - this.costeHabilidad1);;
+		int opcion = elegirAleatorio(4);
 		if(opcion == 0) {
 			//HERVIDO Y DULCE
-			unidad.restaurarHP(obtenerValorEntre(7,15));
-			unidad.setAtqMod(unidad.getAtqMod() + obtenerValorEntre(3,7));
-			unidad.setPcrtMod(unidad.getPcrtMod() + (0.05));
+			Habilidades.restaurarHP(unidad, 20);
+			Habilidades.setearEstado(unidad, "+" + this.porcentajeHP(20));
+			unidad.setCurando(true);
+			
 		}
 		else if(opcion == 1) {
 			//HERVIDO y AMARGO
-			unidad.restaurarHP(obtenerValorEntre(7,15));
-			unidad.setDefMod(unidad.getDefMod() + obtenerValorEntre(1,3));
-			unidad.setEvaMod(0.25);
+			if(unidad.getTimerPrecavido() == -1) {
+				Habilidades.aumentarProteccion(unidad);
+			}
+			Habilidades.setearEstado(unidad, "PRECAVIDO");
+			unidad.setPrecavido(true);
+			unidad.setTimerPrecavido(5);
 		}
 		else if(opcion == 2) {
 			//HELADO Y DULCE
-			if(unidad.getSPMax() > 0) {
-				unidad.restaurarSP(obtenerValorEntre(7,15));
+			if(unidad.getTimerAgresivo() == -1) {
+				Habilidades.aumentarAgresividad(unidad);
 			}
-			unidad.setAtqMod(unidad.getAtqMod() + obtenerValorEntre(3,7));
-			unidad.setPcrtMod(unidad.getPcrtMod() + (0.05));
+			Habilidades.setearEstado(unidad, "AGRESIVO");
+			unidad.setAgresivo(true);
+			unidad.setTimerAgresivo(5);
 			
-		}
-		else if(opcion == 3) {
-			//HELADO Y AMARGO
-			if(unidad.getSPMax() > 0) {
-				unidad.restaurarSP(obtenerValorEntre(7,15));
-			}
-			unidad.setDefMod(unidad.getDefMod() + obtenerValorEntre(1,3));
-			unidad.setEvaMod(0.25);
 		}
 		else {
 			//PERFECTO
-			unidad.setHPMax(unidad.getHPMax()+(unidad.getHPMax()/10));
-			unidad.restaurarHP(obtenerValorEntre(15,23));
-			if(unidad.getSPMax() > 0) {
-				unidad.setSPMax(unidad.getSPMax()+(unidad.getSPMax()/10));
-				unidad.restaurarSP(obtenerValorEntre(15,23));
+			if(unidad.getTimerPotenciado() == -1) {
+				Habilidades.potenciarUnidad(unidad);
 			}
-			unidad.setAtqMod(unidad.getAtqMod() + obtenerValorEntre(3,7));
-			unidad.setDefMod(unidad.getDefMod() + obtenerValorEntre(1,3));
-			unidad.setPcrtMod(unidad.getPcrtMod() + (0.05));
-			unidad.setEvaMod(0.25);
+			Habilidades.setearEstado(unidad, "POTENCIADO");
+			Habilidades.aumentarHPMax(unidad, 20);
+			Habilidades.restaurarHP(unidad, 20);
+			Habilidades.aumentarSPMax(unidad, 20);
+			Habilidades.restaurarSP(unidad, 20);
+			unidad.setPotenciado(true);
+			unidad.setTimerPotenciado(5);
 			
 		}
+		this.setCdHabilidad1(1);
+		this.setHabilidad1(false);
 		pdj.ReproducirSE(5);
-		unidad.setearSacudida(true);
-		unidad.setDuracionSacudida(20);
-		unidad.setIdMate(opcion);
-		unidad.setTomandoUnMate(true);
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
 	public boolean cumpleReqDeHab1() {
-		if(this.getSP() > 0) {
-			if(this.getSP() >= this.spHabilidad1) {
+		if(this.getSP() > 0 && this.isHabilidad1()) {
+			if(this.getSP() >= this.costeHabilidad1) {
 				return true;
 			}
 		}
@@ -123,6 +120,15 @@ public class CebadorDeMate extends Unidad{
 		else {
 			this.setAccion("");
 		}
+	}
+	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
+		if(this.getCdHabilidad1() == 0) {
+			this.setHabilidad1(true);
+		}
+		else {
+			this.setCdHabilidad1(this.getCdHabilidad1() - 1);
+		}
+		super.pasivaDeClase(aliados, enemigos);
 	}
 	public String[] getListaDeHabilidades() {return listaDeHabilidades;}
 	public void setListaDeHabilidades(String[] habilidades) {this.listaDeHabilidades = habilidades;}
