@@ -10,9 +10,11 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import javax.imageio.ImageIO;
-
+import principal.Habilidades;
 import principal.PanelDeJuego;
 import principal.Utilidades;
 import principal.Zona;
@@ -21,20 +23,25 @@ public class Unidad {
 	//SISTEMA////////////////////////////////////////////////////////
 	PanelDeJuego pdj;
 	Graphics2D g2;
+	//GestorDeHabilidades gdh;
 	//POSICIONAMIENTO////////////////////////////////////////////////
 	private Zona zona;
 	private int posX = 0;
 	private int posY = 0;
 	//INDICADORES DE SALUD Y NOMBRE//////////////////////////////////
 	int barraHP = 72;
-	private String dañoRecibido;
-	private String curaRecibida;
+	private String textoDañoRecibido;
+	private String textoCuracionRecibida;
+	private String textoInformativo;
+	private int cdHabilidad1 = 0;
+	private int cdHabilidad2 = 0;
+	private boolean habilidad1 = true;
+	private boolean habilidad2 = true;
 	//ESTADOS Y COMPORTAMIENTOS//////////////////////////////////////
 	private int idMate;
 	private boolean esAliado = false;
 	private boolean estaActivo = true;
-	private boolean estaVivo = true;
-	private boolean realizaUnCritico;
+	private boolean estaVivo = true;	
 	private boolean estaMarcado;
 	private boolean realizaUnaCuracion;
 	private boolean estaEsquivando;
@@ -48,6 +55,21 @@ public class Unidad {
 	private boolean estaKO;
 	private boolean estaBloqueando;
 	private boolean estaEnamorado;
+	//ACCIONES//////////////////////////////////////////////////////
+	private boolean realizaUnCritico;
+	private boolean evadiendo;
+	private boolean rompiendo;
+	private boolean curando;
+	//ESTADOS////////////////////////////////////////////////////////
+	private boolean precavido;
+	private boolean agresivo;
+	private boolean acelerado;
+	private boolean potenciado;
+	//CONTADORES DE ESTADOS//////////////////////////////////////////
+	private int timerPrecavido = -1;
+	private int timerAgresivo = -1;
+	private int timerAcelerado = -1;
+	private int timerPotenciado = -1;
 	//VARIABLES PARA LA SACUDIDA/////////////////////////////////////
 	private boolean enSacudida = false;
 	private int duracionSacudida = 0; // Duración en frames
@@ -89,8 +111,8 @@ public class Unidad {
 	private int atq;
 	private int def;
 	private int vel;
-	private double eva;
-	private double pcrt;
+	private int eva;
+	private int pcrt;
 	private double dcrt;
 	//MODIFICADORES DE STATS////////////////////////////////////////
 	private int hpMaxMod = 0;
@@ -98,16 +120,18 @@ public class Unidad {
 	private int atqMod = 0;
 	private int defMod = 0;
 	private int velMod = 0;
-	private double evaMod = 0;
-	private double pcrtMod = 0;
+	private int evaMod = 0;
+	private int pcrtMod = 0;
 	private double dcrtMod = 0;
 	private double capacidadBloqueo;
 	private int vidaPerdida = 0;
 	////////////////////////////////////////////////////////////////
 	public Unidad(Zona zona,boolean aliado, PanelDeJuego pdj) {
 		this.pdj = pdj;
-		this.dañoRecibido = "";
-		this.curaRecibida = "";
+		//this.gdh = gdh;
+		this.textoInformativo = "";
+		this.textoDañoRecibido = "";
+		this.textoCuracionRecibida = "";
 		this.setZona(zona);
 		this.setTomandoUnMate(false);
 		this.setIdMate(-1);
@@ -145,21 +169,15 @@ public class Unidad {
                 
             } else {
                 setearSacudida(false);
-                realizaUnaCuracion = false;
-                estaEsquivando = false;
-                tomandoUnMate = false;
-                esUnaHabilidad = false;
-                estaGanandoSP = false;
-                estaMotivado = false;
-                estaDesmotivado = false;
+                realizaUnaCuracion = false; 
                 realizaUnCritico = false;
-                estaLisiado = false;
-                estaDebilitado = false;
-                estaBloqueando = false;
                 desplazamientoSacudidaX = 0;
                 desplazamientoSacudidaY = 0;
                 desplazarDañoRecibido = getPosY();
-                dañoRecibido = "";
+                textoInformativo = "";
+                textoDañoRecibido = "";
+                textoCuracionRecibida = "";
+                cancelarTextoDeEfectos();
             }
         }
         if(getHP() <= 0) {
@@ -189,93 +207,62 @@ public class Unidad {
         	Image marca = configurarImagen("/efectos/mark", 4);
         	g2.drawImage(marca, dibujarX, dibujarY, null);
         }
-        if(this.realizaUnaCuracion) {
+        
+        if(this.isCurando()) {
             g2.setColor(Color.green);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
-            g2.drawString(curaRecibida , getPosX()+84, desplazarDañoRecibido-48);
+            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
         }
         else if(this.realizaUnCritico) {
         	g2.setColor(Color.YELLOW);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
-            g2.drawString(dañoRecibido, getPosX()+84, desplazarDañoRecibido-48);
+            g2.drawString(this.getTextoDañoRecibido(), getPosX()+84, desplazarDañoRecibido-48);
         }
-        else if(this.estaEsquivando) {
+        else if(this.isEvadiendo()) {
         	g2.setColor(Color.GRAY);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
-            g2.drawString("MISS!", getPosX()+84, desplazarDañoRecibido-48);
+            g2.drawString(this.getTextoInformativo(), getPosX()+84, desplazarDañoRecibido-48);
         }
-        else if(this.getTomandoUnMate()) {
-        	if(getIdMate() == 0) {
-        		g2.setColor(Color.RED);
-        		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
-                g2.drawString("HERVIDO", getPosX()+84, desplazarDañoRecibido-48);
-                g2.setColor(Color.pink);
-                g2.drawString("Y DULCE!", getPosX()+84, desplazarDañoRecibido-30);
-        	}
-        	if(getIdMate() == 1) {
-        		g2.setColor(Color.RED);
-        		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
-                g2.drawString("HERVIDO", getPosX()+84, desplazarDañoRecibido-48);
-                g2.setColor(Color.GREEN);
-                g2.drawString("Y AMARGO!", getPosX()+84, desplazarDañoRecibido-30);
-        	}
-        	if(getIdMate() == 2) {
-        		g2.setColor(Color.BLUE);
-        		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
-                g2.drawString("FRIO Y", getPosX()+84, desplazarDañoRecibido-48);
-                g2.setColor(Color.pink);
-                g2.drawString("DULCE!", getPosX()+84, desplazarDañoRecibido-30);
-        	}
-        	if(getIdMate() == 3) {
-        		g2.setColor(Color.BLUE);
-        		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
-                g2.drawString("FRIO Y", getPosX()+84, desplazarDañoRecibido-48);
-                g2.setColor(Color.GREEN);
-                g2.drawString("AMARGO!", getPosX()+84, desplazarDañoRecibido-30);
-        	}
-        	if(getIdMate() == 4) {
-        		g2.setColor(Color.YELLOW);
-        		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
-                g2.drawString("MATE", getPosX()+84, desplazarDañoRecibido-48);
-                g2.drawString("PERFECTO!", getPosX()+84, desplazarDañoRecibido-30);
-        	}
-        }
-        else if(this.esUnaHabilidad) {
-        	g2.setColor(Color.cyan);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
-            g2.drawString(dañoRecibido+" IMPACT!!!", getPosX()+84, desplazarDañoRecibido-48);
-        }
-        else if(this.estaMotivado) {
-        	g2.setColor(Color.ORANGE);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
-            g2.drawString("+HIGH!", getPosX()+84, desplazarDañoRecibido-48);
-        }
-        else if(this.estaDesmotivado) {
+        else if(this.isRompiendo()) {
         	g2.setColor(Color.WHITE);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
-            g2.drawString(dañoRecibido, getPosX()+104, desplazarDañoRecibido-28);
-            g2.setColor(Color.BLUE);
-            g2.drawString("DOWN!", getPosX()+104, desplazarDañoRecibido-48);
+            g2.drawString(this.getTextoInformativo(), getPosX()+84, desplazarDañoRecibido-48);
         }
-        else if(this.estaGanandoSP) {
-        	g2.setColor(Color.cyan);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
-            g2.drawString(curaRecibida, getPosX()+84, desplazarDañoRecibido-48);
-        }
-        else if(this.estaLisiado) {
-        	Color c = new Color(50, 100, 100);
+        else if(this.isPrecavido()) {
+        	Color c = new Color(55,55,255);
         	g2.setColor(c);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
-            g2.drawString("HURT...", getPosX()+84, desplazarDañoRecibido-48);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
+            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
         }
-        else if(this.estaKO) {
+        else if(this.isAgresivo()) {
+        	Color c = new Color(255,55,55);
+        	g2.setColor(c);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
+            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
+        }
+        else if(this.isAcelerado()) {
+        	Color c = new Color(55,255,255);
+        	g2.setColor(c);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
+            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
+        }
+        else if(this.isPotenciado()) {
+        	Color c = new Color(255,255,55);
+        	g2.setColor(c);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
+            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
+        }
+        else {
+        	g2.setColor(Color.WHITE);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+            g2.drawString(this.getTextoDañoRecibido(), getPosX()+84, desplazarDañoRecibido-48);
+        }
+        /////////
+        
+        
+        if(this.estaKO) {
         	Image KO = configurarImagen("/efectos/stun", 3);
         	g2.drawImage(KO, dibujarX+10, dibujarY, null);
-        }
-        else if(this.estaDebilitado) {
-        	g2.setColor(Color.pink);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
-            g2.drawString("CASTIGADO!", getPosX()+84, desplazarDañoRecibido-48);
         }
         else if(this.estaBloqueando) {
         	g2.setColor(Color.GRAY);
@@ -283,11 +270,7 @@ public class Unidad {
             g2.drawString("BLOCK", getPosX()+84, desplazarDañoRecibido-48);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
         }
-        else {
-        	g2.setColor(Color.WHITE);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
-            g2.drawString(dañoRecibido, getPosX()+84, desplazarDañoRecibido-48);
-        }
+        
         
         efectosVisualesPersonalizados(g2);
     }
@@ -304,161 +287,60 @@ public class Unidad {
 	}
 	
 	public void recibirDaño(int daño, boolean isCritical, int duracionSacudida) {
-		int SEId = 2;
-		if(isCritical) {
-			dañoRecibido = "CRITICAL " + daño +"!";
-			this.realizaUnCritico = true;
-			SEId = 3;
-		}
-		else {
-			dañoRecibido = "" + daño;
-		}
-		setearSacudida(true);
-	    setDuracionSacudida(duracionSacudida);
-		if(this.escudos > 0) {
-			escudos--;
-			pdj.ReproducirSE(9);
-		}
-		else {
-			this.setHP(this.getHP() - daño);
-			this.setVidaPerdida(this.getVidaPerdida() + daño);
-			pdj.ReproducirSE(SEId);
-		}
-	    
+	    int SEId = 2;
+	    int reduccion = (int) (daño * ((this.getDef() + this.getDefMod()) / 100.0));
+        int dañoFinal = Math.max(1, daño - reduccion);
+        String textoMostrado = "";
+	    if (this.elegirAleatorio(100) < (this.getEva() + this.getEvaMod())) {
+	    	pdj.ReproducirSE(6);
+	    	this.setEvadiendo(true);
+	        textoMostrado = "MISS!";
+	        Habilidades.setearEstado(this, textoMostrado);
+	    }
+	    else {
+	    	if (this.escudos > 0) {
+		        escudos--;
+		        pdj.ReproducirSE(9);
+		        this.setRompiendo(true);
+		        textoMostrado = "BREAK!";
+		        Habilidades.setearEstado(this, textoMostrado);
+		    } else {
+		    	if (isCritical) {
+			    	SEId = 3;
+			    	this.realizaUnCritico = true;
+			        textoMostrado = "CRITICAL " + dañoFinal + "!";
+			    } else {
+			        textoMostrado = "" + dañoFinal;
+			    }
+		        this.setHP(this.getHP() - dañoFinal);
+		        pdj.ReproducirSE(SEId);
+		        Habilidades.setearDaño(this, textoMostrado);
+		    }
+	    }  
 	}
 	
 	public void realizarAtaque(Unidad unidad, ArrayList<Unidad> enemigos) {
-		Unidad protector = this.getProtector(enemigos);
-		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());
+		boolean isCritical = Math.random() <= ((this.getPCRT() + this.getPcrtMod()) / 100);
 		if(unidad != null) {
-			boolean isMiss = Math.random() <= (unidad.getEva() + unidad.getEvaMod());
-			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod())); 
-			if(this.getClase() == "Puño Furioso" && this.getHPMax() < unidad.getHPMax()) {
-				daño += (unidad.getHPMax()/10);
-			}	 
+			int daño = this.getAtq() + this.getAtqMod();
 			if (isCritical) {
 				daño *= (this.getDCRT() + this.getDcrtMod());
 			}
-			if(!isMiss) {
-				if(protector != null) {
-					if(protector.puedeBloquear()) {
-						protector.recibirDaño(daño/2, false, 20);
-						protector.setEstaBloqueando(true);
-						protector.setDefMod(protector.getDefMod() + 1);
-						pdj.ReproducirSE(9);
-						contarFaltas(protector, 1);
-					}
-					else {
-						unidad.recibirDaño(daño, isCritical, 20);
-						contarFaltas(unidad, 1);
-						if(this.getClase() == "Idol Galactica") {
-							unidad.setEstaEnamorado(true);
-							this.setCargarEnamoramiento(this.getCargarEnamoramiento() + 1);
-						}
-					}
-				}
-				else {
-					unidad.recibirDaño(daño, isCritical, 20);
-					contarFaltas(unidad, 1);
-					if(this.getClase() == "Idol Galactica") {
-						unidad.setEstaEnamorado(true);
-						this.setCargarEnamoramiento(this.getCargarEnamoramiento() + 1);
-					}
-				}
-				if(this.getTipo() == "Especialista") {
-					this.restaurarSP(daño*3);
-					estaGanandoSP = true;
-					setearSacudida(true);
-				    setDuracionSacudida(20);
-				}
-				if(this.getClase() == "Gaucho Moderno") {
-					this.setPcrtMod(this.getPcrtMod()+0.05);
-				}
-				if(this.getIdFaccion() == 2 && this.getClase() != "Dragon Pirotecnico") {
-					int NC = daño;
-					if(this.getClase() == "Alumno Modelo") {
-						NC = daño*3;
-						
-					}
-					else {
-						NC = this.obtenerValorEntre(1, daño);
-					}
-					this.setDañoCausado(NC);
-					this.sumarNeocreditos(daño);
-				}
-			}
-			else {
-				unidad.evadirAtaque();
-			}
+			unidad.recibirDaño(daño, isCritical, 20);
 			this.reflejarDaño(unidad, daño);
 			this.robarVida(daño, unidad);
 		}
 	}
 
 	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
-		Unidad protector = this.getProtector(unidades);
 		Unidad objetivo = elegirObjetivo(unidades);
-		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());  
+		boolean isCritical = Math.random() <= ((this.getPCRT() + this.getPcrtMod()) / 100);  
 		if(objetivo != null) {
-			boolean isMiss = Math.random() <= (objetivo.getEva() + objetivo.getEvaMod());
-			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (objetivo.getDef() + objetivo.getDefMod()));
-			if(this.getClase() == "Puño Furioso" && this.getHPMax() < objetivo.getHPMax()) {
-				daño += (objetivo.getHPMax()/10);
-			} 
+			int daño = this.getAtq() + this.getAtqMod();
 			if (isCritical) {
 				daño *= (this.getDCRT() + this.getDcrtMod());
 			}
-			if(!isMiss) {
-				if(protector != null) {
-					if(protector.puedeBloquear()) {
-						protector.recibirDaño(daño/2, false, 20);
-						protector.setEstaBloqueando(true);
-						protector.setDefMod(protector.getDefMod() + 1);
-						pdj.ReproducirSE(9);
-						contarFaltas(protector, 1);
-					}
-					else {
-						objetivo.recibirDaño(daño, isCritical, 20);
-						contarFaltas(objetivo ,1);
-						if(this.getClase() == "Idol Galactica") {
-							objetivo.setEstaEnamorado(true);
-							this.setCargarEnamoramiento(this.getCargarEnamoramiento() + 1);
-						}
-					}
-				}
-				else {
-					objetivo.recibirDaño(daño, isCritical, 20);
-					contarFaltas(objetivo, 1);
-					if(this.getClase() == "Idol Galactica") {
-						objetivo.setEstaEnamorado(true);
-						this.setCargarEnamoramiento(this.getCargarEnamoramiento() + 1);
-					}
-				}
-				if(this.getTipo() == "Especialista") {
-					this.restaurarSP(daño*3);
-					estaGanandoSP = true;
-					setearSacudida(true);
-				    setDuracionSacudida(20);
-				}
-				if(this.getClase() == "Gaucho Moderno") {
-					this.setPcrtMod(this.getPcrtMod()+0.05);
-				}
-				if(this.getIdFaccion() == 2 && this.getClase() != "Dragon Pirotecnico") {
-					int NC = daño;
-					if(this.getClase() == "Alumno Modelo") {
-						NC = daño*3;
-						
-					}
-					else {
-						NC = this.obtenerValorEntre(1, daño);
-					}
-					this.setDañoCausado(NC);
-					this.sumarNeocreditos(daño);
-				}
-			}
-			else {
-				objetivo.evadirAtaque();
-			}
+			objetivo.recibirDaño(daño, isCritical, 20);
 			this.reflejarDaño(objetivo, daño);
 			robarVida(daño, objetivo);
 		}
@@ -478,32 +360,6 @@ public class Unidad {
 	public boolean puedeBloquear() {
 		return Math.random() <= (this.getCapacidadBloqueo());  
 	}	
-	public void evadirAtaque() {
-		pdj.ReproducirSE(6);
-		estaEsquivando = true;
-		setearSacudida(true);
-	    setDuracionSacudida(20);
-	}
-	
-	public void restaurarHP(int curacion) {
-		if((this.getHP() + curacion) > this.getHPMax()) {
-			this.setHP(this.getHPMax());
-		}
-		else {
-			this.setHP(this.getHP() + curacion);
-		}
-		curaRecibida = "+" + curacion;
-	}
-	
-	public void restaurarSP(int energia) {
-		if((this.getSP() + energia) > this.getSPMax()) {
-			this.setSP(this.getSPMax());
-		}
-		else {
-			this.setSP(this.getSP() + energia);
-		}
-		curaRecibida = "+" + energia;
-	}
 	
 	public void reflejarDaño(Unidad unidad, int daño) {
 		if(unidad.getClase() == "Shaolin Escolar" || unidad.getClase() == "Aspirante A Dragon") {
@@ -543,12 +399,9 @@ public class Unidad {
 	public void robarVida(int daño, Unidad unidad) {
 		if(unidad.getEstaMarcado()) {
 			if(this.getClase() == "Aspirante A Dragon") {
-				this.restaurarHP(daño);
 			}
 			else {
-				this.restaurarHP(daño-(daño/4));
 			}
-			this.restaurarHP(daño-(daño/4));
 			this.setRealizandoCuracion(true);
 			this.setDuracionSacudida(20);
 			this.setearSacudida(true);
@@ -563,7 +416,8 @@ public class Unidad {
 	}
 	
 	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
-		this.restaurarSP(3);
+		iniciarTimersDeEstado();
+		Habilidades.restaurarSP(this, 5);
 		if(!enemigos.isEmpty()) {
 			for(Unidad unidad : enemigos) {
 				if(unidad.getClase() == "Delegada") {
@@ -571,6 +425,22 @@ public class Unidad {
 				}
 			}
 		}
+	}
+	
+	public void iniciarTimersDeEstado() {
+	    actualizarTimer(this::getTimerPrecavido, this::setTimerPrecavido, () -> Habilidades.reducirProteccion(this));
+	    actualizarTimer(this::getTimerAgresivo, this::setTimerAgresivo, () -> Habilidades.reducirAgresividad(this));
+	    actualizarTimer(this::getTimerAcelerado, this::setTimerAcelerado, () -> Habilidades.reducirAgilidad(this));
+	    actualizarTimer(this::getTimerPotenciado, this::setTimerPotenciado, () -> Habilidades.debilitarUnidad(this));
+	}
+
+	private void actualizarTimer(Supplier<Integer> getter, Consumer<Integer> setter, Runnable habilidad) {
+	    if (getter.get() > 0) {
+	        setter.accept(getter.get() - 1);
+	    } else if (getter.get() == 0) {
+	        habilidad.run();
+	        setter.accept(-1);
+	    }
 	}
 	
 	public void sumarNeocreditos(int neocreditos) {
@@ -586,7 +456,24 @@ public class Unidad {
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
 	}	
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {}
-	//METODOS DE DIBUJO///////////////////////////////////////////////////////
+	//METODOS VARIOS///////////////////////////////////////////////////////
+	public void cancelarTextoDeEfectos() {
+		this.setPrecavido(false);
+		this.setAgresivo(false);
+		this.setAcelerado(false);
+		this.setPotenciado(false);
+		this.setEvadiendo(false);
+		this.setRompiendo(false);
+		this.setCurando(false);
+	}
+	
+	public int porcentajeHP(int valor) {
+	    return (int) ((valor / this.getHPMax()) * 100);
+	}
+	
+	public int porcentajeSP(int valor) {
+	    return (int) ((valor / this.getSPMax()) * 100);
+	}
 	//METODOS VISUALES/////////////////////////////////////////////////////////
 	public void dibujarVida() {
 	    g2.setFont(g2.getFont().deriveFont(Font.BOLD, 15f));
@@ -1055,6 +942,24 @@ public class Unidad {
 	public void setEstaActivo(boolean estaActivo) {this.estaActivo = estaActivo;}
 	public boolean isObjetivoUnico() {return objetivoUnico;}
 	public void setObjetivoUnico(boolean singleTarget) {this.objetivoUnico = singleTarget;}
+	public String getTextoInformativo() {
+		return textoInformativo;
+	}
+	public void setTextoInformativo(String textoInformativo) {
+		this.textoInformativo = textoInformativo;
+	}
+	public String getTextoDañoRecibido() {
+		return textoDañoRecibido;
+	}
+	public void setTextoDañoRecibido(String textoDañoRecibido) {
+		this.textoDañoRecibido = textoDañoRecibido;
+	}
+	public String getTextoCuracionRecibida() {
+		return textoCuracionRecibida;
+	}
+	public void setTextoCuracionRecibida(String textoCuracionRecibida) {
+		this.textoCuracionRecibida = textoCuracionRecibida;
+	}
 	//GETTERS & SETTERS DE EFECTOS//////////////////////////////////////////////
 	public boolean getRealizaCuracion() {return this.realizaUnaCuracion;}
 	public void setRealizandoCuracion(boolean boo) {this.realizaUnaCuracion = boo;}
@@ -1144,12 +1049,12 @@ public class Unidad {
 	public int getVel() {return vel;}
 	public void setVel(int vel) {this.vel = vel;}
 	public void setDef(int def) {this.def = def;}
-	public double getPCRT() {return pcrt;}
-	public void setPCRT(double pcrt) {this.pcrt = pcrt;}
+	public int getPCRT() {return pcrt;}
+	public void setPCRT(int pcrt) {this.pcrt = pcrt;}
 	public double getDCRT() {return dcrt;}
 	public void setDCRT(double dcrt) {this.dcrt = dcrt;}
-	public double getEva() {return eva;}
-	public void setEva(double eva) {this.eva = eva;}
+	public int getEva() {return eva;}
+	public void setEva(int eva) {this.eva = eva;}
 	//GETTERS & SETTERS STATS MOD//////////////////////////////////////////////
 	public int getHpMaxMod() {return hpMaxMod;}
 	public void setHpMaxMod(int hpMaxMod) {this.hpMaxMod = hpMaxMod;}
@@ -1161,13 +1066,73 @@ public class Unidad {
 	public void setDefMod(int defMod) {this.defMod = defMod;}
 	public int getVelMod() {return velMod;}
 	public void setVelMod(int velMod) {this.velMod = velMod;}
-	public double getEvaMod() {return evaMod;}
-	public void setEvaMod(double evaMod) { this.evaMod = evaMod;}
-	public double getPcrtMod() { return pcrtMod;}
-	public void setPcrtMod(double pcrtMod) { this.pcrtMod = pcrtMod;}
+	public int getEvaMod() {return evaMod;}
+	public void setEvaMod(int evaMod) { this.evaMod = evaMod;}
+	public int getPcrtMod() { return pcrtMod;}
+	public void setPcrtMod(int pcrtMod) { this.pcrtMod = pcrtMod;}
 	public double getDcrtMod() { return dcrtMod;}
 	public void setDcrtMod(double dcrtMod) { this.dcrtMod = dcrtMod;}
 	public double getCapacidadBloqueo() {return capacidadBloqueo;}
 	public void setCapacidadBloqueo(double capacidadBloqueo) {this.capacidadBloqueo = capacidadBloqueo;}
+	//CD Y HABILIDADES/////////////////////////////////////////////////////////////////////
+	public int getCdHabilidad1() {return cdHabilidad1;}
+	public void setCdHabilidad1(int cdHabilidad1) {this.cdHabilidad1 = cdHabilidad1;}
+	public int getCdHabilidad2() {return cdHabilidad2;}
+	public void setCdHabilidad2(int cdHabilidad2) {this.cdHabilidad2 = cdHabilidad2;}
+	public boolean isHabilidad1() {return habilidad1;}
+	public void setHabilidad1(boolean habilidad1) {this.habilidad1 = habilidad1;}
+	public boolean isHabilidad2() {return habilidad2;}
+	public void setHabilidad2(boolean habilidad2) {this.habilidad2 = habilidad2;}
+	//ESTADOS//////////////////////////////////////////////////////////////////////////////
+	public boolean isPrecavido() {return precavido;}
+	public void setPrecavido(boolean precavido) {this.precavido = precavido;}
+	public boolean isAgresivo() {return agresivo;}
+	public void setAgresivo(boolean agresivo) {this.agresivo = agresivo;}
+	public boolean isAcelerado() {return acelerado;}
+	public void setAcelerado(boolean acelerado) {this.acelerado = acelerado;}
+	public boolean isPotenciado() {return potenciado;}
+	public void setPotenciado(boolean potenciado) {this.potenciado = potenciado;}
+	public boolean isEvadiendo() {
+		return evadiendo;
+	}
+	public void setEvadiendo(boolean evadiendo) {
+		this.evadiendo = evadiendo;
+	}
+	public boolean isRompiendo() {
+		return rompiendo;
+	}
+	public void setRompiendo(boolean rompiendo) {
+		this.rompiendo = rompiendo;
+	}
+	public boolean isCurando() {
+		return curando;
+	}
+	public void setCurando(boolean curando) {
+		this.curando = curando;
+	}
+	public int getTimerPrecavido() {
+		return timerPrecavido;
+	}
+	public void setTimerPrecavido(int timerPrecavido) {
+		this.timerPrecavido = timerPrecavido;
+	}
+	public int getTimerAgresivo() {
+		return timerAgresivo;
+	}
+	public void setTimerAgresivo(int timerAgresivo) {
+		this.timerAgresivo = timerAgresivo;
+	}
+	public int getTimerAcelerado() {
+		return timerAcelerado;
+	}
+	public void setTimerAcelerado(int timerAcelerado) {
+		this.timerAcelerado = timerAcelerado;
+	}
+	public int getTimerPotenciado() {
+		return timerPotenciado;
+	}
+	public void setTimerPotenciado(int timerPotenciado) {
+		this.timerPotenciado = timerPotenciado;
+	}
 
 }
