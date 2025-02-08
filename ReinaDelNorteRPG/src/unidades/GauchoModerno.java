@@ -1,6 +1,8 @@
 package unidades;
 
 import java.util.ArrayList;
+
+import principal.Habilidades;
 import principal.PanelDeJuego;
 import principal.Zona;
 
@@ -19,13 +21,14 @@ public class GauchoModerno extends Unidad {
 		this.setHP(this.getHPMax());
 		this.setSP(0);
 		this.setSPMax(0);
-		this.setAtq(obtenerValorEntre(13,17));
+		this.setAtq(obtenerValorEntre(12,17));
 		this.setDef(obtenerValorEntre(5,9));
-		this.setPCRT(0.15);
+		this.setPCRT(15);
 		this.setDCRT(1.5);
 		this.setEva(0);
+		this.setBloq(0);
 		this.setVel(obtenerValorEntre(5,10));
-		this.listaDeHabilidades[0] = "SALDAR DEUDA";
+		this.listaDeHabilidades[0] = "APUÑALAR";
 		this.generarCuerpo();
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
@@ -34,10 +37,10 @@ public class GauchoModerno extends Unidad {
 	    super.recibirDaño(daño, isCritical, duracionSacudida);
 	    int hpPerdido = hpAnterior - this.getHP();
 	    this.acumuladorDeVidaPrdida += hpPerdido;
-	    if(acumuladorDeVidaPrdida >= 10) {
-	    	int acumuladorDeAtq = (acumuladorDeVidaPrdida / 10);
+	    if(acumuladorDeVidaPrdida >= 5) {
+	    	int acumuladorDeAtq = (acumuladorDeVidaPrdida / 5);
 	    	this.setAtqMod(this.getAtqMod() + acumuladorDeAtq);
-	        this.acumuladorDeVidaPrdida -= (10*acumuladorDeAtq); 
+	        this.acumuladorDeVidaPrdida -= (5*acumuladorDeAtq); 
 	    }
 	}
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
@@ -49,35 +52,54 @@ public class GauchoModerno extends Unidad {
 		if(this.getHabilidadElegida() == 0) {
 			if(!unidades.isEmpty()) {
 				Unidad unidad = elegirObjetivo(unidades);
-				saldarDeuda(unidad);
+				apuñalar(unidad);
 			}
 		}
 	}
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {	
-		saldarDeuda(unidad);
+		apuñalar(unidad);
 	}
 	//HABILIDADES////////////////////////////////////////////////////////////////////////
-	public void saldarDeuda(Unidad unidad) {
-		boolean isMiss = Math.random() <= (unidad.getEva() + unidad.getEvaMod());	
-		if(unidad != null) {
-			if(!isMiss) {
-				int daño = (this.getAtqMod()*4);
-				unidad.recibirDaño(daño, false, 20);
-				unidad.setearSacudida(true);
-				unidad.setDuracionSacudida(20);
-				unidad.setEsUnaHabilidad(true);
-				contarFaltas(unidad, 3);
-			}
-			else {
-				unidad.evadirAtaque();
-			}	
-		}
-		this.setAtqMod(0);
+	public void apuñalar(Unidad unidad) {
+		int daño = this.getAtq() + this.getAtqMod();
+	    int reduccion = (int) (daño * ((unidad.getDef() + unidad.getDefMod()) / 100.0));
+        int dañoFinal = Math.max(1, daño - reduccion);
+        String textoMostrado = "";
+	    if (unidad.elegirAleatorio(100) < (unidad.getEva() + unidad.getEvaMod())) {
+	    	pdj.ReproducirSE(6);
+	    	unidad.setEvadiendo(true);
+	        textoMostrado = "MISS!";
+	        Habilidades.setearEstado(unidad, textoMostrado);
+	    }
+	    else {
+	    	if(this.elegirAleatorio(100) < (unidad.getBloq() + unidad.getBloqMod())) {
+	    		pdj.ReproducirSE(9);
+	    		unidad.setBloqueando(true);
+	    		unidad.setHP(unidad.getHP() - (dañoFinal/4));
+		        textoMostrado = "BLOCK!";
+		        Habilidades.setearEstado(unidad, textoMostrado);
+	    	}
+	    	else if (unidad.getEscudos() > 0) {
+		        unidad.setEscudos(unidad.getEscudos() - 1);
+		        pdj.ReproducirSE(9);
+		        unidad.setRompiendo(true);
+		        textoMostrado = "BREAK!";
+		        Habilidades.setearEstado(unidad, textoMostrado);
+		    } else {
+		    	textoMostrado = "" + dañoFinal;
+		        unidad.setHP(unidad.getHP() - dañoFinal);
+		        pdj.ReproducirSE(3);
+		        Habilidades.setearDaño(unidad, textoMostrado);
+		        unidad.setValorSangrado(unidad.getHPMax()/20 + this.getAtqMod());
+				unidad.setSangrando(true);
+				unidad.setTimerSangrando(5);
+		    }
+	    }  
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
 	public boolean cumpleReqDeHab1() {
-		if(this.getAtqMod() >= 5) {
+		if(this.getAtqMod() >= 0) {
 			return true;
 		}
 		return false;
