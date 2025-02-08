@@ -78,7 +78,7 @@ public class Habilidades {
 		unidad.setDuracionSacudida(20);
 	}
 	
-	//HABILIDADES COMPUSTAS/////////////////////////////////////////////////
+	//HABILIDADES DE REGENERACION////////////////////////////////////////////
 	
 	public static void restaurarHP(Unidad unidad, int porcentajeCuracion) {
 		 int curacion = (unidad.getHPMax() * porcentajeCuracion) / 100;
@@ -99,6 +99,24 @@ public class Habilidades {
 				unidad.setSP(unidad.getSP() + energia);
 			}
 	}
+	
+	//HABILIDADES ESPECIALES/////////////////////////////////////////////////
+	
+	public static void provocarHemorragia(Unidad unidad, PanelDeJuego pdj) {
+		new Thread(() -> {
+		    try {
+		        Thread.sleep(500);
+		    } catch (InterruptedException e) {
+		        e.printStackTrace();
+		    }
+		    pdj.ReproducirSE(2);
+		    unidad.setHP(unidad.getHP() - unidad.getValorSangrado());
+		    Habilidades.setearDaño(unidad, "-"+unidad.getValorSangrado());
+			unidad.setSangrando(true);
+		}).start();	
+	}
+	
+	//HABILIDADES COMPUeSTAS/////////////////////////////////////////////////
 	
 	public static void aumentarAgresividad(Unidad unidad) {
 		aumentarAtaque(unidad, 5);

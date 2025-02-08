@@ -23,7 +23,6 @@ public class Unidad {
 	//SISTEMA////////////////////////////////////////////////////////
 	PanelDeJuego pdj;
 	Graphics2D g2;
-	//GestorDeHabilidades gdh;
 	//POSICIONAMIENTO////////////////////////////////////////////////
 	private Zona zona;
 	private int posX = 0;
@@ -31,29 +30,18 @@ public class Unidad {
 	//INDICADORES DE SALUD Y NOMBRE//////////////////////////////////
 	int barraHP = 72;
 	private String textoDañoRecibido;
-	private String textoCuracionRecibida;
 	private String textoInformativo;
 	private int cdHabilidad1 = 0;
 	private int cdHabilidad2 = 0;
 	private boolean habilidad1 = true;
 	private boolean habilidad2 = true;
 	//ESTADOS Y COMPORTAMIENTOS//////////////////////////////////////
-	private int idMate;
 	private boolean esAliado = false;
 	private boolean estaActivo = true;
 	private boolean estaVivo = true;	
 	private boolean estaMarcado;
-	private boolean realizaUnaCuracion;
-	private boolean estaEsquivando;
-	private boolean tomandoUnMate;
 	private boolean esUnaHabilidad;
-	private boolean estaGanandoSP;
-	private boolean estaMotivado;
-	private boolean estaDesmotivado;
-	private boolean estaLisiado;
-	private boolean estaDebilitado;
 	private boolean estaKO;
-	private boolean estaBloqueando;
 	private boolean estaEnamorado;
 	//ACCIONES//////////////////////////////////////////////////////
 	private boolean realizaUnCritico;
@@ -66,11 +54,15 @@ public class Unidad {
 	private boolean agresivo;
 	private boolean acelerado;
 	private boolean potenciado;
+	private boolean sangrando;
 	//CONTADORES DE ESTADOS//////////////////////////////////////////
 	private int timerPrecavido = -1;
 	private int timerAgresivo = -1;
 	private int timerAcelerado = -1;
 	private int timerPotenciado = -1;
+	private int timerSangrando = -1;
+	//ELEMENTOS DE ESTADOS///////////////////////////////////////////
+	private int valorSangrado;
 	//VARIABLES PARA LA SACUDIDA/////////////////////////////////////
 	private boolean enSacudida = false;
 	private int duracionSacudida = 0; // Duración en frames
@@ -100,11 +92,12 @@ public class Unidad {
 	private int puñosAcumulados;
 	private int cargarEnamoramiento = 0;
 	private int contador = 5;
-	//ESTADISTICAS DE LA UNIDAD/////////////////////////////////////
+	private int vidaPerdida = 0;
 	private String nombre;
 	private String clase;
 	private String tipo;
 	private int genero;
+	//ESTADISTICAS DE LA UNIDAD/////////////////////////////////////
 	private int hp;
 	private int hpMax;
 	private int sp;
@@ -114,8 +107,8 @@ public class Unidad {
 	private int vel;
 	private int eva;
 	private int pcrt;
-	private double dcrt;
 	private int bloq;
+	private double dcrt;
 	//MODIFICADORES DE STATS////////////////////////////////////////
 	private int hpMaxMod = 0;
 	private int spMaxMod = 0;
@@ -124,19 +117,15 @@ public class Unidad {
 	private int velMod = 0;
 	private int evaMod = 0;
 	private int pcrtMod = 0;
-	private double dcrtMod = 0;
 	private int bloqMod = 0;
-	private int vidaPerdida = 0;
+	private double dcrtMod = 0;
 	////////////////////////////////////////////////////////////////
 	public Unidad(Zona zona,boolean aliado, PanelDeJuego pdj) {
 		this.pdj = pdj;
 		//this.gdh = gdh;
 		this.textoInformativo = "";
 		this.textoDañoRecibido = "";
-		this.textoCuracionRecibida = "";
 		this.setZona(zona);
-		this.setTomandoUnMate(false);
-		this.setIdMate(-1);
 		this.setPosX(zona.x);
 		this.setPosY(zona.y);
 		this.setAliado(aliado);
@@ -171,14 +160,12 @@ public class Unidad {
                 
             } else {
                 setearSacudida(false);
-                realizaUnaCuracion = false; 
                 realizaUnCritico = false;
                 desplazamientoSacudidaX = 0;
                 desplazamientoSacudidaY = 0;
                 desplazarDañoRecibido = getPosY();
                 textoInformativo = "";
                 textoDañoRecibido = "";
-                textoCuracionRecibida = "";
                 cancelarTextoDeEfectos();
             }
         }
@@ -259,6 +246,12 @@ public class Unidad {
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
             g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
         }
+        else if(this.isSangrando()) {
+        	Color c = new Color(255,0,0);
+        	g2.setColor(c);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+            g2.drawString(this.getTextoDañoRecibido() , getPosX()+84, desplazarDañoRecibido-48);
+        }
         else {
         	g2.setColor(Color.WHITE);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
@@ -270,12 +263,6 @@ public class Unidad {
         if(this.estaKO) {
         	Image KO = configurarImagen("/efectos/stun", 3);
         	g2.drawImage(KO, dibujarX+10, dibujarY, null);
-        }
-        else if(this.estaBloqueando) {
-        	g2.setColor(Color.GRAY);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
-            g2.drawString("BLOCK", getPosX()+84, desplazarDañoRecibido-48);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
         }
         
         
@@ -369,11 +356,6 @@ public class Unidad {
 			}
 		}
 		return null;
-	}
-	
-	public boolean puedeBloquear() {
-		//return Math.random() <= (this.getCapacidadBloqueo());  
-		return false;
 	}	
 	
 	public void reflejarDaño(Unidad unidad, int daño) {
@@ -413,13 +395,10 @@ public class Unidad {
 	
 	public void robarVida(int daño, Unidad unidad) {
 		if(unidad.getEstaMarcado()) {
-			if(this.getClase() == "Aspirante A Dragon") {
-			}
-			else {
-			}
-			this.setRealizandoCuracion(true);
-			this.setDuracionSacudida(20);
-			this.setearSacudida(true);
+			Habilidades.restaurarHP(unidad, 20);
+			Habilidades.setearEstado(unidad, "+" + this.porcentajeHP(20));
+			unidad.setCurando(true);
+			Habilidades.setearEstado(this, "+"+(daño - (daño/4)));
 		}
 	}
 	
@@ -443,6 +422,7 @@ public class Unidad {
 	}
 	
 	public void iniciarTimersDeEstado() {
+		actualizarHemorragia();
 	    actualizarTimer(this::getTimerPrecavido, this::setTimerPrecavido, () -> Habilidades.reducirProteccion(this));
 	    actualizarTimer(this::getTimerAgresivo, this::setTimerAgresivo, () -> Habilidades.reducirAgresividad(this));
 	    actualizarTimer(this::getTimerAcelerado, this::setTimerAcelerado, () -> Habilidades.reducirAgilidad(this));
@@ -456,6 +436,13 @@ public class Unidad {
 	        habilidad.run();
 	        setter.accept(-1);
 	    }
+	}
+	
+	private void actualizarHemorragia() {
+		if(this.getTimerSangrando() > 0) {
+			this.setTimerSangrando(this.getTimerSangrando() - 1);
+			Habilidades.provocarHemorragia(this, pdj);
+		}
 	}
 	
 	public void sumarNeocreditos(int neocreditos) {
@@ -481,6 +468,7 @@ public class Unidad {
 		this.setRompiendo(false);
 		this.setCurando(false);
 		this.setBloqueando(false);
+		this.setSangrando(false);
 	}
 	
 	public int porcentajeHP(int valor) {
@@ -958,49 +946,19 @@ public class Unidad {
 	public void setEstaActivo(boolean estaActivo) {this.estaActivo = estaActivo;}
 	public boolean isObjetivoUnico() {return objetivoUnico;}
 	public void setObjetivoUnico(boolean singleTarget) {this.objetivoUnico = singleTarget;}
-	public String getTextoInformativo() {
-		return textoInformativo;
-	}
-	public void setTextoInformativo(String textoInformativo) {
-		this.textoInformativo = textoInformativo;
-	}
-	public String getTextoDañoRecibido() {
-		return textoDañoRecibido;
-	}
-	public void setTextoDañoRecibido(String textoDañoRecibido) {
-		this.textoDañoRecibido = textoDañoRecibido;
-	}
-	public String getTextoCuracionRecibida() {
-		return textoCuracionRecibida;
-	}
-	public void setTextoCuracionRecibida(String textoCuracionRecibida) {
-		this.textoCuracionRecibida = textoCuracionRecibida;
-	}
+	public String getTextoInformativo() {return textoInformativo;}
+	public void setTextoInformativo(String textoInformativo) {this.textoInformativo = textoInformativo;}
+	public String getTextoDañoRecibido() {return textoDañoRecibido;}
+	public void setTextoDañoRecibido(String textoDañoRecibido) {this.textoDañoRecibido = textoDañoRecibido;}
 	//GETTERS & SETTERS DE EFECTOS//////////////////////////////////////////////
-	public boolean getRealizaCuracion() {return this.realizaUnaCuracion;}
-	public void setRealizandoCuracion(boolean boo) {this.realizaUnaCuracion = boo;}
 	public boolean getEstaMarcado() {return this.estaMarcado;}
 	public void setEstaMArcado(boolean boo) {this.estaMarcado = boo;}
-	public boolean getTomandoUnMate() {return tomandoUnMate;}
-	public void setTomandoUnMate(boolean esMate) {this.tomandoUnMate = esMate;}
-	public boolean getEstaMotivado() {return estaMotivado;}
-	public void setEstaMotivado(boolean esMotivar) {this.estaMotivado = esMotivar;}
-	public boolean getEstaDesmotivado() {return estaDesmotivado;}
-	public void setEstaDesmotivado(boolean esDesmotivar) {this.estaDesmotivado = esDesmotivar;}
 	public boolean getEsUnaHabilidad() {return esUnaHabilidad;}
 	public void setEsUnaHabilidad(boolean eshabilidad) {this.esUnaHabilidad = eshabilidad;}
-	public boolean getEstaGanandoSP() {return estaGanandoSP;}
-	public void setEstaGanandoSP(boolean esGanarSP) {this.estaGanandoSP = esGanarSP;}
-	public boolean getEstaLisiado() {return estaLisiado;}
-	public void setEstaLisiado(boolean estaLisiado) {this.estaLisiado = estaLisiado;}
 	public boolean getEstaKO() {return estaKO;}
 	public void setEstaKO(boolean estaKO) {this.estaKO = estaKO;}
 	public boolean isEstaEnamorado() {return estaEnamorado;}
 	public void setEstaEnamorado(boolean estaEnamorado) {this.estaEnamorado = estaEnamorado;}
-	public boolean getEstaDebilitado() {return this.estaDebilitado;}
-	public void setEstaDebilitado(boolean boo) {this.estaDebilitado = boo;}
-	public boolean isEstaBloqueando() {return estaBloqueando;}
-	public void setEstaBloqueando(boolean estaBloqueando) {this.estaBloqueando = estaBloqueando;}
 	//GETTER & SETTERS MISCELANEOS///////////////////////////////////////////////
 	public Zona getZona() {return zona;}
 	public void setZona(Zona zona) {this.zona = zona;}
@@ -1014,8 +972,6 @@ public class Unidad {
 	public void setDuracionSacudida(int duracionSacudida) {this.duracionSacudida = duracionSacudida;}
 	public int getVidaPerdida() {return vidaPerdida;}
 	public void setVidaPerdida(int vida) {this.vidaPerdida = vida;}
-	public int getIdMate() {return idMate;}
-	public void setIdMate(int idMate) {this.idMate = idMate;}
 	public String[] getListaDeHabilidades() {return listaDeHabilidades;}
 	public void setListaDeHabilidades(String[] habilidades) {this.listaDeHabilidades = habilidades;}
 	public int getHabilidadElegida() {return habilidadElegida;}
@@ -1110,6 +1066,12 @@ public class Unidad {
 	public void setAcelerado(boolean acelerado) {this.acelerado = acelerado;}
 	public boolean isPotenciado() {return potenciado;}
 	public void setPotenciado(boolean potenciado) {this.potenciado = potenciado;}
+	public boolean isSangrando() {
+		return sangrando;
+	}
+	public void setSangrando(boolean sangrando) {
+		this.sangrando = sangrando;
+	}
 	public boolean isEvadiendo() {
 		return evadiendo;
 	}
@@ -1157,6 +1119,18 @@ public class Unidad {
 	}
 	public void setTimerPotenciado(int timerPotenciado) {
 		this.timerPotenciado = timerPotenciado;
+	}
+	public int getTimerSangrando() {
+		return timerSangrando;
+	}
+	public void setTimerSangrando(int timerSangrando) {
+		this.timerSangrando = timerSangrando;
+	}
+	public int getValorSangrado() {
+		return valorSangrado;
+	}
+	public void setValorSangrado(int valorSangrado) {
+		this.valorSangrado = valorSangrado;
 	}
 
 }
