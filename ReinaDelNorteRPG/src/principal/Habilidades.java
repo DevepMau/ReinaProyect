@@ -139,6 +139,13 @@ public class Habilidades {
 		aumentarVelocidad(unidad, 5);
 	}
 	
+	public static void motivarUnidad(Unidad unidad) {
+		aumentarAgresividad(unidad);
+		aumentarAgresividad(unidad);
+		aumentarVelocidad(unidad, 10);
+		aumentarEvasion(unidad, 10);
+	}
+	
 	public static void reducirAgresividad(Unidad unidad) {
 		reducirAtaque(unidad, 5);
 		reducirProbCrit(unidad, 5);
@@ -158,6 +165,13 @@ public class Habilidades {
 		reducirAgresividad(unidad);
 		reducirProteccion(unidad);
 		reducirVelocidad(unidad, 5);
+	}
+	
+	public static void desmotivarUnidad(Unidad unidad) {
+		reducirAgresividad(unidad);
+		reducirAgresividad(unidad);
+		reducirVelocidad(unidad, 10);
+		reducirEvasion(unidad, 10);
 	}
 
 	
