@@ -49,20 +49,25 @@ public class Unidad {
 	private boolean rompiendo;
 	private boolean curando;
 	private boolean bloqueando;
+	private boolean reduciendoDefensa;
 	//ESTADOS////////////////////////////////////////////////////////
 	private boolean precavido;
 	private boolean agresivo;
 	private boolean acelerado;
 	private boolean potenciado;
 	private boolean sangrando;
+	private boolean motivado;
 	//CONTADORES DE ESTADOS//////////////////////////////////////////
 	private int timerPrecavido = -1;
 	private int timerAgresivo = -1;
 	private int timerAcelerado = -1;
 	private int timerPotenciado = -1;
 	private int timerSangrando = -1;
+	private int timerMotivado = -1;
+	private int timerRdcDefAcc = -1;
 	//ELEMENTOS DE ESTADOS///////////////////////////////////////////
 	private int valorSangrado;
+	private int rdcDefAcc = 0;
 	//VARIABLES PARA LA SACUDIDA/////////////////////////////////////
 	private boolean enSacudida = false;
 	private int duracionSacudida = 0; // Duración en frames
@@ -252,6 +257,18 @@ public class Unidad {
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
             g2.drawString(this.getTextoDañoRecibido() , getPosX()+84, desplazarDañoRecibido-48);
         }
+        else if(this.isMotivado()) {
+        	Color c = new Color(255,200,0);
+        	g2.setColor(c);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
+            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
+        }
+        else if(this.isReduciendoDefensa()) {
+        	Color c = new Color(155,155,255);
+        	g2.setColor(c);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+            g2.drawString(this.getTextoDañoRecibido() , getPosX()+84, desplazarDañoRecibido-48);
+        }
         else {
         	g2.setColor(Color.WHITE);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
@@ -427,6 +444,8 @@ public class Unidad {
 	    actualizarTimer(this::getTimerAgresivo, this::setTimerAgresivo, () -> Habilidades.reducirAgresividad(this));
 	    actualizarTimer(this::getTimerAcelerado, this::setTimerAcelerado, () -> Habilidades.reducirAgilidad(this));
 	    actualizarTimer(this::getTimerPotenciado, this::setTimerPotenciado, () -> Habilidades.debilitarUnidad(this));
+	    actualizarTimer(this::getTimerMotivado, this::setTimerMotivado, () -> Habilidades.desmotivarUnidad(this));
+	    actualizarTimer(this::getTimerRdcDefAcc, this::setTimerRdcDefAcc, () -> Habilidades.aumentarDefensaAcc(this, this.getRdcDefAcc()));
 	}
 
 	private void actualizarTimer(Supplier<Integer> getter, Consumer<Integer> setter, Runnable habilidad) {
@@ -469,6 +488,8 @@ public class Unidad {
 		this.setCurando(false);
 		this.setBloqueando(false);
 		this.setSangrando(false);
+		this.setMotivado(false);
+		this.setReduciendoDefensa(false);
 	}
 	
 	public int porcentajeHP(int valor) {
@@ -1072,6 +1093,12 @@ public class Unidad {
 	public void setSangrando(boolean sangrando) {
 		this.sangrando = sangrando;
 	}
+	public boolean isMotivado() {
+		return motivado;
+	}
+	public void setMotivado(boolean motivado) {
+		this.motivado = motivado;
+	}
 	public boolean isEvadiendo() {
 		return evadiendo;
 	}
@@ -1095,6 +1122,12 @@ public class Unidad {
 	}
 	public void setBloqueando(boolean bloqueando) {
 		this.bloqueando = bloqueando;
+	}
+	public boolean isReduciendoDefensa() {
+		return reduciendoDefensa;
+	}
+	public void setReduciendoDefensa(boolean reduciendoDefensa) {
+		this.reduciendoDefensa = reduciendoDefensa;
 	}
 	public int getTimerPrecavido() {
 		return timerPrecavido;
@@ -1126,11 +1159,29 @@ public class Unidad {
 	public void setTimerSangrando(int timerSangrando) {
 		this.timerSangrando = timerSangrando;
 	}
+	public int getTimerMotivado() {
+		return timerMotivado;
+	}
+	public void setTimerMotivado(int timerMotivado) {
+		this.timerMotivado = timerMotivado;
+	}
+	public int getTimerRdcDefAcc() {
+		return timerRdcDefAcc;
+	}
+	public void setTimerRdcDefAcc(int timerRdcDefAcc) {
+		this.timerRdcDefAcc = timerRdcDefAcc;
+	}
 	public int getValorSangrado() {
 		return valorSangrado;
 	}
 	public void setValorSangrado(int valorSangrado) {
 		this.valorSangrado = valorSangrado;
+	}
+	public int getRdcDefAcc() {
+		return rdcDefAcc;
+	}
+	public void setRdcDefAcc(int rdcDefAcc) {
+		this.rdcDefAcc = rdcDefAcc;
 	}
 
 }

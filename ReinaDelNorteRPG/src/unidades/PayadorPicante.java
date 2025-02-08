@@ -1,6 +1,8 @@
 package unidades;
 
 import java.util.ArrayList;
+
+import principal.Habilidades;
 import principal.PanelDeJuego;
 import principal.Zona;
 
@@ -16,7 +18,7 @@ public class PayadorPicante extends Unidad {
 		this.setTipo("Especialista");
 		this.setClase("Payador Picante");
 		this.setIdFaccion(1);
-		this.setHPMax(obtenerValorEntre(40,70));
+		this.setHPMax(obtenerValorEntre(400,700));
 		this.setHP(this.getHPMax());
 		this.setSPMax(obtenerValorEntre(60,100));
 		this.setSP(this.getSPMax());
@@ -25,7 +27,7 @@ public class PayadorPicante extends Unidad {
 		this.setVel(obtenerValorEntre(8,15));
 		this.setPCRT(0);
 		this.spHabilidad1 = 10;
-		this.spHabilidad2 = 30;
+		this.spHabilidad2 = 40;
 		this.habilidades[0] = "CHICANEAR";
 		this.habilidades[1] = "MOTIVAR";
 		this.generarCuerpo();
@@ -63,7 +65,9 @@ public class PayadorPicante extends Unidad {
 				for(Unidad unidad : aliados) {
 					motivar(unidad);
 				}
-			}
+				this.setCdHabilidad2(10);
+				this.setHabilidad2(false);
+			}	
 		}
 	}
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
@@ -76,32 +80,55 @@ public class PayadorPicante extends Unidad {
 			for(Unidad unidadObjetivo : unidades) {
 				motivar(unidadObjetivo);
 			}	
+			this.setCdHabilidad2(10);
+			this.setHabilidad2(false);
 		}
 		
 	}
 	//HABILIDADES////////////////////////////////////////////////////////////////////////
 	public void chicanear(Unidad unidad) {
-		int daño = (this.getAtq()+this.getAtqMod()+(this.getSPMax() / 20));
-		if(unidad != null) {
-			this.setSP(this.getSP() - this.spHabilidad1);
-			pdj.ReproducirSE(3);
-			unidad.recibirDaño(daño, false, 20);
-			unidad.setearSacudida(true);
-			unidad.setDuracionSacudida(20);
-			unidad.setEstaDesmotivado(true);
-			unidad.setVelMod(unidad.getVelMod() - obtenerValorEntre(1,5));
-			unidad.setDefMod(unidad.getDefMod() - obtenerValorEntre(1,3));
-			contarFaltas(unidad, 1);
-		}
+		this.setSP(this.getSP() - this.spHabilidad1);
+		int daño = this.getAtq() + this.getAtqMod() + this.getSPMax()/10;
+	    int reduccion = (int) (daño * ((unidad.getDef() + unidad.getDefMod()) / 100.0));
+        int dañoFinal = Math.max(1, daño - reduccion);
+        String textoMostrado = "";
+	    if (unidad.elegirAleatorio(100) < (unidad.getEva() + unidad.getEvaMod())) {
+	    	pdj.ReproducirSE(6);
+	    	unidad.setEvadiendo(true);
+	        textoMostrado = "MISS!";
+	        Habilidades.setearEstado(unidad, textoMostrado);
+	    }
+	    else {
+	    	if (unidad.getEscudos() > 0) {
+		        unidad.setEscudos(unidad.getEscudos() - 1);
+		        pdj.ReproducirSE(9);
+		        unidad.setRompiendo(true);
+		        textoMostrado = "BREAK!";
+		        Habilidades.setearEstado(unidad, textoMostrado);
+		    } else {
+		    	textoMostrado = "-" + dañoFinal;
+		        unidad.setHP(unidad.getHP() - dañoFinal);
+		        Habilidades.setearDaño(unidad, textoMostrado);
+		        unidad.setReduciendoDefensa(true);
+		        unidad.setTimerRdcDefAcc(3);
+		        pdj.ReproducirSE(3);
+		        if(unidad.getRdcDefAcc() < 3) {
+		        	Habilidades.reducirDefensa(unidad, 5);
+			        unidad.setRdcDefAcc(unidad.getRdcDefAcc() + 1);
+		        } 
+				
+		    }
+	    } 
+	    this.setCdHabilidad1(1);
+		this.setHabilidad1(false);
 	}
 	public void motivar(Unidad unidad) {
 		if(unidad != null) {
 			pdj.ReproducirSE(7);
-			unidad.setearSacudida(true);
-			unidad.setDuracionSacudida(20);
-			unidad.setEstaMotivado(true);
-			unidad.setVelMod(unidad.getVelMod() + obtenerValorEntre(1,5));
-			unidad.setAtqMod(unidad.getAtqMod() + obtenerValorEntre(1,5));
+			Habilidades.motivarUnidad(unidad);
+			Habilidades.setearEstado(unidad, "DANCE!");
+			unidad.setMotivado(true);
+			unidad.setTimerMotivado(5);
 		}
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
@@ -116,20 +143,31 @@ public class PayadorPicante extends Unidad {
 		}
 	}
 	public boolean cumpleReqDeHab1() {
-		if(this.getSP() > 0) {
-			if(this.getSP() >= this.spHabilidad1) {
-				return true;
-			}
+		if(this.getSP() >= this.spHabilidad1 && this.isHabilidad1()) {
+			return true;
 		}
 		return false;
 	}
 	public boolean cumpleReqDeHab2() {
-		if(this.getSP() > 0) {
-			if(this.getSP() >= this.spHabilidad2) {
-				return true;
-			}
+		if(this.getSP() >= this.spHabilidad2 && this.isHabilidad2()) {
+			return true;
 		}
 		return false;
+	}
+	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
+		if(this.getCdHabilidad1() == 0) {
+			this.setHabilidad1(true);
+		}
+		else {
+			this.setCdHabilidad1(this.getCdHabilidad1() - 1);
+		}
+		if(this.getCdHabilidad2() == 0) {
+			this.setHabilidad2(true);
+		}
+		else {
+			this.setCdHabilidad2(this.getCdHabilidad2() - 1);
+		}
+		super.pasivaDeClase(aliados, enemigos);
 	}
 	public String[] getListaDeHabilidades() {return habilidades;}
 	public void setListaDeHabilidades(String[] habilidades) {this.habilidades = habilidades;}
