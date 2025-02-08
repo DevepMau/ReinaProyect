@@ -64,6 +64,17 @@ public class Habilidades {
 		unidad.setBloqMod(unidad.getBloqMod() - valor);
 	}
 	
+	//HABILIDADES CON ACUMULADOR////////////////////////////////////////////
+	
+	public static void reducirDefensaAcc(Unidad unidad, int acc) {
+		reducirDefensa(unidad, 5 * acc);
+	}
+	
+	public static void aumentarDefensaAcc(Unidad unidad, int acc) {
+		aumentarDefensa(unidad, 5 * acc);
+		unidad.setRdcDefAcc(0);
+	}
+	
 	//HABILIDADES COMPLEMENTARIAS///////////////////////////////////////////
 	
 	public static void setearEstado(Unidad unidad, String texto) {
