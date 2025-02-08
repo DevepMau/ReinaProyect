@@ -60,6 +60,7 @@ public class Unidad {
 	private boolean evadiendo;
 	private boolean rompiendo;
 	private boolean curando;
+	private boolean bloqueando;
 	//ESTADOS////////////////////////////////////////////////////////
 	private boolean precavido;
 	private boolean agresivo;
@@ -114,6 +115,7 @@ public class Unidad {
 	private int eva;
 	private int pcrt;
 	private double dcrt;
+	private int bloq;
 	//MODIFICADORES DE STATS////////////////////////////////////////
 	private int hpMaxMod = 0;
 	private int spMaxMod = 0;
@@ -123,7 +125,7 @@ public class Unidad {
 	private int evaMod = 0;
 	private int pcrtMod = 0;
 	private double dcrtMod = 0;
-	private double capacidadBloqueo;
+	private int bloqMod = 0;
 	private int vidaPerdida = 0;
 	////////////////////////////////////////////////////////////////
 	public Unidad(Zona zona,boolean aliado, PanelDeJuego pdj) {
@@ -228,6 +230,11 @@ public class Unidad {
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
             g2.drawString(this.getTextoInformativo(), getPosX()+84, desplazarDañoRecibido-48);
         }
+        else if(this.isBloqueando()) {
+        	g2.setColor(Color.WHITE);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
+            g2.drawString(this.getTextoInformativo(), getPosX()+84, desplazarDañoRecibido-48);
+        }
         else if(this.isPrecavido()) {
         	Color c = new Color(55,55,255);
         	g2.setColor(c);
@@ -298,7 +305,14 @@ public class Unidad {
 	        Habilidades.setearEstado(this, textoMostrado);
 	    }
 	    else {
-	    	if (this.escudos > 0) {
+	    	if(this.elegirAleatorio(100) < (this.getBloq() + this.getBloqMod())) {
+	    		pdj.ReproducirSE(9);
+	    		this.setBloqueando(true);
+	    		this.setHP(this.getHP() - (dañoFinal/4));
+		        textoMostrado = "BLOCK!";
+		        Habilidades.setearEstado(this, textoMostrado);
+	    	}
+	    	else if (this.escudos > 0) {
 		        escudos--;
 		        pdj.ReproducirSE(9);
 		        this.setRompiendo(true);
@@ -358,7 +372,8 @@ public class Unidad {
 	}
 	
 	public boolean puedeBloquear() {
-		return Math.random() <= (this.getCapacidadBloqueo());  
+		//return Math.random() <= (this.getCapacidadBloqueo());  
+		return false;
 	}	
 	
 	public void reflejarDaño(Unidad unidad, int daño) {
@@ -465,6 +480,7 @@ public class Unidad {
 		this.setEvadiendo(false);
 		this.setRompiendo(false);
 		this.setCurando(false);
+		this.setBloqueando(false);
 	}
 	
 	public int porcentajeHP(int valor) {
@@ -1055,6 +1071,8 @@ public class Unidad {
 	public void setDCRT(double dcrt) {this.dcrt = dcrt;}
 	public int getEva() {return eva;}
 	public void setEva(int eva) {this.eva = eva;}
+	public int getBloq() {return bloq;}
+	public void setBloq(int capacidadBloqueo) {this.bloq = capacidadBloqueo;}
 	//GETTERS & SETTERS STATS MOD//////////////////////////////////////////////
 	public int getHpMaxMod() {return hpMaxMod;}
 	public void setHpMaxMod(int hpMaxMod) {this.hpMaxMod = hpMaxMod;}
@@ -1072,8 +1090,8 @@ public class Unidad {
 	public void setPcrtMod(int pcrtMod) { this.pcrtMod = pcrtMod;}
 	public double getDcrtMod() { return dcrtMod;}
 	public void setDcrtMod(double dcrtMod) { this.dcrtMod = dcrtMod;}
-	public double getCapacidadBloqueo() {return capacidadBloqueo;}
-	public void setCapacidadBloqueo(double capacidadBloqueo) {this.capacidadBloqueo = capacidadBloqueo;}
+	public int getBloqMod() {return bloqMod;}
+	public void setBloqMod(int blockMod) {this.bloqMod = blockMod;}
 	//CD Y HABILIDADES/////////////////////////////////////////////////////////////////////
 	public int getCdHabilidad1() {return cdHabilidad1;}
 	public void setCdHabilidad1(int cdHabilidad1) {this.cdHabilidad1 = cdHabilidad1;}
@@ -1109,6 +1127,12 @@ public class Unidad {
 	}
 	public void setCurando(boolean curando) {
 		this.curando = curando;
+	}
+	public boolean isBloqueando() {
+		return bloqueando;
+	}
+	public void setBloqueando(boolean bloqueando) {
+		this.bloqueando = bloqueando;
 	}
 	public int getTimerPrecavido() {
 		return timerPrecavido;

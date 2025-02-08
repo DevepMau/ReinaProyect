@@ -36,6 +36,10 @@ public class Habilidades {
 		unidad.setPcrtMod(unidad.getPcrtMod() + valor);
 	}
 	
+	public static void aumentarTasaBloqueo(Unidad unidad, int valor) {
+		unidad.setBloqMod(unidad.getBloqMod() + valor);
+	}
+	
 	public static void reducirAtaque(Unidad unidad, int valor) {
 		unidad.setAtqMod(unidad.getAtqMod() - valor);
 	}
@@ -56,6 +60,10 @@ public class Habilidades {
 		unidad.setPcrtMod(unidad.getPcrtMod() - valor);
 	}
 	
+	public static void reducirTasaBloqueo(Unidad unidad, int valor) {
+		unidad.setBloqMod(unidad.getBloqMod() - valor);
+	}
+	
 	//HABILIDADES COMPLEMENTARIAS///////////////////////////////////////////
 	
 	public static void setearEstado(Unidad unidad, String texto) {
@@ -69,8 +77,6 @@ public class Habilidades {
 		unidad.setearSacudida(true);
 		unidad.setDuracionSacudida(20);
 	}
-	
-	//HABILIDADES COMPUSTAS/////////////////////////////////////////////////
 	
 	//HABILIDADES COMPUSTAS/////////////////////////////////////////////////
 	
@@ -101,7 +107,7 @@ public class Habilidades {
 	
 	public static void aumentarProteccion(Unidad unidad) {
 		aumentarDefensa(unidad, 5);
-		aumentarEvasion(unidad, 5);
+		aumentarTasaBloqueo(unidad, 5);
 	}
 	
 	public static void aumentarAgilidad(Unidad unidad) {
