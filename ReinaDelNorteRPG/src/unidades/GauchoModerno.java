@@ -94,12 +94,15 @@ public class GauchoModerno extends Unidad {
 		        unidad.setValorSangrado(unidad.getHPMax()/20 + this.getAtqMod());
 				unidad.setSangrando(true);
 				unidad.setTimerSangrando(5);
+				//CD HABILIDAD///////////////
+				this.setCdHabilidad1(3);
+				this.setHabilidad1(false);
 		    }
 	    }  
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
 	public boolean cumpleReqDeHab1() {
-		if(this.getAtqMod() >= 0) {
+		if(this.isHabilidad1()) {
 			return true;
 		}
 		return false;
@@ -111,6 +114,15 @@ public class GauchoModerno extends Unidad {
 		else {
 			this.setAccion("");
 		}
+	}
+	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
+		if(this.getCdHabilidad1() == 0) {
+			this.setHabilidad1(true);
+		}
+		else {
+			this.setCdHabilidad1(this.getCdHabilidad1() - 1);
+		}
+		super.pasivaDeClase(aliados, enemigos);
 	}
 	public String[] getListaDeHabilidades() {return listaDeHabilidades;}
 	public void setListaDeHabilidades(String[] habilidades) {this.listaDeHabilidades = habilidades;}
