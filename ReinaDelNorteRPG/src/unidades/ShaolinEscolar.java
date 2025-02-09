@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+
+import principal.Habilidades;
 import principal.PanelDeJuego;
 import principal.Zona;
 
@@ -19,16 +21,17 @@ public class ShaolinEscolar extends Unidad {
 		this.setClase("Shaolin Escolar");
 		this.setIdFaccion(2);
 		this.setGenero(1);
-		this.setHPMax(obtenerValorEntre(50,80));
+		this.setHPMax(obtenerValorEntre(110,130));
 		this.setHP(this.getHPMax());
 		this.setSP(0);
 		this.setSPMax(0);
-		this.setAtq(obtenerValorEntre(13,15));
-		this.setDef(obtenerValorEntre(4,7));
-		this.setPCRT(0.25);
+		this.setAtq(obtenerValorEntre(12,15));
+		this.setDef(obtenerValorEntre(25,35));
+		this.setPCRT(25);
 		this.setDCRT(1.5);
-		this.setEva(0.35);
-		this.setVel(obtenerValorEntre(7,13));
+		this.setEva(25);
+		this.setBloq(25);
+		this.setVel(obtenerValorEntre(10,20));
 		this.setNeocreditos(0);
 		this.listaDeHabilidades[0] = "...";
 		this.generarCuerpo();
@@ -38,10 +41,10 @@ public class ShaolinEscolar extends Unidad {
 		realizarAtaqueEnemigo(enemigos);
 		this.pasivaDeClase(aliados, enemigos);
 	}
-	public void recibirDaño(int daño, boolean isCritical, int duracionSacudida) {
-		int valor = 6;
+	public void recibirDaño(int daño, boolean isCritical, Unidad unidad) {
+		int valor = 5;
 	    int hpAnterior = this.getHP();
-	    super.recibirDaño(daño, isCritical, 20);
+	    super.recibirDaño(daño, isCritical, unidad);
 	    int hpPerdido = hpAnterior - this.getHP();
 	    this.acumuladorDeVidaPrdida += hpPerdido;
 	    if(acumuladorDeVidaPrdida >= valor) {
@@ -69,12 +72,9 @@ public class ShaolinEscolar extends Unidad {
 	//HABILIDADES////////////////////////////////////////////////////////////////////////
 	public void potenciar() {
 		pdj.ReproducirSE(7);
-		this.setearSacudida(true);
-		this.setDuracionSacudida(20);
-		this.setEstaMotivado(true);
-		this.setPcrtMod(this.getPcrtMod() + 0.1);
-		this.setVelMod(this.getVelMod() + obtenerValorEntre(1,7));
-		this.setAtqMod(this.getAtqMod() + obtenerValorEntre(1,7));
+		Habilidades.potenciarUnidad(this);
+		Habilidades.setearEstado(this, "POWERED!");
+		this.setPotenciado(true);
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
 	public boolean cumpleReqDeHab1() {
@@ -106,15 +106,6 @@ public class ShaolinEscolar extends Unidad {
 	}
 	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
 		super.pasivaDeClase(aliados, enemigos);
-		if(!aliados.isEmpty()) {
-			for(Unidad unidad : aliados) {
-				if(unidad.getIdFaccion() == 2) {
-					if(!this.equals(unidad)) {
-						unidad.sumarNeocreditos(this.getDañoCausado()/2);
-					}
-				}
-			}
-		}
 	}
 	public String[] getListaDeHabilidades() {return listaDeHabilidades;}
 	public void setListaDeHabilidades(String[] habilidades) {this.listaDeHabilidades = habilidades;}
