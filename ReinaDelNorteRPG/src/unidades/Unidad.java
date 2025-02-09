@@ -40,7 +40,6 @@ public class Unidad {
 	private boolean estaActivo = true;
 	private boolean estaVivo = true;	
 	private boolean estaMarcado;
-	private boolean esUnaHabilidad;
 	private boolean estaStun;
 	private boolean estaEnamorado;
 	//ACCIONES//////////////////////////////////////////////////////
@@ -94,7 +93,8 @@ public class Unidad {
 	private int idTez = 0;
 	private int escudos = 0;
 	private int faltasCometidas = 0;
-	private int neocreditos;
+	private int neocreditos = 0;
+	private int neoCreditosRecientes = 0;
 	private int dañoCausado = 0;
 	private int puñosAcumulados;
 	private int cargarEnamoramiento = 0;
@@ -305,7 +305,7 @@ public class Unidad {
 		}
 	}
 	
-	public void recibirDaño(int daño, boolean isCritical, int duracionSacudida) {
+	public void recibirDaño(int daño, boolean isCritical, Unidad unidad) {
 	    int SEId = 2;
 	    int reduccion = (int) (daño * ((this.getDef() + this.getDefMod()) / 100.0));
         int dañoFinal = Math.max(1, daño - reduccion);
@@ -315,6 +315,7 @@ public class Unidad {
 	    	this.setEvadiendo(true);
 	        textoMostrado = "MISS!";
 	        Habilidades.setearEstado(this, textoMostrado);
+	        Habilidades.ganarNeoCreditos(this, 10);
 	    }
 	    else {
 	    	if(this.elegirAleatorio(100) < (this.getBloq() + this.getBloqMod())) {
@@ -323,6 +324,7 @@ public class Unidad {
 	    		this.setHP(this.getHP() - (dañoFinal/4));
 		        textoMostrado = "BLOCK!";
 		        Habilidades.setearEstado(this, textoMostrado);
+		        Habilidades.ganarNeoCreditos(this, 12);
 	    	}
 	    	else if (this.escudos > 0) {
 		        escudos--;
@@ -330,6 +332,7 @@ public class Unidad {
 		        this.setRompiendo(true);
 		        textoMostrado = "BREAK!";
 		        Habilidades.setearEstado(this, textoMostrado);
+		        Habilidades.ganarNeoCreditos(unidad, 7);
 		    } else {
 		    	if (isCritical) {
 			    	SEId = 3;
@@ -341,6 +344,7 @@ public class Unidad {
 		        this.setHP(this.getHP() - dañoFinal);
 		        pdj.ReproducirSE(SEId);
 		        Habilidades.setearDaño(this, textoMostrado);
+		        Habilidades.ganarNeoCreditos(unidad, 5);
 		    }
 	    }  
 	}
@@ -352,7 +356,7 @@ public class Unidad {
 			if (isCritical) {
 				daño *= (this.getDCRT() + this.getDcrtMod());
 			}
-			unidad.recibirDaño(daño, isCritical, 20);
+			unidad.recibirDaño(daño, isCritical, this);
 			this.reflejarDaño(unidad, daño);
 			this.robarVida(daño, unidad);
 		}
@@ -366,7 +370,7 @@ public class Unidad {
 			if (isCritical) {
 				daño *= (this.getDCRT() + this.getDcrtMod());
 			}
-			objetivo.recibirDaño(daño, isCritical, 20);
+			objetivo.recibirDaño(daño, isCritical, this);
 			this.reflejarDaño(objetivo, daño);
 			robarVida(daño, objetivo);
 		}
@@ -387,10 +391,10 @@ public class Unidad {
 		if(unidad.getClase() == "Shaolin Escolar" || unidad.getClase() == "Aspirante A Dragon") {
 			int i = (daño/2);
 			if(i > 1) {
-				this.recibirDaño(i, false, 20);
+				this.recibirDaño(i, false, this);
 			}
 			else {
-				this.recibirDaño(1, false, 20);
+				this.recibirDaño(1, false, this);
 			}
 		}
 	}
@@ -413,7 +417,7 @@ public class Unidad {
 	            if(dañoActual == 0) {
 	            	dañoActual = 1;
 	            }
-	            recibirDaño(dañoActual, golpeCritico, 10);
+	            recibirDaño(dañoActual, golpeCritico, this);
 	        }
 	    }).start();
 	}
@@ -437,6 +441,7 @@ public class Unidad {
 	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
 		iniciarTimersDeEstado();
 		Habilidades.restaurarSP(this, 5);
+		Habilidades.repartirNeoCreditos(aliados, this);
 		if(!enemigos.isEmpty()) {
 			for(Unidad unidad : enemigos) {
 				if(unidad.getClase() == "Delegada") {
@@ -984,8 +989,6 @@ public class Unidad {
 	//GETTERS & SETTERS DE EFECTOS//////////////////////////////////////////////
 	public boolean getEstaMarcado() {return this.estaMarcado;}
 	public void setEstaMArcado(boolean boo) {this.estaMarcado = boo;}
-	public boolean getEsUnaHabilidad() {return esUnaHabilidad;}
-	public void setEsUnaHabilidad(boolean eshabilidad) {this.esUnaHabilidad = eshabilidad;}
 	public boolean getEstaStun() {return estaStun;}
 	public void setEstaStun(boolean estaKO) {this.estaStun = estaKO;}
 	public boolean isEstaEnamorado() {return estaEnamorado;}
@@ -1019,6 +1022,12 @@ public class Unidad {
 	public void setMostrarFaltas(boolean boo) {this.mostrarFaltas = boo;}
 	public int getNeocreditos() {return neocreditos;}
 	public void setNeocreditos(int neocreditos) {this.neocreditos = neocreditos;}
+	public int getNeoCreditosRecientes() {
+		return neoCreditosRecientes;
+	}
+	public void setNeoCreditosRecientes(int neoCreditosRecientes) {
+		this.neoCreditosRecientes = neoCreditosRecientes;
+	}
 	public int getDañoCausado() {return dañoCausado;}
 	public void setDañoCausado(int dañoCausado) {this.dañoCausado = dañoCausado;}
 	public int getPuñosAcumulados() {return puñosAcumulados;}
@@ -1097,113 +1106,41 @@ public class Unidad {
 	public void setAcelerado(boolean acelerado) {this.acelerado = acelerado;}
 	public boolean isPotenciado() {return potenciado;}
 	public void setPotenciado(boolean potenciado) {this.potenciado = potenciado;}
-	public boolean isSangrando() {
-		return sangrando;
-	}
-	public void setSangrando(boolean sangrando) {
-		this.sangrando = sangrando;
-	}
-	public boolean isMotivado() {
-		return motivado;
-	}
-	public void setMotivado(boolean motivado) {
-		this.motivado = motivado;
-	}
-	public boolean isLisiado() {
-		return lisiado;
-	}
-	public void setLisiado(boolean lisiado) {
-		this.lisiado = lisiado;
-	}
-	public boolean isEvadiendo() {
-		return evadiendo;
-	}
-	public void setEvadiendo(boolean evadiendo) {
-		this.evadiendo = evadiendo;
-	}
-	public boolean isRompiendo() {
-		return rompiendo;
-	}
-	public void setRompiendo(boolean rompiendo) {
-		this.rompiendo = rompiendo;
-	}
-	public boolean isCurando() {
-		return curando;
-	}
-	public void setCurando(boolean curando) {
-		this.curando = curando;
-	}
-	public boolean isBloqueando() {
-		return bloqueando;
-	}
-	public void setBloqueando(boolean bloqueando) {
-		this.bloqueando = bloqueando;
-	}
-	public boolean isReduciendoDefensa() {
-		return reduciendoDefensa;
-	}
-	public void setReduciendoDefensa(boolean reduciendoDefensa) {
-		this.reduciendoDefensa = reduciendoDefensa;
-	}
-	public int getTimerPrecavido() {
-		return timerPrecavido;
-	}
-	public void setTimerPrecavido(int timerPrecavido) {
-		this.timerPrecavido = timerPrecavido;
-	}
-	public int getTimerAgresivo() {
-		return timerAgresivo;
-	}
-	public void setTimerAgresivo(int timerAgresivo) {
-		this.timerAgresivo = timerAgresivo;
-	}
-	public int getTimerAcelerado() {
-		return timerAcelerado;
-	}
-	public void setTimerAcelerado(int timerAcelerado) {
-		this.timerAcelerado = timerAcelerado;
-	}
-	public int getTimerPotenciado() {
-		return timerPotenciado;
-	}
-	public void setTimerPotenciado(int timerPotenciado) {
-		this.timerPotenciado = timerPotenciado;
-	}
-	public int getTimerSangrando() {
-		return timerSangrando;
-	}
-	public void setTimerSangrando(int timerSangrando) {
-		this.timerSangrando = timerSangrando;
-	}
-	public int getTimerMotivado() {
-		return timerMotivado;
-	}
-	public void setTimerMotivado(int timerMotivado) {
-		this.timerMotivado = timerMotivado;
-	}
-	public int getTimerRdcDefAcc() {
-		return timerRdcDefAcc;
-	}
-	public void setTimerRdcDefAcc(int timerRdcDefAcc) {
-		this.timerRdcDefAcc = timerRdcDefAcc;
-	}
-	public int getTimerLisiado() {
-		return timerLisiado;
-	}
-	public void setTimerLisiado(int timerLisiado) {
-		this.timerLisiado = timerLisiado;
-	}
-	public int getValorSangrado() {
-		return valorSangrado;
-	}
-	public void setValorSangrado(int valorSangrado) {
-		this.valorSangrado = valorSangrado;
-	}
-	public int getRdcDefAcc() {
-		return rdcDefAcc;
-	}
-	public void setRdcDefAcc(int rdcDefAcc) {
-		this.rdcDefAcc = rdcDefAcc;
-	}
+	public boolean isSangrando() {return sangrando;}
+	public void setSangrando(boolean sangrando) {this.sangrando = sangrando;}
+	public boolean isMotivado() {return motivado;}
+	public void setMotivado(boolean motivado) {this.motivado = motivado;}
+	public boolean isLisiado() {return lisiado;}
+	public void setLisiado(boolean lisiado) {this.lisiado = lisiado;}
+	public boolean isEvadiendo() {return evadiendo;}
+	public void setEvadiendo(boolean evadiendo) {this.evadiendo = evadiendo;}
+	public boolean isRompiendo() {return rompiendo;}
+	public void setRompiendo(boolean rompiendo) {this.rompiendo = rompiendo;}
+	public boolean isCurando() {return curando;}
+	public void setCurando(boolean curando) {this.curando = curando;}
+	public boolean isBloqueando() {return bloqueando;}
+	public void setBloqueando(boolean bloqueando) {this.bloqueando = bloqueando;}
+	public boolean isReduciendoDefensa() {return reduciendoDefensa;}
+	public void setReduciendoDefensa(boolean reduciendoDefensa) {this.reduciendoDefensa = reduciendoDefensa;}
+	public int getTimerPrecavido() {return timerPrecavido;}
+	public void setTimerPrecavido(int timerPrecavido) {this.timerPrecavido = timerPrecavido;}
+	public int getTimerAgresivo() {return timerAgresivo;}
+	public void setTimerAgresivo(int timerAgresivo) {this.timerAgresivo = timerAgresivo;}
+	public int getTimerAcelerado() {return timerAcelerado;}
+	public void setTimerAcelerado(int timerAcelerado) {this.timerAcelerado = timerAcelerado;}
+	public int getTimerPotenciado() {return timerPotenciado;}
+	public void setTimerPotenciado(int timerPotenciado) {this.timerPotenciado = timerPotenciado;}
+	public int getTimerSangrando() {return timerSangrando;}
+	public void setTimerSangrando(int timerSangrando) {this.timerSangrando = timerSangrando;}
+	public int getTimerMotivado() {return timerMotivado;}
+	public void setTimerMotivado(int timerMotivado) {this.timerMotivado = timerMotivado;}
+	public int getTimerRdcDefAcc() {return timerRdcDefAcc;}
+	public void setTimerRdcDefAcc(int timerRdcDefAcc) {this.timerRdcDefAcc = timerRdcDefAcc;}
+	public int getTimerLisiado() {return timerLisiado;}
+	public void setTimerLisiado(int timerLisiado) {this.timerLisiado = timerLisiado;}
+	public int getValorSangrado() {return valorSangrado;}
+	public void setValorSangrado(int valorSangrado) {this.valorSangrado = valorSangrado;}
+	public int getRdcDefAcc() {return rdcDefAcc;}
+	public void setRdcDefAcc(int rdcDefAcc) {this.rdcDefAcc = rdcDefAcc;}
 
 }
