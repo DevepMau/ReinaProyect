@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+
+import principal.Habilidades;
 import principal.PanelDeJuego;
 import principal.Zona;
 
@@ -23,12 +25,12 @@ public class AlumnoModelo extends Unidad{
 		this.setSPMax(0);
 		this.setSP(this.getSPMax());
 		this.setAtq(obtenerValorEntre(8,12));
-		this.setDef(obtenerValorEntre(1,5));
+		this.setDef(obtenerValorEntre(10,20));
 		this.setPCRT(0);
 		this.setDCRT(1.5);
 		this.setEva(0);
-		this.setVel(obtenerValorEntre(10,20));
-		this.setNeocreditos(0);
+		this.setVel(obtenerValorEntre(20,30));
+		this.setNeocreditos(100);
 		this.spHabilidad1 = 100;
 		this.listaDeHabilidades[0] = "FAVOR ESTATAL";
 		this.generarCuerpo();
@@ -53,18 +55,23 @@ public class AlumnoModelo extends Unidad{
 	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
 		if(this.getHabilidadElegida() == 0) {
+			pdj.ReproducirSE(4);
 			reconocimientoNacional(unidades);
 		}
 		else if(this.getHabilidadElegida() == 1) {
+			pdj.ReproducirSE(3);
 			denunciaColectiva(unidades);
 		}
+		this.setNeocreditos(0);
 	}
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {
 		if(this.getHabilidadElegida() == 0) {
+			pdj.ReproducirSE(4);
 			reconocimientoNacional(unidades);
 		}
 		else if(this.getHabilidadElegida() == 1) {
+			pdj.ReproducirSE(3);
 			denunciaColectiva(unidades);
 		}
 		this.setNeocreditos(0);
@@ -73,19 +80,47 @@ public class AlumnoModelo extends Unidad{
 	public void reconocimientoNacional(ArrayList<Unidad> unidades) {
 		if(!unidades.isEmpty()) {
 			for(Unidad unidad : unidades) {
-				unidad.restaurarHP(unidad.getHPMax()/4);
+				if(unidad.getHPMax() > unidad.getHP()) {
+					Habilidades.restaurarHP(unidad, 20);
+					Habilidades.setearEstado(unidad, "HEAL!");
+					unidad.setCurando(true);
+				}
+				else if(unidad.getTimerPrecavido() == -1) {
+					Habilidades.aumentarProteccion(unidad);
+					Habilidades.setearEstado(unidad, "PROTECTED!");
+					unidad.setPrecavido(true);
+					unidad.setTimerPrecavido(5);
+				}
+				else if(unidad.getTimerAgresivo() == -1) {
+					Habilidades.aumentarAgresividad(unidad);
+					Habilidades.setearEstado(unidad, "AGGRESSIVE!");
+					unidad.setAgresivo(true);
+					unidad.setTimerAgresivo(5);
+				}
+				else if(unidad.getTimerAcelerado() == -1) {
+						Habilidades.aumentarAgilidad(unidad);
+						Habilidades.setearEstado(unidad, "ACCELERATED!");
+						unidad.setAcelerado(true);
+						unidad.setTimerAcelerado(5);
+				}
+				else {
+					if(unidad.getTimerPotenciado() == -1) {
+						Habilidades.potenciarUnidad(unidad);
+					}
+					Habilidades.setearEstado(unidad, "POWERED!");
+					unidad.setPotenciado(true);
+					unidad.setTimerPotenciado(5);
+				}
 			}
 		}
 	}
 	public void denunciaColectiva(ArrayList<Unidad> unidades) {
 		if(!unidades.isEmpty()) {
 			for(Unidad unidad : unidades) {
-				pdj.ReproducirSE(3);
-				unidad.recibirDaño(unidad.getHPMax()/10, false, 20);
-				unidad.setEstaActivo(false);
-				unidad.setEstaKO(true);
-				unidad.setearSacudida(true);
-				unidad.setDuracionSacudida(20);
+				unidad.setHP(unidad.getHP() - unidad.getHPMax()/10);
+				Habilidades.setearEstado(unidad, "REPORTED!");
+		        Habilidades.stunearUnidad(unidad);
+		        unidad.setReportando(true);
 			}
 		}
 	}
