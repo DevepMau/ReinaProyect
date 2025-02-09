@@ -1,6 +1,8 @@
 package unidades;
 
 import java.util.ArrayList;
+
+import principal.Habilidades;
 import principal.PanelDeJuego;
 import principal.Zona;
 
@@ -21,9 +23,9 @@ public class HeroeFederal extends Unidad{
 		this.setSP(this.getSPMax());
 		this.setAtq(obtenerValorEntre(13,17));
 		this.setDef(obtenerValorEntre(10,13));
-		this.setPCRT(0.5);
+		this.setPCRT(5);
 		this.setDCRT(2);
-		this.setEva(0.15);
+		this.setEva(15);
 		this.setVel(obtenerValorEntre(20,25));
 		this.spHabilidad1 = 10;
 		this.listaDeHabilidades[0] = "EXPULSAR";
@@ -54,35 +56,41 @@ public class HeroeFederal extends Unidad{
 	}
 	//HABILIDADES///////////////////////////////////////////////////////////////////
 	public void expulsar(Unidad unidad) {
-		if(unidad != null) {
-			this.setSP(this.getSP() - this.spHabilidad1);
-			boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());   
-			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod()));
-	    	 
-			if (isCritical) {
-				daño *= (this.getDCRT() + this.getDcrtMod());
-				unidad.setEstaActivo(false);
-				unidad.setEstaKO(true);
-				contarFaltas(unidad, 3);
-			}
-			else {
-				unidad.setEstaLisiado(true);
-				contarFaltas(unidad, 1);
-			}
-			unidad.recibirDaño(daño, false, 20);
-			unidad.setVelMod(unidad.getVelMod() - (unidad.getVel()+unidad.getVelMod()));
-			unidad.setearSacudida(true);
-			unidad.setDuracionSacudida(20);
-		}
+		this.setSP(this.getSP() - this.spHabilidad1);
+		int daño = this.getAtq() + this.getAtqMod() + this.getVel()/2;
+	    int reduccion = (int) (daño * ((unidad.getDef() + unidad.getDefMod()) / 100.0));
+        int dañoFinal = Math.max(1, daño - reduccion);
+        String textoMostrado = "";
+	    if (unidad.elegirAleatorio(100) < (unidad.getEva() + unidad.getEvaMod())) {
+	    	pdj.ReproducirSE(6);
+	    	unidad.setEvadiendo(true);
+	        textoMostrado = "MISS!";
+	        Habilidades.setearEstado(unidad, textoMostrado);
+	    }
+	    else {
+	    	if (unidad.getEscudos() > 0) {
+		        unidad.setEscudos(0);
+		        pdj.ReproducirSE(9);
+		        unidad.setRompiendo(true);
+		        textoMostrado = "BREAK!";
+		        Habilidades.setearEstado(unidad, textoMostrado);
+		    } else {
+		    	textoMostrado = "HURT";
+		    	 pdj.ReproducirSE(3);
+		        unidad.setHP(unidad.getHP() - dañoFinal);
+		        unidad.setLisiado(true);
+		        unidad.setTimerLisiado(3);
+		        Habilidades.setearEstado(unidad, textoMostrado);
+		        Habilidades.destruirMovilidad(unidad);
+		        Habilidades.stunearUnidad(unidad);
+		    }
+	    } 
+	    this.setCdHabilidad1(1);
+		this.setHabilidad1(false);
 	}
 	//METODOS AUXILIARES////////////////////////////////////////////////////////////
 	public Unidad elegirObjetivoMasFuerte(ArrayList<Unidad> unidades) {
 		Unidad protector = this.getProtector(unidades);
-		if(protector != null) {
-			if(protector.puedeBloquear()) {
-				return protector;
-			}
-		}
 	    Unidad unidadSeleccionada = null;
 	    int mayorPorcentajeATQ = Integer.MIN_VALUE;
 	    for (Unidad unidad : unidades) {
@@ -95,10 +103,8 @@ public class HeroeFederal extends Unidad{
 	    return unidadSeleccionada;
 	}
 	public boolean cumpleReqDeHab1() {
-		if(this.getSP() > 0) {
-			if(this.getSP() >= this.spHabilidad1) {
-				return true;
-			}
+		if(this.getSP() >= this.spHabilidad1 && this.isHabilidad1()) {
+			return true;
 		}
 		return false;
 	}
@@ -109,6 +115,15 @@ public class HeroeFederal extends Unidad{
 		else {
 			this.setAccion("");
 		}
+	}
+	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
+		if(this.getCdHabilidad1() == 0) {
+			this.setHabilidad1(true);
+		}
+		else {
+			this.setCdHabilidad1(this.getCdHabilidad1() - 1);
+		}
+		super.pasivaDeClase(aliados, enemigos);
 	}
 	public String[] getListaDeHabilidades() {return listaDeHabilidades;}
 	public void setListaDeHabilidades(String[] habilidades) {this.listaDeHabilidades = habilidades;}
