@@ -49,6 +49,7 @@ public class Unidad {
 	private boolean curando;
 	private boolean bloqueando;
 	private boolean reduciendoDefensa;
+	private boolean reportando;
 	//ESTADOS////////////////////////////////////////////////////////
 	private boolean precavido;
 	private boolean agresivo;
@@ -277,20 +278,22 @@ public class Unidad {
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
             g2.drawString(this.getTextoDañoRecibido() , getPosX()+84, desplazarDañoRecibido-48);
         }
+        else if(this.isReportando()) {
+        	Color c = new Color(55,55,55);
+        	g2.setColor(c);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
+        }
         else {
         	g2.setColor(Color.WHITE);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
             g2.drawString(this.getTextoDañoRecibido(), getPosX()+84, desplazarDañoRecibido-48);
         }
         /////////
-        
-        
         if(this.estaStun) {
         	Image KO = configurarImagen("/efectos/stun", 3);
         	g2.drawImage(KO, dibujarX+10, dibujarY, null);
-        }
-        
-        
+        }  
         efectosVisualesPersonalizados(g2);
     }
 	//METODOS DE ACCION///////////////////////////////////////////////////////
@@ -372,7 +375,7 @@ public class Unidad {
 			}
 			objetivo.recibirDaño(daño, isCritical, this);
 			this.reflejarDaño(objetivo, daño);
-			robarVida(daño, objetivo);
+			this.robarVida(daño, objetivo);
 		}
 	}
 	
@@ -478,16 +481,6 @@ public class Unidad {
 		}
 	}
 	
-	public void sumarNeocreditos(int neocreditos) {
-		int i = neocreditos + this.neocreditos;
-		if(i > 100) {
-			this.neocreditos = 100;
-		}
-		else {
-			this.neocreditos += neocreditos;
-		}
-	}
-	
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
 	}	
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {}
@@ -505,14 +498,15 @@ public class Unidad {
 		this.setMotivado(false);
 		this.setReduciendoDefensa(false);
 		this.setLisiado(false);
+		this.setReportando(false);
 	}
 	
 	public int porcentajeHP(int valor) {
-	    return (int) ((valor / this.getHPMax()) * 100);
+	    return ((valor / this.getHPMax()) * 100);
 	}
 	
 	public int porcentajeSP(int valor) {
-	    return (int) ((valor / this.getSPMax()) * 100);
+	    return ((valor / this.getSPMax()) * 100);
 	}
 	//METODOS VISUALES/////////////////////////////////////////////////////////
 	public void dibujarVida() {
@@ -1122,6 +1116,12 @@ public class Unidad {
 	public void setBloqueando(boolean bloqueando) {this.bloqueando = bloqueando;}
 	public boolean isReduciendoDefensa() {return reduciendoDefensa;}
 	public void setReduciendoDefensa(boolean reduciendoDefensa) {this.reduciendoDefensa = reduciendoDefensa;}
+	public boolean isReportando() {
+		return reportando;
+	}
+	public void setReportando(boolean reportando) {
+		this.reportando = reportando;
+	}
 	public int getTimerPrecavido() {return timerPrecavido;}
 	public void setTimerPrecavido(int timerPrecavido) {this.timerPrecavido = timerPrecavido;}
 	public int getTimerAgresivo() {return timerAgresivo;}
