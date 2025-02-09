@@ -1,5 +1,7 @@
 package principal;
 
+import java.util.ArrayList;
+
 import unidades.Unidad;
 
 public class Habilidades {
@@ -109,6 +111,42 @@ public class Habilidades {
 			else {
 				unidad.setSP(unidad.getSP() + energia);
 			}
+	}
+	
+	public static void ganarNeoCreditos(Unidad unidad, int cant) {
+		if(unidad.getIdFaccion() == 2) {
+			if(unidad.getNeocreditos() + cant >= 100 || unidad.getNeocreditos() + cant*3 >= 100) {
+				unidad.setNeocreditos(100);
+				unidad.setNeoCreditosRecientes(cant);
+			}
+			else {
+				if(unidad.getClase() == "Alumno Modelo") {
+					unidad.setNeocreditos(unidad.getNeocreditos() + cant*3);
+					unidad.setNeoCreditosRecientes(cant*3);
+				}
+				else {
+					unidad.setNeocreditos(unidad.getNeocreditos() + cant);
+					unidad.setNeoCreditosRecientes(cant);
+				}
+			}
+			
+		}
+	}
+	
+	public static void repartirNeoCreditos(ArrayList<Unidad> unidades, Unidad unidad) {
+		int cant = unidad.getNeoCreditosRecientes();
+		if(!unidades.isEmpty()) {
+			for(Unidad objetivo : unidades) {
+				if(objetivo.getIdFaccion() == 2 && !objetivo.equals(unidad)) {
+					if(objetivo.getNeocreditos() + cant/2 >= 100 || objetivo.getNeocreditos() + (cant*3)/2 >= 100) {
+						objetivo.setNeocreditos(100);
+					}
+					else {
+						objetivo.setNeocreditos(objetivo.getNeocreditos() + cant/2);
+					}
+				}
+			}
+		}
 	}
 	
 	//HABILIDADES ESPECIALES/////////////////////////////////////////////////
