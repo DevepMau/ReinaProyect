@@ -63,7 +63,7 @@ public class CebadorDeMate extends Unidad{
 		if(opcion == 0) {
 			//HERVIDO Y DULCE
 			Habilidades.restaurarHP(unidad, 20);
-			Habilidades.setearEstado(unidad, "+" + this.porcentajeHP(20));
+			Habilidades.setearEstado(unidad, "HEAL!");
 			unidad.setCurando(true);
 			
 		}
@@ -72,7 +72,7 @@ public class CebadorDeMate extends Unidad{
 			if(unidad.getTimerPrecavido() == -1) {
 				Habilidades.aumentarProteccion(unidad);
 			}
-			Habilidades.setearEstado(unidad, "PRECAVIDO");
+			Habilidades.setearEstado(unidad, "PROTECTED!");
 			unidad.setPrecavido(true);
 			unidad.setTimerPrecavido(5);
 		}
@@ -81,7 +81,7 @@ public class CebadorDeMate extends Unidad{
 			if(unidad.getTimerAgresivo() == -1) {
 				Habilidades.aumentarAgresividad(unidad);
 			}
-			Habilidades.setearEstado(unidad, "AGRESIVO");
+			Habilidades.setearEstado(unidad, "AGGRESSIVE");
 			unidad.setAgresivo(true);
 			unidad.setTimerAgresivo(5);
 			
@@ -91,7 +91,7 @@ public class CebadorDeMate extends Unidad{
 			if(unidad.getTimerPotenciado() == -1) {
 				Habilidades.potenciarUnidad(unidad);
 			}
-			Habilidades.setearEstado(unidad, "POTENCIADO");
+			Habilidades.setearEstado(unidad, "POWERED!");
 			Habilidades.aumentarHPMax(unidad, 20);
 			Habilidades.restaurarHP(unidad, 20);
 			Habilidades.aumentarSPMax(unidad, 20);

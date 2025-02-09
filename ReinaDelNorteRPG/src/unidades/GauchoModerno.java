@@ -32,9 +32,9 @@ public class GauchoModerno extends Unidad {
 		this.generarCuerpo();
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
-	public void recibirDaño(int daño, boolean isCritical, int duracionSacudida) {
+	public void recibirDaño(int daño, boolean isCritical, Unidad unidad) {
 	    int hpAnterior = this.getHP();
-	    super.recibirDaño(daño, isCritical, duracionSacudida);
+	    super.recibirDaño(daño, isCritical, unidad);
 	    int hpPerdido = hpAnterior - this.getHP();
 	    this.acumuladorDeVidaPrdida += hpPerdido;
 	    if(acumuladorDeVidaPrdida >= 5) {
@@ -87,18 +87,17 @@ public class GauchoModerno extends Unidad {
 		        textoMostrado = "BREAK!";
 		        Habilidades.setearEstado(unidad, textoMostrado);
 		    } else {
-		    	textoMostrado = "" + dañoFinal;
+		    	textoMostrado = "BLEEDING!";
 		        unidad.setHP(unidad.getHP() - dañoFinal);
 		        pdj.ReproducirSE(3);
 		        Habilidades.setearDaño(unidad, textoMostrado);
 		        unidad.setValorSangrado(unidad.getHPMax()/20 + this.getAtqMod());
 				unidad.setSangrando(true);
 				unidad.setTimerSangrando(5);
-				//CD HABILIDAD///////////////
-				this.setCdHabilidad1(3);
-				this.setHabilidad1(false);
 		    }
-	    }  
+	    }
+	    this.setCdHabilidad1(3);
+		this.setHabilidad1(false);
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
 	public boolean cumpleReqDeHab1() {

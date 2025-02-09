@@ -30,7 +30,7 @@ public class AlumnoModelo extends Unidad{
 		this.setDCRT(1.5);
 		this.setEva(0);
 		this.setVel(obtenerValorEntre(20,30));
-		this.setNeocreditos(100);
+		this.setNeocreditos(0);
 		this.spHabilidad1 = 100;
 		this.listaDeHabilidades[0] = "FAVOR ESTATAL";
 		this.generarCuerpo();
@@ -163,15 +163,6 @@ public class AlumnoModelo extends Unidad{
 	}
 	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
 		super.pasivaDeClase(aliados, enemigos);
-		if(!aliados.isEmpty()) {
-			for(Unidad unidad : aliados) {
-				if(unidad.getIdFaccion() == 2) {
-					if(!this.equals(unidad)) {
-						unidad.sumarNeocreditos(this.getDañoCausado());
-					}
-				}
-			}
-		}
 	}
 	public String[] getListaDeHabilidades() {return listaDeHabilidades;}
 	public void setListaDeHabilidades(String[] habilidades) {this.listaDeHabilidades = habilidades;}
