@@ -113,6 +113,8 @@ public class Habilidades {
 			}
 	}
 	
+	//HABILIDADES ESPECIALES/////////////////////////////////////////////////
+	
 	public static void ganarNeoCreditos(Unidad unidad, int cant) {
 		if(unidad.getIdFaccion() == 2) {
 			if(unidad.getNeocreditos() + cant >= 100 || unidad.getNeocreditos() + cant*3 >= 100) {
@@ -149,8 +151,6 @@ public class Habilidades {
 		}
 	}
 	
-	//HABILIDADES ESPECIALES/////////////////////////////////////////////////
-	
 	public static void provocarHemorragia(Unidad unidad, PanelDeJuego pdj) {
 		new Thread(() -> {
 		    try {
@@ -168,6 +168,16 @@ public class Habilidades {
 	public static void stunearUnidad(Unidad unidad) {
 		unidad.setEstaActivo(false);
 		unidad.setEstaStun(true);
+	}
+	
+	public static void pocionDeLibido(Unidad unidad) {
+		aumentarAgresividad(unidad);
+		aumentarAgresividad(unidad);
+	}
+	
+	public static void pocionAnticonceptiva(Unidad unidad) {
+		aumentarProteccion(unidad);
+		aumentarProteccion(unidad);
 	}
 	
 	//HABILIDADES COMPUESTAS/////////////////////////////////////////////////
@@ -190,7 +200,7 @@ public class Habilidades {
 	public static void potenciarUnidad(Unidad unidad) {
 		aumentarAgresividad(unidad);
 		aumentarProteccion(unidad);
-		aumentarVelocidad(unidad, 5);
+		aumentarAgilidad(unidad);
 	}
 	
 	public static void motivarUnidad(Unidad unidad) {
@@ -223,7 +233,7 @@ public class Habilidades {
 	public static void debilitarUnidad(Unidad unidad) {
 		reducirAgresividad(unidad);
 		reducirProteccion(unidad);
-		reducirVelocidad(unidad, 5);
+		reducirAgilidad(unidad);
 	}
 	
 	public static void desmotivarUnidad(Unidad unidad) {
