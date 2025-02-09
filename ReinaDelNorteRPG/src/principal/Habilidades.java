@@ -127,7 +127,12 @@ public class Habilidades {
 		}).start();	
 	}
 	
-	//HABILIDADES COMPUeSTAS/////////////////////////////////////////////////
+	public static void stunearUnidad(Unidad unidad) {
+		unidad.setEstaActivo(false);
+		unidad.setEstaStun(true);
+	}
+	
+	//HABILIDADES COMPUESTAS/////////////////////////////////////////////////
 	
 	public static void aumentarAgresividad(Unidad unidad) {
 		aumentarAtaque(unidad, 5);
@@ -157,6 +162,11 @@ public class Habilidades {
 		aumentarEvasion(unidad, 10);
 	}
 	
+	public static void renovarMovilidad(Unidad unidad) {
+		aumentarVelocidad(unidad, 100);
+		aumentarEvasion(unidad, 100);
+	}
+	
 	public static void reducirAgresividad(Unidad unidad) {
 		reducirAtaque(unidad, 5);
 		reducirProbCrit(unidad, 5);
@@ -184,6 +194,10 @@ public class Habilidades {
 		reducirVelocidad(unidad, 10);
 		reducirEvasion(unidad, 10);
 	}
-
+	
+	public static void destruirMovilidad(Unidad unidad) {
+		reducirVelocidad(unidad, 100);
+		reducirEvasion(unidad, 100);
+	}
 	
 }

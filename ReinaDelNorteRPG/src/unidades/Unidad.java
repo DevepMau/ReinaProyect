@@ -41,7 +41,7 @@ public class Unidad {
 	private boolean estaVivo = true;	
 	private boolean estaMarcado;
 	private boolean esUnaHabilidad;
-	private boolean estaKO;
+	private boolean estaStun;
 	private boolean estaEnamorado;
 	//ACCIONES//////////////////////////////////////////////////////
 	private boolean realizaUnCritico;
@@ -57,6 +57,7 @@ public class Unidad {
 	private boolean potenciado;
 	private boolean sangrando;
 	private boolean motivado;
+	private boolean lisiado;
 	//CONTADORES DE ESTADOS//////////////////////////////////////////
 	private int timerPrecavido = -1;
 	private int timerAgresivo = -1;
@@ -65,6 +66,7 @@ public class Unidad {
 	private int timerSangrando = -1;
 	private int timerMotivado = -1;
 	private int timerRdcDefAcc = -1;
+	private int timerLisiado = -1;
 	//ELEMENTOS DE ESTADOS///////////////////////////////////////////
 	private int valorSangrado;
 	private int rdcDefAcc = 0;
@@ -263,6 +265,12 @@ public class Unidad {
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
             g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
         }
+        else if(this.isLisiado()) {
+        	Color c = new Color(155,0,155);
+        	g2.setColor(c);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
+            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
+        }
         else if(this.isReduciendoDefensa()) {
         	Color c = new Color(155,155,255);
         	g2.setColor(c);
@@ -277,7 +285,7 @@ public class Unidad {
         /////////
         
         
-        if(this.estaKO) {
+        if(this.estaStun) {
         	Image KO = configurarImagen("/efectos/stun", 3);
         	g2.drawImage(KO, dibujarX+10, dibujarY, null);
         }
@@ -446,6 +454,7 @@ public class Unidad {
 	    actualizarTimer(this::getTimerPotenciado, this::setTimerPotenciado, () -> Habilidades.debilitarUnidad(this));
 	    actualizarTimer(this::getTimerMotivado, this::setTimerMotivado, () -> Habilidades.desmotivarUnidad(this));
 	    actualizarTimer(this::getTimerRdcDefAcc, this::setTimerRdcDefAcc, () -> Habilidades.aumentarDefensaAcc(this, this.getRdcDefAcc()));
+	    actualizarTimer(this::getTimerLisiado, this::setTimerLisiado, () -> Habilidades.renovarMovilidad(this));
 	}
 
 	private void actualizarTimer(Supplier<Integer> getter, Consumer<Integer> setter, Runnable habilidad) {
@@ -490,6 +499,7 @@ public class Unidad {
 		this.setSangrando(false);
 		this.setMotivado(false);
 		this.setReduciendoDefensa(false);
+		this.setLisiado(false);
 	}
 	
 	public int porcentajeHP(int valor) {
@@ -976,8 +986,8 @@ public class Unidad {
 	public void setEstaMArcado(boolean boo) {this.estaMarcado = boo;}
 	public boolean getEsUnaHabilidad() {return esUnaHabilidad;}
 	public void setEsUnaHabilidad(boolean eshabilidad) {this.esUnaHabilidad = eshabilidad;}
-	public boolean getEstaKO() {return estaKO;}
-	public void setEstaKO(boolean estaKO) {this.estaKO = estaKO;}
+	public boolean getEstaStun() {return estaStun;}
+	public void setEstaStun(boolean estaKO) {this.estaStun = estaKO;}
 	public boolean isEstaEnamorado() {return estaEnamorado;}
 	public void setEstaEnamorado(boolean estaEnamorado) {this.estaEnamorado = estaEnamorado;}
 	//GETTER & SETTERS MISCELANEOS///////////////////////////////////////////////
@@ -1099,6 +1109,12 @@ public class Unidad {
 	public void setMotivado(boolean motivado) {
 		this.motivado = motivado;
 	}
+	public boolean isLisiado() {
+		return lisiado;
+	}
+	public void setLisiado(boolean lisiado) {
+		this.lisiado = lisiado;
+	}
 	public boolean isEvadiendo() {
 		return evadiendo;
 	}
@@ -1170,6 +1186,12 @@ public class Unidad {
 	}
 	public void setTimerRdcDefAcc(int timerRdcDefAcc) {
 		this.timerRdcDefAcc = timerRdcDefAcc;
+	}
+	public int getTimerLisiado() {
+		return timerLisiado;
+	}
+	public void setTimerLisiado(int timerLisiado) {
+		this.timerLisiado = timerLisiado;
 	}
 	public int getValorSangrado() {
 		return valorSangrado;
