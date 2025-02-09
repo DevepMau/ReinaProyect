@@ -17,16 +17,16 @@ public class CebadorDeMate extends Unidad{
 		this.setTipo("Recluta");
 		this.setClase("Cebador De Mate");
 		this.setIdFaccion(1);
-		this.setHPMax(obtenerValorEntre(500,750));
+		this.setHPMax(obtenerValorEntre(50,75));
 		this.setHP(this.getHPMax());
-		this.setSPMax(obtenerValorEntre(25,50));
+		this.setSPMax(obtenerValorEntre(35,50));
 		this.setSP(this.getSPMax());
-		this.setAtq(obtenerValorEntre(7,12));
-		this.setDef(obtenerValorEntre(1,5));
+		this.setAtq(obtenerValorEntre(5,8));
+		this.setDef(obtenerValorEntre(10,20));
 		this.setPCRT(0);
 		this.setDCRT(1.5);
 		this.setEva(0);
-		this.setVel(obtenerValorEntre(10,20));
+		this.setVel(obtenerValorEntre(20,30));
 		this.costeHabilidad1 = 7;
 		this.listaDeHabilidades[0] = "CEBAR UN MATE";
 		this.generarCuerpo();
@@ -100,7 +100,7 @@ public class CebadorDeMate extends Unidad{
 			unidad.setTimerPotenciado(5);
 			
 		}
-		this.setCdHabilidad1(1);
+		this.setCdHabilidad1(0);
 		this.setHabilidad1(false);
 		pdj.ReproducirSE(5);
 	}

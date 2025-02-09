@@ -17,17 +17,18 @@ public class HeroeFederal extends Unidad{
 		this.setTipo("Elite");
 		this.setClase("Heroe Federal");
 		this.setIdFaccion(1);
-		this.setHPMax(obtenerValorEntre(100,150));
+		this.setHPMax(obtenerValorEntre(150,220));
 		this.setHP(this.getHPMax());
-		this.setSPMax(obtenerValorEntre(50,70));
+		this.setSPMax(obtenerValorEntre(70,90));
 		this.setSP(this.getSPMax());
-		this.setAtq(obtenerValorEntre(13,17));
-		this.setDef(obtenerValorEntre(10,13));
+		this.setAtq(obtenerValorEntre(18,25));
+		this.setDef(obtenerValorEntre(30,40));
 		this.setPCRT(5);
 		this.setDCRT(2);
 		this.setEva(15);
-		this.setVel(obtenerValorEntre(20,25));
-		this.spHabilidad1 = 10;
+		this.setBloq(15);
+		this.setVel(obtenerValorEntre(30,50));
+		this.spHabilidad1 = 15;
 		this.listaDeHabilidades[0] = "EXPULSAR";
 		this.generarCuerpo();
 	}
@@ -80,8 +81,10 @@ public class HeroeFederal extends Unidad{
 		        unidad.setHP(unidad.getHP() - dañoFinal);
 		        unidad.setLisiado(true);
 		        unidad.setTimerLisiado(3);
+		        if(unidad.getTimerLisiado() == -1) {
+		        	 Habilidades.destruirMovilidad(unidad);
+		        }
 		        Habilidades.setearEstado(unidad, textoMostrado);
-		        Habilidades.destruirMovilidad(unidad);
 		        Habilidades.stunearUnidad(unidad);
 		    }
 	    } 
@@ -90,7 +93,6 @@ public class HeroeFederal extends Unidad{
 	}
 	//METODOS AUXILIARES////////////////////////////////////////////////////////////
 	public Unidad elegirObjetivoMasFuerte(ArrayList<Unidad> unidades) {
-		Unidad protector = this.getProtector(unidades);
 	    Unidad unidadSeleccionada = null;
 	    int mayorPorcentajeATQ = Integer.MIN_VALUE;
 	    for (Unidad unidad : unidades) {

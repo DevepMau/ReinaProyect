@@ -17,17 +17,17 @@ public class GauchoModerno extends Unidad {
 		this.setTipo("Combatiente");
 		this.setClase("Gaucho Moderno");
 		this.setIdFaccion(1);
-		this.setHPMax(obtenerValorEntre(60,90));
+		this.setHPMax(obtenerValorEntre(110,130));
 		this.setHP(this.getHPMax());
 		this.setSP(0);
 		this.setSPMax(0);
-		this.setAtq(obtenerValorEntre(12,17));
-		this.setDef(obtenerValorEntre(5,9));
+		this.setAtq(obtenerValorEntre(11,13));
+		this.setDef(obtenerValorEntre(20,30));
 		this.setPCRT(15);
 		this.setDCRT(1.5);
 		this.setEva(0);
 		this.setBloq(0);
-		this.setVel(obtenerValorEntre(5,10));
+		this.setVel(obtenerValorEntre(10,20));
 		this.listaDeHabilidades[0] = "APUÑALAR";
 		this.generarCuerpo();
 	}
