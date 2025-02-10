@@ -1,12 +1,14 @@
 package unidades;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import principal.PanelDeJuego;
 import principal.Zona;
 
 public class PuñoFurioso extends Unidad {
 	
-	private int spHabilidad1;
 	private String[] listaDeHabilidades = new String[1];
 
 	public PuñoFurioso(Zona zona, boolean aliado, PanelDeJuego pdj) {
@@ -15,17 +17,16 @@ public class PuñoFurioso extends Unidad {
 		this.setTipo("Combatiente");
 		this.setClase("Puño Furioso");
 		this.setIdFaccion(3);
-		this.setHPMax(obtenerValorEntre(70,100));
+		this.setHPMax(obtenerValorEntre(110,130));
 		this.setHP(this.getHPMax());
-		this.setSPMax(obtenerValorEntre(20,30));
+		this.setSPMax(0);
 		this.setSP(this.getSPMax());
-		this.setAtq(obtenerValorEntre(11,16));
-		this.setDef(obtenerValorEntre(5,8));
-		this.setPCRT(0.25);
+		this.setAtq(obtenerValorEntre(13,18));
+		this.setDef(obtenerValorEntre(10,20));
+		this.setPCRT(25);
 		this.setDCRT(1.5);
-		this.setEva(0.25);
-		this.setVel(obtenerValorEntre(12,17));
-		this.spHabilidad1 = 10;
+		this.setEva(25);
+		this.setVel(obtenerValorEntre(10,20));
 		this.listaDeHabilidades[0] = "DOBLE IMPACTO";
 		this.generarCuerpo();
 	}
@@ -40,37 +41,28 @@ public class PuñoFurioso extends Unidad {
 		}
 		this.pasivaDeClase(aliados, enemigos);
 	}
-	public void recibirDaño(int daño, boolean isCritical, int duracionSacudida) {
-		super.recibirDaño(daño, isCritical, duracionSacudida);
-		this.restaurarSP(daño/2);
+	public void recibirDaño(int daño, boolean isCritical, Unidad unidad) {
+		super.recibirDaño(daño, isCritical, unidad);
+		if(this.getPuñosAcumulados() < 2) {
+			this.setPuñosAcumulados(this.getPuñosAcumulados() + 1);
+		}
+		System.out.println(this.getEvaMod());
 	}
 	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
 		Unidad objetivo = elegirObjetivoConMayorHP(unidades);
 		dobleGolpe(objetivo);
+		this.setPuñosAcumulados(0);
 	}
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {
 		dobleGolpe(unidad);
-		this.setSP(this.getSP() - this.spHabilidad1);
+		this.setPuñosAcumulados(0);
 	}
 	//HABILIDADES////////////////////////////////////////////////////////////////////////
 	public void dobleGolpe(Unidad unidad) {
-		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());   
-		if(unidad != null) {
-			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod()));
-	    	if(this.getHPMax() < unidad.getHPMax()) {
-	    		daño += (unidad.getHPMax()/10);
-	    	}
-			if (isCritical) {
-				daño *= (this.getDCRT() + this.getDcrtMod());
-			}
-			contarFaltas(unidad, 2);
-			unidad.recibirGolpesMúltiples(daño, 2, isCritical);
-			unidad.setDefMod(unidad.getDefMod() -2);
-			this.reflejarDaño(unidad, daño);
-			this.robarVida(daño, unidad);
-		}
+		int daño = this.getAtq() + this.getAtqMod();
+		unidad.recibirGolpesMúltiples(daño, 2 , true, this);
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
 	public Unidad elegirObjetivoConMayorHP(ArrayList<Unidad> unidades) {
@@ -86,10 +78,8 @@ public class PuñoFurioso extends Unidad {
 	    return unidadSeleccionada;
 	}
 	public boolean cumpleReqDeHab1() {
-		if(this.getSP() > 0) {
-			if(this.getSP() >= this.spHabilidad1) {
-				return true;
-			}
+		if(this.getPuñosAcumulados() >= 2) {
+			return true;
 		}
 		return false;
 	}
@@ -100,6 +90,25 @@ public class PuñoFurioso extends Unidad {
 		else {
 			this.setAccion("");
 		}
+	}
+	public void efectosVisualesPersonalizados(Graphics2D g2) {
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18f));
+		g2.setColor(Color.white);
+		if(this.getPuñosAcumulados() == 1) {
+			g2.drawString("+", this.getPosX()+8, this.getPosY()-12+this.getAlturaBarraHP());
+			g2.fillRoundRect(this.getPosX()+16, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
+		}
+		else if(this.getPuñosAcumulados() >= 2) {
+			g2.setColor(Color.white);
+			g2.drawString("+", this.getPosX()+8, this.getPosY()-12+this.getAlturaBarraHP());
+			g2.setColor(Color.yellow);
+			g2.fillRoundRect(this.getPosX()+16, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
+			g2.fillRoundRect(this.getPosX()+26, this.getPosY()-24+this.getAlturaBarraHP(), 10, 10, 50, 50);
+		}
+	}
+	
+	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
+		super.pasivaDeClase(aliados, enemigos);
 	}
 	public String[] getListaDeHabilidades() {return listaDeHabilidades;}
 	public void setListaDeHabilidades(String[] habilidades) {this.listaDeHabilidades = habilidades;}
