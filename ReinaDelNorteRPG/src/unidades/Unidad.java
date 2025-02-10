@@ -58,6 +58,7 @@ public class Unidad {
 	private boolean sangrando;
 	private boolean motivado;
 	private boolean lisiado;
+	private boolean incendiado;
 	//CONTADORES DE ESTADOS//////////////////////////////////////////
 	private int timerPrecavido = -1;
 	private int timerAgresivo = -1;
@@ -67,6 +68,7 @@ public class Unidad {
 	private int timerMotivado = -1;
 	private int timerRdcDefAcc = -1;
 	private int timerLisiado = -1;
+	private int timerIncendiado = -1;
 	//ELEMENTOS DE ESTADOS///////////////////////////////////////////
 	private int valorSangrado;
 	private int rdcDefAcc = 0;
@@ -101,6 +103,7 @@ public class Unidad {
 	private int cargarEnamoramiento = 0;
 	private int contador = 5;
 	private int vidaPerdida = 0;
+	private Unidad unidadObjetivoEnemigo = null;
 	private String nombre;
 	private String clase;
 	private String tipo;
@@ -281,8 +284,14 @@ public class Unidad {
         else if(this.isReportando()) {
         	Color c = new Color(55,55,55);
         	g2.setColor(c);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
             g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
+        }
+        else if(this.isIncendiado()) {
+        	Color c = new Color(255,155,0);
+        	g2.setColor(c);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+            g2.drawString(this.getTextoDañoRecibido() , getPosX()+84, desplazarDañoRecibido-48);
         }
         else {
         	g2.setColor(Color.WHITE);
@@ -313,7 +322,7 @@ public class Unidad {
 	    int reduccion = (int) (daño * ((this.getDef() + this.getDefMod()) / 100.0));
         int dañoFinal = Math.max(1, daño - reduccion);
         String textoMostrado = "";
-	    if (this.elegirAleatorio(100) < (this.getEva() + this.getEvaMod())) {
+	    if (this.elegirAleatorio(100) < (this.getEva() + this.getEvaMod()) && unidad.getClase() != "Dragon Pirotecnico") {
 	    	pdj.ReproducirSE(6);
 	    	this.setEvadiendo(true);
 	        textoMostrado = "MISS!";
@@ -376,6 +385,9 @@ public class Unidad {
 			objetivo.recibirDaño(daño, isCritical, this);
 			this.reflejarDaño(objetivo, daño);
 			this.robarVida(daño, objetivo);
+			if(this.getClase() == "Dragon Pirotecnico") {
+				this.setUnidadObjetivoEnemigo(objetivo);
+			}
 		}
 	}
 	
@@ -456,6 +468,7 @@ public class Unidad {
 	
 	public void iniciarTimersDeEstado() {
 		actualizarHemorragia();
+		actualizarIncendiar();
 	    actualizarTimer(this::getTimerPrecavido, this::setTimerPrecavido, () -> Habilidades.reducirProteccion(this));
 	    actualizarTimer(this::getTimerAgresivo, this::setTimerAgresivo, () -> Habilidades.reducirAgresividad(this));
 	    actualizarTimer(this::getTimerAcelerado, this::setTimerAcelerado, () -> Habilidades.reducirAgilidad(this));
@@ -481,6 +494,13 @@ public class Unidad {
 		}
 	}
 	
+	private void actualizarIncendiar() {
+		if(this.getTimerIncendiado() > 0) {
+			this.setTimerIncendiado(this.getTimerIncendiado() - 1);
+			Habilidades.provocarIncendiar(this, pdj);
+		}
+	}
+	
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
 	}	
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {}
@@ -499,6 +519,7 @@ public class Unidad {
 		this.setReduciendoDefensa(false);
 		this.setLisiado(false);
 		this.setReportando(false);
+		this.setIncendiado(false);
 	}
 	
 	public int porcentajeHP(int valor) {
@@ -1024,6 +1045,12 @@ public class Unidad {
 	}
 	public int getDañoCausado() {return dañoCausado;}
 	public void setDañoCausado(int dañoCausado) {this.dañoCausado = dañoCausado;}
+	public Unidad getUnidadObjetivoEnemigo() {
+		return unidadObjetivoEnemigo;
+	}
+	public void setUnidadObjetivoEnemigo(Unidad unidadObjetivoEnemigo) {
+		this.unidadObjetivoEnemigo = unidadObjetivoEnemigo;
+	}
 	public int getPuñosAcumulados() {return puñosAcumulados;}
 	public void setPuñosAcumulados(int puñosAcumulados) {this.puñosAcumulados = puñosAcumulados;}
 	public int getCargarEnamoramiento() {return cargarEnamoramiento;}
@@ -1106,6 +1133,12 @@ public class Unidad {
 	public void setMotivado(boolean motivado) {this.motivado = motivado;}
 	public boolean isLisiado() {return lisiado;}
 	public void setLisiado(boolean lisiado) {this.lisiado = lisiado;}
+	public boolean isIncendiado() {
+		return incendiado;
+	}
+	public void setIncendiado(boolean incendiado) {
+		this.incendiado = incendiado;
+	}
 	public boolean isEvadiendo() {return evadiendo;}
 	public void setEvadiendo(boolean evadiendo) {this.evadiendo = evadiendo;}
 	public boolean isRompiendo() {return rompiendo;}
@@ -1139,6 +1172,12 @@ public class Unidad {
 	public int getTimerLisiado() {return timerLisiado;}
 	public void setTimerLisiado(int timerLisiado) {this.timerLisiado = timerLisiado;}
 	public int getValorSangrado() {return valorSangrado;}
+	public int getTimerIncendiado() {
+		return timerIncendiado;
+	}
+	public void setTimerIncendiado(int timerIncendiado) {
+		this.timerIncendiado = timerIncendiado;
+	}
 	public void setValorSangrado(int valorSangrado) {this.valorSangrado = valorSangrado;}
 	public int getRdcDefAcc() {return rdcDefAcc;}
 	public void setRdcDefAcc(int rdcDefAcc) {this.rdcDefAcc = rdcDefAcc;}
