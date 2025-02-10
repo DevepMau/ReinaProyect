@@ -317,7 +317,11 @@ public class Unidad {
 		}
 	}
 	
-	public void recibirDaño(int daño, boolean isCritical, Unidad unidad) {
+	public void recibirDaño(int damage, boolean isCritical, Unidad unidad) {
+		int daño = damage;
+		if(this.getHPMax() > unidad.getHPMax() && unidad.getClase() == "Puño Furioso") {
+			daño += (this.getHPMax()-unidad.getHPMax())/10;
+		}
 	    int SEId = 2;
 	    int reduccion = (int) (daño * ((this.getDef() + this.getDefMod()) / 100.0));
         int dañoFinal = Math.max(1, daño - reduccion);
@@ -414,7 +418,7 @@ public class Unidad {
 		}
 	}
 	
-	public void recibirGolpesMúltiples(int daño,int cant, boolean isCritical) {
+	public void recibirGolpesMúltiples(int daño,int cant, boolean isCritical, Unidad unidad) {
 	    int numGolpes = cant;
 	    new Thread(() -> {
 	        for (int i = 0; i < numGolpes; i++) {
@@ -432,7 +436,7 @@ public class Unidad {
 	            if(dañoActual == 0) {
 	            	dañoActual = 1;
 	            }
-	            recibirDaño(dañoActual, golpeCritico, this);
+	            this.recibirDaño(dañoActual, golpeCritico, unidad);
 	        }
 	    }).start();
 	}
