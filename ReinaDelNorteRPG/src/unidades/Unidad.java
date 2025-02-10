@@ -419,7 +419,7 @@ public class Unidad {
 	    new Thread(() -> {
 	        for (int i = 0; i < numGolpes; i++) {
 	            try {
-	                Thread.sleep(200);
+	                Thread.sleep(300);
 	            } catch (InterruptedException e) {
 	                e.printStackTrace();
 	            }
