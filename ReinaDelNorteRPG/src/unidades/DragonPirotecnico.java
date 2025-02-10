@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+
+import principal.Habilidades;
 import principal.PanelDeJuego;
 import principal.Zona;
 
@@ -18,16 +20,16 @@ public class DragonPirotecnico extends Unidad{
 		this.setTipo("Elite");
 		this.setClase("Dragon Pirotecnico");
 		this.setIdFaccion(2);
-		this.setHPMax(obtenerValorEntre(130,160));
+		this.setHPMax(obtenerValorEntre(180,250));
 		this.setHP(this.getHPMax());
 		this.setSPMax(0);
 		this.setSP(this.getSPMax());
-		this.setAtq(obtenerValorEntre(18,27));
-		this.setDef(obtenerValorEntre(2,5));
-		this.setPCRT(0);
-		this.setDCRT(1);
+		this.setAtq(obtenerValorEntre(20,30));
+		this.setDef(obtenerValorEntre(10,20));
+		this.setPCRT(100);
+		this.setDCRT(1.5);
 		this.setEva(0);
-		this.setVel(obtenerValorEntre(5,7));
+		this.setVel(obtenerValorEntre(5,10));
 		this.cargaExplosiva = 0;
 		this.listaDeHabilidades[0] = "AÑO NUEVO";
 		this.generarCuerpo();
@@ -51,18 +53,19 @@ public class DragonPirotecnico extends Unidad{
 		}
 	}
 	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
-		Unidad objetivo = elegirObjetivo(unidades); 
-		if(objetivo != null) {
-			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (objetivo.getDef() + objetivo.getDefMod()));
-			objetivo.recibirDaño(daño, true, 20);
-			contarFaltas(objetivo, 2);
-			this.cargaExplosiva++;
-			for (Unidad unidadAledaña : unidades) {
-	            if (!unidadAledaña.equals(objetivo)) { // Evitar aplicar daño a la unidad objetivo
-	                unidadAledaña.recibirDaño(daño / 3, false, 20);
-	            }
-	        }
-			this.robarVida(daño, objetivo);
+		super.realizarAtaqueEnemigo(unidades);
+		this.cargaExplosiva++;
+		int daño = (this.getAtq() + this.getAtqMod())/3;
+		for(Unidad unidad : unidades) {
+			if(unidad != null) {
+				if(!this.getUnidadObjetivoEnemigo().equals(unidad)) {
+					int reduccion = (int) (daño * ((unidad.getDef() + unidad.getDefMod()) / 100.0));
+			        int dañoFinal = Math.max(1, daño - reduccion);
+			        unidad.setHP(unidad.getHP() - dañoFinal);
+			        Habilidades.setearDaño(unidad, ""+dañoFinal);
+			        this.robarVida(daño, unidad);	
+				}	
+			}
 		}
 	}
 	//METODOS DE JUGADOR////////////////////////////////////////////////////////////
@@ -71,31 +74,38 @@ public class DragonPirotecnico extends Unidad{
 		this.cargaExplosiva = 0;
 	}
 	public void realizarAtaque(Unidad unidad, ArrayList<Unidad> unidades) {
-		if(unidad != null) {
-			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod())); 	 
-			unidad.recibirDaño(daño, true, 20);
-			contarFaltas(unidad, 2);
-			this.cargaExplosiva++;
-			for (Unidad unidadAledaña : unidades) {
-	            if (!unidadAledaña.equals(unidad)) { // Evitar aplicar daño a la unidad objetivo
-	                unidadAledaña.recibirDaño(daño / 3, false, 20);
-	            }
-	        }
-			this.robarVida(daño, unidad);
+		super.realizarAtaque(unidad, unidades);
+		this.cargaExplosiva++;
+		int daño = (this.getAtq() + this.getAtqMod())/3;
+		for(Unidad objetivo : unidades) {
+			if(objetivo != null) {
+				if(!unidad.equals(objetivo)) {
+					int reduccion = (int) (daño * ((objetivo.getDef() + objetivo.getDefMod()) / 100.0));
+			        int dañoFinal = Math.max(1, daño - reduccion);
+			        objetivo.setHP(objetivo.getHP() - dañoFinal);
+			        Habilidades.setearDaño(objetivo, ""+dañoFinal);
+			        this.robarVida(daño, objetivo);	
+				}
+			}
 		}
 	}
 	//HABILIDADES///////////////////////////////////////////////////////////////////
 	public void FestejoDeAñoNuevo(ArrayList<Unidad> unidades) {
-	    int dañoExplosion = ((this.getAtq() + this.getAtqMod()))*2;
-	    if (!unidades.isEmpty()) {
-	        Unidad unidad = elegirObjetivoMasFuerte(unidades);
-	        unidad.recibirDaño(dañoExplosion, true, 20);
-	        for (Unidad unidadAledaña : unidades) {
-	            if (!unidadAledaña.equals(unidad)) { // Evitar aplicar daño a la unidad objetivo
-	                unidadAledaña.recibirDaño(dañoExplosion / 2, false, 20);
-	            }
-	        }
-	    }
+		this.setDCRT(2.0);
+		Unidad unidad = elegirObjetivoMasFuerte(unidades);
+		this.realizarAtaque(unidad, unidades);
+		this.setDCRT(1.5);
+		int daño = (this.getAtq() + this.getAtqMod())/2;
+		for(Unidad objetivo : unidades) {
+			if(objetivo != null) {
+				int reduccion = (int) (daño * ((objetivo.getDef() + objetivo.getDefMod()) / 100.0));
+		        int dañoFinal = Math.max(1, daño - reduccion);
+		        objetivo.setHP(objetivo.getHP() - dañoFinal);  
+		        Habilidades.setearDaño(objetivo, ""+dañoFinal);
+		        objetivo.setIncendiado(true);
+				objetivo.setTimerIncendiado(5);
+			}
+		}
 	}
 	//METODOS AUXILIARES////////////////////////////////////////////////////////////
 	public Unidad elegirObjetivoMasFuerte(ArrayList<Unidad> unidades) {
