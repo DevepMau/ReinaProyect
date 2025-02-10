@@ -79,11 +79,12 @@ public class HeroeFederal extends Unidad{
 		    	textoMostrado = "HURT";
 		    	 pdj.ReproducirSE(3);
 		        unidad.setHP(unidad.getHP() - dañoFinal);
-		        unidad.setLisiado(true);
-		        unidad.setTimerLisiado(3);
+		        unidad.setLisiado(true); 
 		        if(unidad.getTimerLisiado() == -1) {
 		        	 Habilidades.destruirMovilidad(unidad);
+		        	 System.out.println("ok");
 		        }
+		        unidad.setTimerLisiado(3);
 		        Habilidades.setearEstado(unidad, textoMostrado);
 		        Habilidades.stunearUnidad(unidad);
 		    }
