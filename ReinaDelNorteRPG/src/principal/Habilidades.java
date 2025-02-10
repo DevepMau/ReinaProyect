@@ -82,13 +82,13 @@ public class Habilidades {
 	public static void setearEstado(Unidad unidad, String texto) {
 		unidad.setTextoInformativo(texto);
 		unidad.setearSacudida(true);
-		unidad.setDuracionSacudida(20);
+		unidad.setDuracionSacudida(15);
 	}
 	
 	public static void setearDaño(Unidad unidad, String texto) {
 		unidad.setTextoDañoRecibido(texto);
 		unidad.setearSacudida(true);
-		unidad.setDuracionSacudida(20);
+		unidad.setDuracionSacudida(15);
 	}
 	
 	//HABILIDADES DE REGENERACION////////////////////////////////////////////
