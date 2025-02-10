@@ -165,6 +165,20 @@ public class Habilidades {
 		}).start();	
 	}
 	
+	public static void provocarIncendiar(Unidad unidad, PanelDeJuego pdj) {
+		new Thread(() -> {
+		    try {
+		        Thread.sleep(500);
+		    } catch (InterruptedException e) {
+		        e.printStackTrace();
+		    }
+		    pdj.ReproducirSE(2);
+		    unidad.setHP(unidad.getHP() - unidad.getHPMax()/20);
+		    Habilidades.setearDaño(unidad, "-"+unidad.getHPMax()/20);
+			unidad.setIncendiado(true);
+		}).start();	
+	}
+	
 	public static void stunearUnidad(Unidad unidad) {
 		unidad.setEstaActivo(false);
 		unidad.setEstaStun(true);
