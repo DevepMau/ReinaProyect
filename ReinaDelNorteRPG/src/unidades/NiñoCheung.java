@@ -44,6 +44,9 @@ public class NiñoCheung extends Unidad {
 			this.setAccion("");
 		}
 	}
+	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
+		super.pasivaDeClase(aliados, enemigos);
+	}
 	public String[] getListaDeHabilidades() {return listaDeHabilidades;}
 	public void setListaDeHabilidades(String[] habilidades) {this.listaDeHabilidades = habilidades;}
 }
