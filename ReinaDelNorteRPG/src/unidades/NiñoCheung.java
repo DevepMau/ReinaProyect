@@ -14,16 +14,16 @@ public class NiñoCheung extends Unidad {
 		this.setTipo("Recluta");
 		this.setClase("Niño Cheung");
 		this.setIdFaccion(3);
-		this.setHPMax(obtenerValorEntre(60,90));
+		this.setHPMax(obtenerValorEntre(90,120));
 		this.setHP(this.getHPMax());
 		this.setSP(0);
 		this.setSPMax(0);
-		this.setAtq(obtenerValorEntre(13,16));
-		this.setDef(obtenerValorEntre(2,6));
-		this.setPCRT(0.05);
+		this.setAtq(obtenerValorEntre(12,15));
+		this.setDef(obtenerValorEntre(10,20));
+		this.setPCRT(5);
 		this.setDCRT(10);
-		this.setEva(0.25);
-		this.setVel(obtenerValorEntre(10,15));
+		this.setEva(25);
+		this.setVel(obtenerValorEntre(10,20));
 		this.listaDeHabilidades[0] = "...";
 		this.generarCuerpo();
 	}
