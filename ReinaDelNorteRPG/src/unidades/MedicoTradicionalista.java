@@ -91,9 +91,13 @@ public class MedicoTradicionalista extends Unidad {
 			Habilidades.setearEstado(unidad, "HEAL!");
 			Habilidades.ganarNeoCreditos(this, 10);
 			unidad.setCurando(true);
-			unidad.setTimerSangrando(0);
-			unidad.setTimerLisiado(0);
-			unidad.setTimerRdcDefAcc(0);	
+			if(unidad.getTimerLisiado() > 0) {
+				unidad.setTimerLisiado(0);
+			}
+			if(unidad.getTimerRdcDefAcc() > 0) {
+				unidad.setTimerRdcDefAcc(0);
+			}
+			unidad.setTimerSangrando(0);		
 		}
 	}
 	public void tonicoImperial(Unidad unidad) {
