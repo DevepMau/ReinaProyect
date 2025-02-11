@@ -79,6 +79,16 @@ public class Habilidades {
 	
 	//HABILIDADES COMPLEMENTARIAS///////////////////////////////////////////
 	
+	public static void marcarUnidad(Unidad unidad) {
+		unidad.setMarcado(true);
+		unidad.setTimerMarcado(5);
+	}
+	
+	public static void desmarcarUnidad(Unidad unidad) {
+		unidad.setMarcado(false);
+		unidad.setTimerMarcado(-1);
+	}
+	
 	public static void setearEstado(Unidad unidad, String texto) {
 		unidad.setTextoInformativo(texto);
 		unidad.setearSacudida(true);
