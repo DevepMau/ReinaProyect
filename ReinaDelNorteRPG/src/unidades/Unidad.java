@@ -57,8 +57,11 @@ public class Unidad {
 	private boolean potenciado;
 	private boolean sangrando;
 	private boolean motivado;
+	private boolean desmotivado;
 	private boolean lisiado;
 	private boolean incendiado;
+	private boolean marcado;
+	private boolean debilitado;
 	//CONTADORES DE ESTADOS//////////////////////////////////////////
 	private int timerPrecavido = -1;
 	private int timerAgresivo = -1;
@@ -66,9 +69,12 @@ public class Unidad {
 	private int timerPotenciado = -1;
 	private int timerSangrando = -1;
 	private int timerMotivado = -1;
+	private int timerDesmotivado = -1;
 	private int timerRdcDefAcc = -1;
 	private int timerLisiado = -1;
 	private int timerIncendiado = -1;
+	private int timerMarcado = -1;
+	private int timerDebilitado = -1;
 	//ELEMENTOS DE ESTADOS///////////////////////////////////////////
 	private int valorSangrado;
 	private int rdcDefAcc = 0;
@@ -203,11 +209,11 @@ public class Unidad {
         	mostrarMuerte(g2, dibujarX+10, dibujarY-20, imageMov);
         }
         //MOSTRAR DAÑO RECIBIDO Y EFECTOS////////////////////////////
-        if(this.estaMarcado) {
+        if(this.getTimerMarcado() > 0) {
         	Image marca = configurarImagen("/efectos/mark", 4);
         	g2.drawImage(marca, dibujarX, dibujarY, null);
         }
-        
+        //////////////////////////////////////////////////////////////
         if(this.isCurando()) {
             g2.setColor(Color.green);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
@@ -269,6 +275,12 @@ public class Unidad {
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
             g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
         }
+        else if(this.isDesmotivado()) {
+        	Color c = new Color(0,200,255);
+        	g2.setColor(c);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
+            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
+        }
         else if(this.isLisiado()) {
         	Color c = new Color(155,0,155);
         	g2.setColor(c);
@@ -292,6 +304,18 @@ public class Unidad {
         	g2.setColor(c);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
             g2.drawString(this.getTextoDañoRecibido() , getPosX()+84, desplazarDañoRecibido-48);
+        }
+        else if(this.isDebilitado()) {
+        	Color c = new Color(55,55,155);
+        	g2.setColor(c);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
+        }
+        else if(this.isMarcado()) {
+        	Color c = new Color(155,255,255);
+        	g2.setColor(c);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
+            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
         }
         else {
         	g2.setColor(Color.WHITE);
@@ -320,7 +344,7 @@ public class Unidad {
 	public void recibirDaño(int damage, boolean isCritical, Unidad unidad) {
 		int daño = damage;
 		if(this.getHPMax() > unidad.getHPMax() && unidad.getClase() == "Puño Furioso") {
-			daño += (this.getHPMax()-unidad.getHPMax())/10;
+			daño += (this.getHPMax()-unidad.getHPMax())/4;
 		}
 	    int SEId = 2;
 	    int reduccion = (int) (daño * ((this.getDef() + this.getDefMod()) / 100.0));
@@ -361,6 +385,7 @@ public class Unidad {
 		        pdj.ReproducirSE(SEId);
 		        Habilidades.setearDaño(this, textoMostrado);
 		        Habilidades.ganarNeoCreditos(unidad, 5);
+		        unidad.robarVida(dañoFinal, this);
 		    }
 	    }  
 	}
@@ -477,9 +502,12 @@ public class Unidad {
 	    actualizarTimer(this::getTimerAgresivo, this::setTimerAgresivo, () -> Habilidades.reducirAgresividad(this));
 	    actualizarTimer(this::getTimerAcelerado, this::setTimerAcelerado, () -> Habilidades.reducirAgilidad(this));
 	    actualizarTimer(this::getTimerPotenciado, this::setTimerPotenciado, () -> Habilidades.debilitarUnidad(this));
+	    actualizarTimer(this::getTimerDebilitado, this::setTimerDebilitado, () -> Habilidades.potenciarUnidad(this));
 	    actualizarTimer(this::getTimerMotivado, this::setTimerMotivado, () -> Habilidades.desmotivarUnidad(this));
+	    actualizarTimer(this::getTimerDesmotivado, this::setTimerDesmotivado, () -> Habilidades.motivarUnidad(this));
 	    actualizarTimer(this::getTimerRdcDefAcc, this::setTimerRdcDefAcc, () -> Habilidades.aumentarDefensaAcc(this, this.getRdcDefAcc()));
 	    actualizarTimer(this::getTimerLisiado, this::setTimerLisiado, () -> Habilidades.renovarMovilidad(this));
+	    actualizarTimer(this::getTimerMarcado, this::setTimerMarcado, () -> Habilidades.desmarcarUnidad(this));
 	}
 
 	private void actualizarTimer(Supplier<Integer> getter, Consumer<Integer> setter, Runnable habilidad) {
@@ -520,10 +548,13 @@ public class Unidad {
 		this.setBloqueando(false);
 		this.setSangrando(false);
 		this.setMotivado(false);
+		this.setDesmotivado(false);
+		this.setDebilitado(false);
 		this.setReduciendoDefensa(false);
 		this.setLisiado(false);
 		this.setReportando(false);
 		this.setIncendiado(false);
+		this.setMarcado(false);
 	}
 	
 	public int porcentajeHP(int valor) {
@@ -1135,6 +1166,12 @@ public class Unidad {
 	public void setSangrando(boolean sangrando) {this.sangrando = sangrando;}
 	public boolean isMotivado() {return motivado;}
 	public void setMotivado(boolean motivado) {this.motivado = motivado;}
+	public boolean isDesmotivado() {
+		return desmotivado;
+	}
+	public void setDesmotivado(boolean desmotivado) {
+		this.desmotivado = desmotivado;
+	}
 	public boolean isLisiado() {return lisiado;}
 	public void setLisiado(boolean lisiado) {this.lisiado = lisiado;}
 	public boolean isIncendiado() {
@@ -1142,6 +1179,18 @@ public class Unidad {
 	}
 	public void setIncendiado(boolean incendiado) {
 		this.incendiado = incendiado;
+	}
+	public boolean isMarcado() {
+		return marcado;
+	}
+	public void setMarcado(boolean marcado) {
+		this.marcado = marcado;
+	}
+	public boolean isDebilitado() {
+		return debilitado;
+	}
+	public void setDebilitado(boolean debilitado) {
+		this.debilitado = debilitado;
 	}
 	public boolean isEvadiendo() {return evadiendo;}
 	public void setEvadiendo(boolean evadiendo) {this.evadiendo = evadiendo;}
@@ -1171,6 +1220,12 @@ public class Unidad {
 	public void setTimerSangrando(int timerSangrando) {this.timerSangrando = timerSangrando;}
 	public int getTimerMotivado() {return timerMotivado;}
 	public void setTimerMotivado(int timerMotivado) {this.timerMotivado = timerMotivado;}
+	public int getTimerDesmotivado() {
+		return timerDesmotivado;
+	}
+	public void setTimerDesmotivado(int timerDesmotivado) {
+		this.timerDesmotivado = timerDesmotivado;
+	}
 	public int getTimerRdcDefAcc() {return timerRdcDefAcc;}
 	public void setTimerRdcDefAcc(int timerRdcDefAcc) {this.timerRdcDefAcc = timerRdcDefAcc;}
 	public int getTimerLisiado() {return timerLisiado;}
@@ -1181,6 +1236,18 @@ public class Unidad {
 	}
 	public void setTimerIncendiado(int timerIncendiado) {
 		this.timerIncendiado = timerIncendiado;
+	}
+	public int getTimerMarcado() {
+		return timerMarcado;
+	}
+	public void setTimerMarcado(int timerMarcado) {
+		this.timerMarcado = timerMarcado;
+	}
+	public int getTimerDebilitado() {
+		return timerDebilitado;
+	}
+	public void setTimerDebilitado(int timerDebilitado) {
+		this.timerDebilitado = timerDebilitado;
 	}
 	public void setValorSangrado(int valorSangrado) {this.valorSangrado = valorSangrado;}
 	public int getRdcDefAcc() {return rdcDefAcc;}
