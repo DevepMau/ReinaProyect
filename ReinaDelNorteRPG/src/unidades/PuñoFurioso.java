@@ -46,7 +46,6 @@ public class PuñoFurioso extends Unidad {
 		if(this.getPuñosAcumulados() < 2) {
 			this.setPuñosAcumulados(this.getPuñosAcumulados() + 1);
 		}
-		System.out.println(this.getEvaMod());
 	}
 	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
