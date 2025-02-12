@@ -155,6 +155,9 @@ public class MaestroDelChi extends Unidad {
 		}
 		return false;
 	}
+	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
+		super.pasivaDeClase(aliados, enemigos);
+	}
 	public String[] getListaDeHabilidades() {return habilidades;}
 	public void setListaDeHabilidades(String[] habilidades) {this.habilidades = habilidades;}
 }
