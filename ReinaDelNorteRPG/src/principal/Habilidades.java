@@ -103,6 +103,16 @@ public class Habilidades {
 	
 	//HABILIDADES DE REGENERACION////////////////////////////////////////////
 	
+	public static void restaurarHPPlano(Unidad unidad, int valorCuracion) {
+		int curacion = (unidad.getHP() + valorCuracion);
+		if(curacion >= unidad.getHPMax()) {
+			 unidad.setHP(unidad.getHPMax());
+		}
+		else {
+			unidad.setHP(unidad.getHP() + valorCuracion);
+		}
+	}
+	
 	public static void restaurarHP(Unidad unidad, int porcentajeCuracion) {
 		 int curacion = (unidad.getHPMax() * porcentajeCuracion) / 100;
 		 if(curacion + unidad.getHP() > unidad.getHPMax()) {

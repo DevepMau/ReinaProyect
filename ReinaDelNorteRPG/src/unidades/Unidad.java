@@ -399,7 +399,6 @@ public class Unidad {
 			}
 			unidad.recibirDaño(daño, isCritical, this);
 			this.reflejarDaño(unidad, daño);
-			this.robarVida(daño, unidad);
 		}
 	}
 
@@ -413,7 +412,6 @@ public class Unidad {
 			}
 			objetivo.recibirDaño(daño, isCritical, this);
 			this.reflejarDaño(objetivo, daño);
-			this.robarVida(daño, objetivo);
 			if(this.getClase() == "Dragon Pirotecnico") {
 				this.setUnidadObjetivoEnemigo(objetivo);
 			}
@@ -467,11 +465,10 @@ public class Unidad {
 	}
 	
 	public void robarVida(int daño, Unidad unidad) {
-		if(unidad.getEstaMarcado()) {
-			Habilidades.restaurarHP(unidad, 20);
-			Habilidades.setearEstado(unidad, "+" + this.porcentajeHP(20));
-			unidad.setCurando(true);
-			Habilidades.setearEstado(this, "+"+(daño - (daño/4)));
+		if(unidad.getTimerMarcado() > 0) {
+			Habilidades.restaurarHPPlano(this, daño/2);
+			Habilidades.setearEstado(this, "+" + daño/2);
+			this.setCurando(true);
 		}
 	}
 	
