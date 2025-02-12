@@ -1,6 +1,8 @@
 package unidades;
 
 import java.util.ArrayList;
+
+import principal.Habilidades;
 import principal.PanelDeJuego;
 import principal.Zona;
 
@@ -16,16 +18,16 @@ public class MaestroDelChi extends Unidad {
 		this.setTipo("Especialista");
 		this.setClase("Maestro Del Chi");
 		this.setIdFaccion(3);
-		this.setHPMax(obtenerValorEntre(40,70));
+		this.setHPMax(obtenerValorEntre(110,130));
 		this.setHP(this.getHPMax());
-		this.setSPMax(obtenerValorEntre(60,100));
+		this.setSPMax(obtenerValorEntre(80,120));
 		this.setSP(this.getSPMax());
-		this.setAtq(obtenerValorEntre(12,18));
-		this.setDef(obtenerValorEntre(1,7));
-		this.setVel(obtenerValorEntre(14,19));
-		this.setPCRT(0.25);
+		this.setAtq(obtenerValorEntre(12,15));
+		this.setDef(obtenerValorEntre(10,20));
+		this.setVel(obtenerValorEntre(20,30));
+		this.setPCRT(25);
 		this.setDCRT(1.5);
-		this.setEva(0.25);
+		this.setEva(25);
 		this.spHabilidad1 = 20;
 		this.cargas = 0;
 		this.habilidades[0] = "MARCAR";
@@ -81,28 +83,26 @@ public class MaestroDelChi extends Unidad {
 		this.setSP(this.getSP() - this.spHabilidad1);
 		if(unidad != null) {
 			pdj.ReproducirSE(8);
-			unidad.setEstaMArcado(true);
-			unidad.setearSacudida(true);
-			unidad.setDuracionSacudida(20);
+			Habilidades.marcarUnidad(unidad);
+			Habilidades.setearEstado(unidad, "LOCK ON!");
 			this.cargas++;
 		}
 	}
 	
 	public void explotar(Unidad unidad) {
-		int daño = (this.getAtq()+this.getAtqMod()+(unidad.getVel()/2));
+		int dañoFinal = (this.getAtq()+this.getAtqMod());
 		if(unidad != null) {
 			pdj.ReproducirSE(8);
-			if(unidad.getEstaMarcado()) {
-				unidad.setearSacudida(true);
-				unidad.setDuracionSacudida(20);
-				unidad.setEstaDesmotivado(true);
-				unidad.setearSacudida(true);
-				unidad.setDuracionSacudida(20);
-				unidad.setEstaMArcado(false);
-				unidad.setVelMod(unidad.getVelMod() - obtenerValorEntre(1,5));
-				unidad.setDefMod(unidad.getDefMod() - obtenerValorEntre(1,3));
-				unidad.recibirDaño(daño, false, 20);
-				this.restaurarHP(daño/2);
+			if(unidad.getTimerMarcado() > 0) {
+				if(unidad.getTimerDebilitado() == -1) {
+					Habilidades.debilitarUnidad(unidad);
+				}
+				Habilidades.desmarcarUnidad(unidad);
+				Habilidades.setearEstado(unidad, "WEAK!");
+				Habilidades.restaurarHP(this, 15);
+				unidad.setDebilitado(true);
+				unidad.setTimerDebilitado(5);
+				unidad.setHP(unidad.getHP() - dañoFinal);
 				this.cargas = 0;
 			}
 			
