@@ -6,74 +6,14 @@ import unidades.Unidad;
 
 public class Habilidades {
 	
-	//HABILIDADES BASICAS/////////////////////////////////////////////////
-	
-	public static void aumentarHPMax(Unidad unidad, double porcentaje) {
-	    int aumento = (int) (unidad.getHPMax() * (porcentaje / 100));
-	    unidad.setHPMax(unidad.getHPMax() + aumento);
-	}
-	
-	public static void aumentarSPMax(Unidad unidad, double porcentaje) {
-	    int aumento = (int) (unidad.getSPMax() * (porcentaje / 100));
-	    unidad.setSPMax(unidad.getSPMax() + aumento);
-	}
-
-	public static void aumentarAtaque(Unidad unidad, int valor) {
-		unidad.setAtqMod(unidad.getAtqMod() + valor);
-	}
-	
-	public static void aumentarDefensa(Unidad unidad, int valor) {
-		unidad.setDefMod(unidad.getDefMod() + valor);
-	}
-
-	public static void aumentarVelocidad(Unidad unidad, int valor) {
-		unidad.setVelMod(unidad.getVelMod() + valor);
-	}
-
-	public static void aumentarEvasion(Unidad unidad, int valor) {
-		unidad.setEvaMod(unidad.getEvaMod() + valor);
-	}
-	
-	public static void aumentarProbCrit(Unidad unidad, int valor) {
-		unidad.setPcrtMod(unidad.getPcrtMod() + valor);
-	}
-	
-	public static void aumentarTasaBloqueo(Unidad unidad, int valor) {
-		unidad.setBloqMod(unidad.getBloqMod() + valor);
-	}
-	
-	public static void reducirAtaque(Unidad unidad, int valor) {
-		unidad.setAtqMod(unidad.getAtqMod() - valor);
-	}
-	
-	public static void reducirDefensa(Unidad unidad, int valor) {
-		unidad.setDefMod(unidad.getDefMod() - valor);
-	}
-
-	public static void reducirVelocidad(Unidad unidad, int valor) {
-		unidad.setVelMod(unidad.getVelMod() - valor);
-	}
-
-	public static void reducirEvasion(Unidad unidad, int valor) {
-		unidad.setEvaMod(unidad.getEvaMod() - valor);
-	}
-	
-	public static void reducirProbCrit(Unidad unidad, int valor) {
-		unidad.setPcrtMod(unidad.getPcrtMod() - valor);
-	}
-	
-	public static void reducirTasaBloqueo(Unidad unidad, int valor) {
-		unidad.setBloqMod(unidad.getBloqMod() - valor);
-	}
-	
 	//HABILIDADES CON ACUMULADOR////////////////////////////////////////////
 	
 	public static void reducirDefensaAcc(Unidad unidad, int acc) {
-		reducirDefensa(unidad, 5 * acc);
+		Estadisticas.reducirDefensa(unidad, 5 * acc);
 	}
 	
 	public static void aumentarDefensaAcc(Unidad unidad, int acc) {
-		aumentarDefensa(unidad, 5 * acc);
+		Estadisticas.aumentarDefensa(unidad, 5 * acc);
 		unidad.setRdcDefAcc(0);
 	}
 	
@@ -217,18 +157,18 @@ public class Habilidades {
 	//HABILIDADES COMPUESTAS/////////////////////////////////////////////////
 	
 	public static void aumentarAgresividad(Unidad unidad) {
-		aumentarAtaque(unidad, 5);
-		aumentarProbCrit(unidad, 5);
+		Estadisticas.aumentarAtaque(unidad, 5);
+		Estadisticas.aumentarProbCrit(unidad, 5);
 	}
 	
 	public static void aumentarProteccion(Unidad unidad) {
-		aumentarDefensa(unidad, 5);
-		aumentarTasaBloqueo(unidad, 5);
+		Estadisticas.aumentarDefensa(unidad, 5);
+		Estadisticas.aumentarTasaBloqueo(unidad, 5);
 	}
 	
 	public static void aumentarAgilidad(Unidad unidad) {
-		aumentarEvasion(unidad, 5);
-		aumentarVelocidad(unidad, 5);
+		Estadisticas.aumentarEvasion(unidad, 5);
+		Estadisticas.aumentarVelocidad(unidad, 5);
 	}
 	
 	public static void potenciarUnidad(Unidad unidad) {
@@ -240,28 +180,28 @@ public class Habilidades {
 	public static void motivarUnidad(Unidad unidad) {
 		aumentarAgresividad(unidad);
 		aumentarAgresividad(unidad);
-		aumentarVelocidad(unidad, 10);
-		aumentarEvasion(unidad, 10);
+		Estadisticas.aumentarVelocidad(unidad, 10);
+		Estadisticas.aumentarEvasion(unidad, 10);
 	}
 	
 	public static void renovarMovilidad(Unidad unidad) {
-		aumentarVelocidad(unidad, 100);
-		aumentarEvasion(unidad, 100);
+		Estadisticas.aumentarVelocidad(unidad, 100);
+		Estadisticas.aumentarEvasion(unidad, 100);
 	}
 	
 	public static void reducirAgresividad(Unidad unidad) {
-		reducirAtaque(unidad, 5);
-		reducirProbCrit(unidad, 5);
+		Estadisticas.reducirAtaque(unidad, 5);
+		Estadisticas.reducirProbCrit(unidad, 5);
 	}
 	
 	public static void reducirProteccion(Unidad unidad) {
-		reducirDefensa(unidad, 5);
-		reducirEvasion(unidad, 5);
+		Estadisticas.reducirDefensa(unidad, 5);
+		Estadisticas.reducirEvasion(unidad, 5);
 	}
 	
 	public static void reducirAgilidad(Unidad unidad) {
-		reducirEvasion(unidad, 5);
-		reducirVelocidad(unidad, 5);
+		Estadisticas.reducirEvasion(unidad, 5);
+		Estadisticas.reducirVelocidad(unidad, 5);
 	}
 	
 	public static void debilitarUnidad(Unidad unidad) {
@@ -273,13 +213,13 @@ public class Habilidades {
 	public static void desmotivarUnidad(Unidad unidad) {
 		reducirAgresividad(unidad);
 		reducirAgresividad(unidad);
-		reducirVelocidad(unidad, 10);
-		reducirEvasion(unidad, 10);
+		Estadisticas.reducirVelocidad(unidad, 10);
+		Estadisticas.reducirEvasion(unidad, 10);
 	}
 	
 	public static void destruirMovilidad(Unidad unidad) {
-		reducirVelocidad(unidad, 100);
-		reducirEvasion(unidad, 100);
+		Estadisticas.reducirVelocidad(unidad, 100);
+		Estadisticas.reducirEvasion(unidad, 100);
 	}
 	
 }
