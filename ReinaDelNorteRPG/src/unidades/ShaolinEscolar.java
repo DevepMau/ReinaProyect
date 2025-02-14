@@ -73,8 +73,6 @@ public class ShaolinEscolar extends Unidad {
 	public void potenciar() {
 		pdj.ReproducirSE(7);
 		Habilidades.potenciarUnidad(this);
-		Habilidades.setearEstado(this, "POWERED!");
-		this.setPotenciado(true);
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
 	public boolean cumpleReqDeHab1() {

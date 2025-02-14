@@ -1,5 +1,6 @@
 package unidades;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
 import principal.Habilidades;
@@ -61,32 +62,21 @@ public class HeroeFederal extends Unidad{
 		int daño = this.getAtq() + this.getAtqMod() + this.getVel()/2;
 	    int reduccion = (int) (daño * ((unidad.getDef() + unidad.getDefMod()) / 100.0));
         int dañoFinal = Math.max(1, daño - reduccion);
-        String textoMostrado = "";
 	    if (unidad.elegirAleatorio(100) < (unidad.getEva() + unidad.getEvaMod())) {
 	    	pdj.ReproducirSE(6);
 	    	unidad.setEvadiendo(true);
-	        textoMostrado = "MISS!";
-	        Habilidades.setearEstado(unidad, textoMostrado);
+	        Habilidades.setearEfectoDeEstado(unidad, "MISS!", Color.white);
 	    }
 	    else {
 	    	if (unidad.getEscudos() > 0) {
 		        unidad.setEscudos(0);
 		        pdj.ReproducirSE(9);
 		        unidad.setRompiendo(true);
-		        textoMostrado = "BREAK!";
-		        Habilidades.setearEstado(unidad, textoMostrado);
+		        Habilidades.setearEfectoDeEstado(unidad, "BREAK!", Color.white);
 		    } else {
-		    	textoMostrado = "HURT";
 		    	 pdj.ReproducirSE(3);
 		        unidad.setHP(unidad.getHP() - dañoFinal);
-		        unidad.setLisiado(true); 
-		        if(unidad.getTimerLisiado() == -1) {
-		        	 Habilidades.destruirMovilidad(unidad);
-		        	 System.out.println("ok");
-		        }
-		        unidad.setTimerLisiado(3);
-		        Habilidades.setearEstado(unidad, textoMostrado);
-		        Habilidades.stunearUnidad(unidad);
+		        Habilidades.destruirMovilidad(unidad);
 		    }
 	    } 
 	    this.setCdHabilidad1(1);

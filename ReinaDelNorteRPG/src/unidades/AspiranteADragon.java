@@ -17,16 +17,16 @@ public class AspiranteADragon extends Unidad{
 		this.setTipo("Elite");
 		this.setClase("Aspirante A Dragon");
 		this.setIdFaccion(3);
-		this.setHPMax(obtenerValorEntre(100,130));
+		this.setHPMax(obtenerValorEntre(150,220));
 		this.setHP(this.getHPMax());
 		this.setSPMax(0);
 		this.setSP(this.getSPMax());
-		this.setAtq(obtenerValorEntre(12,15));
-		this.setDef(obtenerValorEntre(4,7));
-		this.setPCRT(0.5);
+		this.setAtq(obtenerValorEntre(15,22));
+		this.setDef(obtenerValorEntre(20,30));
+		this.setPCRT(5);
 		this.setDCRT(2);
-		this.setEva(0.5);
-		this.setVel(obtenerValorEntre(15,20));
+		this.setEva(5);
+		this.setVel(obtenerValorEntre(20,30));
 		this.setPuñosAcumulados(1);
 		this.listaDeHabilidades[0] = "COMBO LETAL";
 		this.generarCuerpo();
@@ -43,14 +43,8 @@ public class AspiranteADragon extends Unidad{
 		this.pasivaDeClase(aliados, enemigos);
 	}
 	
-	public void recibirDaño(int daño, boolean isCritical, int duracionSacudida) {
-		super.recibirDaño(daño, isCritical, duracionSacudida);
-		if(this.getPuñosAcumulados() < 5) {
-			this.setPuñosAcumulados(this.getPuñosAcumulados() + 1);
-		}
-	}
-	public void evadirAtaque() {
-		super.evadirAtaque();
+	public void recibirDaño(int daño, boolean isCritical, Unidad unidad) {
+		super.recibirDaño(daño, isCritical, unidad);
 		if(this.getPuñosAcumulados() < 5) {
 			this.setPuñosAcumulados(this.getPuñosAcumulados() + 1);
 		}
@@ -59,10 +53,7 @@ public class AspiranteADragon extends Unidad{
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
 		if(this.getHabilidadElegida() == 0) {
 			if(this.getPuñosAcumulados() >= 5) {
-				this.setAtqMod(this.getAtqMod() + this.obtenerValorEntre(1, this.getPuñosAcumulados()));
-				this.setVelMod(this.getVelMod() + this.obtenerValorEntre(1, this.getPuñosAcumulados()));
-				this.setPcrtMod(this.getPcrtMod() + 0.05);
-				this.setEvaMod(this.getEvaMod() + 0.05);
+				//potenciacion
 			}
 			Unidad unidad = elegirObjetivoMasFuerte(unidades);
 			comboLetal(unidad);	
@@ -71,31 +62,17 @@ public class AspiranteADragon extends Unidad{
 	//METODOS DE JUGADOR////////////////////////////////////////////////////////////
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {
 		if(this.getPuñosAcumulados() >= 5) {
-			this.setAtqMod(this.getAtqMod() + this.obtenerValorEntre(1, this.getPuñosAcumulados()));
-			this.setVelMod(this.getVelMod() + this.obtenerValorEntre(1, this.getPuñosAcumulados()));
-			this.setPcrtMod(this.getPcrtMod() + 0.05);
-			this.setEvaMod(this.getEvaMod() + 0.05);
+			//habillidad potenciadora
 		}
 		comboLetal(unidad);
 	}
 	//HABILIDADES///////////////////////////////////////////////////////////////////
 	public void comboLetal(Unidad unidad) {
-		boolean isCritical = Math.random() <= (this.getPCRT() + this.getPcrtMod());   
-		if(unidad != null) {
-			int daño = Math.max(1, (this.getAtq() + this.getAtqMod()) - (unidad.getDef() + unidad.getDefMod()));
-	    	if(this.getHPMax() < unidad.getHPMax()) {
-	    		daño += (unidad.getHPMax()/10);
-	    	}
-			if (isCritical) {
-				daño *= (this.getDCRT() + this.getDcrtMod());
-			}
-			unidad.recibirGolpesMúltiples(daño, this.getPuñosAcumulados() , isCritical);
-			contarFaltas(unidad, this.getPuñosAcumulados());
-			this.reflejarDaño(unidad, daño);
-			this.robarVida(daño, unidad);
-			this.setPuñosAcumulados(1);
-		}
+		int daño = this.getAtq() + this.getAtqMod();
+		unidad.recibirGolpesMúltiples(daño, 2 , true, this);
+		this.setPuñosAcumulados(1);
 	}
+	
 	//METODOS AUXILIARES////////////////////////////////////////////////////////////
 	public void efectosVisualesPersonalizados(Graphics2D g2) {
 		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18f));
@@ -154,6 +131,9 @@ public class AspiranteADragon extends Unidad{
 		else {
 			this.setAccion("");
 		}
+	}
+	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
+		super.pasivaDeClase(aliados, enemigos);
 	}
 	public String[] getListaDeHabilidades() {return listaDeHabilidades;}
 	public void setListaDeHabilidades(String[] habilidades) {this.listaDeHabilidades = habilidades;}

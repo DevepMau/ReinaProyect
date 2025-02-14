@@ -59,46 +59,18 @@ public class CebadorDeMate extends Unidad{
 	//HABILIDADES////////////////////////////////////////////////////////////////////////
 	public void cebarMate(Unidad unidad) {
 		this.setSP(this.getSP() - this.costeHabilidad1);;
-		int opcion = elegirAleatorio(4);
+		int opcion = this.elegirAleatorio(4);
 		if(opcion == 0) {
-			//HERVIDO Y DULCE
-			Habilidades.restaurarHP(unidad, 20);
-			Habilidades.setearEstado(unidad, "HEAL!");
-			unidad.setCurando(true);
-			
+			Habilidades.aumentarAgilidad(unidad);	
 		}
 		else if(opcion == 1) {
-			//HERVIDO y AMARGO
-			if(unidad.getTimerPrecavido() == -1) {
-				Habilidades.aumentarProteccion(unidad);
-			}
-			Habilidades.setearEstado(unidad, "PROTECTED!");
-			unidad.setPrecavido(true);
-			unidad.setTimerPrecavido(5);
+			Habilidades.aumentarProteccion(unidad);
 		}
 		else if(opcion == 2) {
-			//HELADO Y DULCE
-			if(unidad.getTimerAgresivo() == -1) {
-				Habilidades.aumentarAgresividad(unidad);
-			}
-			Habilidades.setearEstado(unidad, "AGGRESSIVE");
-			unidad.setAgresivo(true);
-			unidad.setTimerAgresivo(5);
-			
+			Habilidades.aumentarAgresividad(unidad);
 		}
 		else {
-			//PERFECTO
-			if(unidad.getTimerPotenciado() == -1) {
-				Habilidades.potenciarUnidad(unidad);
-			}
-			Habilidades.setearEstado(unidad, "POWERED!");
-			Habilidades.aumentarHPMax(unidad, 20);
-			Habilidades.restaurarHP(unidad, 20);
-			Habilidades.aumentarSPMax(unidad, 20);
-			Habilidades.restaurarSP(unidad, 20);
-			unidad.setPotenciado(true);
-			unidad.setTimerPotenciado(5);
-			
+			Habilidades.potenciarUnidad(unidad);	
 		}
 		this.setCdHabilidad1(0);
 		this.setHabilidad1(false);

@@ -30,7 +30,7 @@ public class DragonPirotecnico extends Unidad{
 		this.setDCRT(1.5);
 		this.setEva(0);
 		this.setVel(obtenerValorEntre(5,10));
-		this.cargaExplosiva = 0;
+		this.cargaExplosiva = elegirAleatorio(6);
 		this.listaDeHabilidades[0] = "AÑO NUEVO";
 		this.generarCuerpo();
 	}
@@ -62,7 +62,7 @@ public class DragonPirotecnico extends Unidad{
 					int reduccion = (int) (daño * ((unidad.getDef() + unidad.getDefMod()) / 100.0));
 			        int dañoFinal = Math.max(1, daño - reduccion);
 			        unidad.setHP(unidad.getHP() - dañoFinal);
-			        Habilidades.setearDaño(unidad, ""+dañoFinal);
+			        Habilidades.setearDaño(unidad, ""+dañoFinal, new Color(255, 155, 0));
 			        this.robarVida(daño, unidad);	
 				}	
 			}
@@ -83,7 +83,7 @@ public class DragonPirotecnico extends Unidad{
 					int reduccion = (int) (daño * ((objetivo.getDef() + objetivo.getDefMod()) / 100.0));
 			        int dañoFinal = Math.max(1, daño - reduccion);
 			        objetivo.setHP(objetivo.getHP() - dañoFinal);
-			        Habilidades.setearDaño(objetivo, ""+dañoFinal);
+			        Habilidades.setearDaño(objetivo, ""+dañoFinal, new Color(255, 155, 0));
 			        this.robarVida(daño, objetivo);	
 				}
 			}
@@ -101,9 +101,8 @@ public class DragonPirotecnico extends Unidad{
 				int reduccion = (int) (daño * ((objetivo.getDef() + objetivo.getDefMod()) / 100.0));
 		        int dañoFinal = Math.max(1, daño - reduccion);
 		        objetivo.setHP(objetivo.getHP() - dañoFinal);  
-		        Habilidades.setearDaño(objetivo, ""+dañoFinal);
-		        objetivo.setIncendiado(true);
-				objetivo.setTimerIncendiado(5);
+		        Habilidades.setearEfectoDeEstado(objetivo, "BURN!", new Color(255, 155, 0));
+				objetivo.setTimerIncendiado(10);
 			}
 		}
 	}

@@ -1,5 +1,6 @@
 package unidades;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
 import principal.Habilidades;
@@ -70,7 +71,7 @@ public class GauchoModerno extends Unidad {
 	    	pdj.ReproducirSE(6);
 	    	unidad.setEvadiendo(true);
 	        textoMostrado = "MISS!";
-	        Habilidades.setearEstado(unidad, textoMostrado);
+	        Habilidades.setearEfectoDeEstado(unidad, textoMostrado, Color.white);
 	    }
 	    else {
 	    	if(this.elegirAleatorio(100) < (unidad.getBloq() + unidad.getBloqMod())) {
@@ -78,21 +79,21 @@ public class GauchoModerno extends Unidad {
 	    		unidad.setBloqueando(true);
 	    		unidad.setHP(unidad.getHP() - (dañoFinal/4));
 		        textoMostrado = "BLOCK!";
-		        Habilidades.setearEstado(unidad, textoMostrado);
+		        Habilidades.setearEfectoDeEstado(unidad, textoMostrado, Color.white);
 	    	}
 	    	else if (unidad.getEscudos() > 0) {
 		        unidad.setEscudos(unidad.getEscudos() - 1);
 		        pdj.ReproducirSE(9);
 		        unidad.setRompiendo(true);
 		        textoMostrado = "BREAK!";
-		        Habilidades.setearEstado(unidad, textoMostrado);
+		        Habilidades.setearEfectoDeEstado(unidad, textoMostrado, Color.white);
 		    } else {
-		    	textoMostrado = "BLEEDING!";
+		    	textoMostrado = "BLEED";
 		        unidad.setHP(unidad.getHP() - dañoFinal);
 		        pdj.ReproducirSE(3);
-		        Habilidades.setearDaño(unidad, textoMostrado);
-		        unidad.setValorSangrado(unidad.getHPMax()/20 + this.getAtqMod());
-				unidad.setSangrando(true);
+		        Habilidades.setearEfectoDeEstado(unidad, textoMostrado, Color.RED);
+				unidad.setEfectoDeEstado(true);
+				unidad.setValorSangrado(unidad.getHPMax()/20 + this.getAtqMod());
 				unidad.setTimerSangrando(5);
 		    }
 	    }

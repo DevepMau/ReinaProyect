@@ -88,16 +88,16 @@ public class MedicoTradicionalista extends Unidad {
 		if(unidad != null) {
 			pdj.ReproducirSE(4);
 			Habilidades.restaurarHP(unidad, 20);
-			Habilidades.setearEstado(unidad, "HEAL!");
 			Habilidades.ganarNeoCreditos(this, 10);
 			unidad.setCurando(true);
 			if(unidad.getTimerLisiado() > 0) {
-				unidad.setTimerLisiado(0);
+				unidad.setTimerLisiado(-1);
 			}
-			if(unidad.getTimerRdcDefAcc() > 0) {
-				unidad.setTimerRdcDefAcc(0);
+			if(unidad.getRdcDefAcc() > 0) {
+				Habilidades.renovarArmadura(unidad);
 			}
-			unidad.setTimerSangrando(0);		
+			unidad.setTimerSangrando(0);	
+			unidad.setTimerIncendiado(0);	
 		}
 	}
 	public void tonicoImperial(Unidad unidad) {
@@ -105,14 +105,10 @@ public class MedicoTradicionalista extends Unidad {
 			pdj.ReproducirSE(7);
 			int i = elegirAleatorio(2);
 			if(i == 0) {
-				Habilidades.pocionDeLibido(unidad);
-				Habilidades.setearEstado(unidad, "LIBIDO!");
-				unidad.setAgresivo(true);
+				Habilidades.aumentarAgresividad(unidad);
 			}
 			else {
-				Habilidades.pocionAnticonceptiva(unidad);
-				Habilidades.setearEstado(unidad, "PREVENTIVE!");
-				unidad.setPrecavido(true);
+				Habilidades.aumentarProteccion(unidad);
 			}
 		}
 	}

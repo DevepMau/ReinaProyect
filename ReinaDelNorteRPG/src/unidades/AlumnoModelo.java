@@ -49,8 +49,8 @@ public class AlumnoModelo extends Unidad{
 		}
 		else {
 			realizarAtaqueEnemigo(enemigos);
-			this.pasivaDeClase(aliados, enemigos);
 		}
+		this.pasivaDeClase(aliados, enemigos);
 	}
 	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
@@ -82,34 +82,18 @@ public class AlumnoModelo extends Unidad{
 			for(Unidad unidad : unidades) {
 				if(unidad.getHPMax() > unidad.getHP()) {
 					Habilidades.restaurarHP(unidad, 20);
-					Habilidades.setearEstado(unidad, "HEAL!");
-					unidad.setCurando(true);
 				}
 				else if(unidad.getTimerPrecavido() == -1) {
 					Habilidades.aumentarProteccion(unidad);
-					Habilidades.setearEstado(unidad, "PROTECTED!");
-					unidad.setPrecavido(true);
-					unidad.setTimerPrecavido(5);
 				}
 				else if(unidad.getTimerAgresivo() == -1) {
 					Habilidades.aumentarAgresividad(unidad);
-					Habilidades.setearEstado(unidad, "AGGRESSIVE!");
-					unidad.setAgresivo(true);
-					unidad.setTimerAgresivo(5);
 				}
 				else if(unidad.getTimerAcelerado() == -1) {
-						Habilidades.aumentarAgilidad(unidad);
-						Habilidades.setearEstado(unidad, "ACCELERATED!");
-						unidad.setAcelerado(true);
-						unidad.setTimerAcelerado(5);
+					Habilidades.aumentarAgilidad(unidad);
 				}
 				else {
-					if(unidad.getTimerPotenciado() == -1) {
-						Habilidades.potenciarUnidad(unidad);
-					}
-					Habilidades.setearEstado(unidad, "POWERED!");
-					unidad.setPotenciado(true);
-					unidad.setTimerPotenciado(5);
+					Habilidades.potenciarUnidad(unidad);
 				}
 			}
 		}
@@ -118,7 +102,6 @@ public class AlumnoModelo extends Unidad{
 		if(!unidades.isEmpty()) {
 			for(Unidad unidad : unidades) {
 				unidad.setHP(unidad.getHP() - unidad.getHPMax()/10);
-				Habilidades.setearEstado(unidad, "REPORTED!");
 		        Habilidades.stunearUnidad(unidad);
 		        unidad.setReportando(true);
 			}

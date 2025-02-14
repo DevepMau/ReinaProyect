@@ -1,5 +1,6 @@
 package unidades;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
 import principal.Habilidades;
@@ -96,7 +97,7 @@ public class PayadorPicante extends Unidad {
 	    	pdj.ReproducirSE(6);
 	    	unidad.setEvadiendo(true);
 	        textoMostrado = "MISS!";
-	        Habilidades.setearEstado(unidad, textoMostrado);
+	        Habilidades.setearEfectoDeEstado(unidad, textoMostrado, Color.white);
 	    }
 	    else {
 	    	if (unidad.getEscudos() > 0) {
@@ -104,19 +105,12 @@ public class PayadorPicante extends Unidad {
 		        pdj.ReproducirSE(9);
 		        unidad.setRompiendo(true);
 		        textoMostrado = "BREAK!";
-		        Habilidades.setearEstado(unidad, textoMostrado);
+		        Habilidades.setearEfectoDeEstado(unidad, textoMostrado, Color.white);
 		    } else {
 		    	textoMostrado = "-" + dañoFinal;
+		    	pdj.ReproducirSE(3);
 		        unidad.setHP(unidad.getHP() - dañoFinal);
-		        Habilidades.setearDaño(unidad, textoMostrado);
-		        unidad.setReduciendoDefensa(true);
-		        unidad.setTimerRdcDefAcc(3);
-		        pdj.ReproducirSE(3);
-		        if(unidad.getRdcDefAcc() < 3) {
-		        	Habilidades.reducirDefensa(unidad, 5);
-			        unidad.setRdcDefAcc(unidad.getRdcDefAcc() + 1);
-		        } 
-				
+		        Habilidades.oxidarArmadura(unidad); 
 		    }
 	    } 
 	    this.setCdHabilidad1(1);
@@ -126,9 +120,6 @@ public class PayadorPicante extends Unidad {
 		if(unidad != null) {
 			pdj.ReproducirSE(7);
 			Habilidades.motivarUnidad(unidad);
-			Habilidades.setearEstado(unidad, "DANCE!");
-			unidad.setMotivado(true);
-			unidad.setTimerMotivado(5);
 		}
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////

@@ -2,6 +2,7 @@ package unidades;
 
 import java.util.ArrayList;
 
+import principal.Estadisticas;
 import principal.Habilidades;
 import principal.PanelDeJuego;
 import principal.Zona;
@@ -84,25 +85,16 @@ public class MaestroDelChi extends Unidad {
 		if(unidad != null) {
 			pdj.ReproducirSE(8);
 			Habilidades.marcarUnidad(unidad);
-			Habilidades.setearEstado(unidad, "LOCK ON!");
 			this.cargas++;
 		}
 	}
 	
 	public void explotar(Unidad unidad) {
-		int dañoFinal = (this.getAtq()+this.getAtqMod());
 		if(unidad != null) {
 			pdj.ReproducirSE(8);
 			if(unidad.getTimerMarcado() > 0) {
-				if(unidad.getTimerDebilitado() == -1) {
-					Habilidades.debilitarUnidad(unidad);
-				}
 				Habilidades.desmarcarUnidad(unidad);
-				Habilidades.setearEstado(unidad, "WEAK!");
-				Habilidades.restaurarHP(this, 15);
-				unidad.setDebilitado(true);
-				unidad.setTimerDebilitado(5);
-				unidad.setHP(unidad.getHP() - dañoFinal);
+				Habilidades.explotarMarca(this, unidad);
 				this.cargas = 0;
 			}
 			
