@@ -42,6 +42,8 @@ public class Unidad {
 	private boolean estaMarcado;
 	private boolean estaStun;
 	private boolean estaEnamorado;
+	private Color colorDeMensaje;
+	private Color colorDeDaño;
 	//ACCIONES//////////////////////////////////////////////////////
 	private boolean realizaUnCritico;
 	private boolean evadiendo;
@@ -51,17 +53,9 @@ public class Unidad {
 	private boolean reduciendoDefensa;
 	private boolean reportando;
 	//ESTADOS////////////////////////////////////////////////////////
-	private boolean precavido;
-	private boolean agresivo;
-	private boolean acelerado;
-	private boolean potenciado;
-	private boolean sangrando;
-	private boolean motivado;
-	private boolean desmotivado;
-	private boolean lisiado;
-	private boolean incendiado;
 	private boolean marcado;
-	private boolean debilitado;
+	private boolean EfectoDeEstado;
+	private boolean dañoEspecial;
 	//CONTADORES DE ESTADOS//////////////////////////////////////////
 	private int timerPrecavido = -1;
 	private int timerAgresivo = -1;
@@ -219,97 +213,22 @@ public class Unidad {
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
             g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
         }
+        
+        else if(this.isEfectoDeEstado()) {
+        	g2.setColor(colorDeMensaje);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
+            g2.drawString(this.getTextoInformativo(), getPosX()+84, desplazarDañoRecibido-48);
+        }
+        
         else if(this.realizaUnCritico) {
         	g2.setColor(Color.YELLOW);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
             g2.drawString(this.getTextoDañoRecibido(), getPosX()+84, desplazarDañoRecibido-48);
         }
-        else if(this.isEvadiendo()) {
-        	g2.setColor(Color.GRAY);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
-            g2.drawString(this.getTextoInformativo(), getPosX()+84, desplazarDañoRecibido-48);
-        }
-        else if(this.isRompiendo()) {
-        	g2.setColor(Color.WHITE);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
-            g2.drawString(this.getTextoInformativo(), getPosX()+84, desplazarDañoRecibido-48);
-        }
-        else if(this.isBloqueando()) {
-        	g2.setColor(Color.WHITE);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
-            g2.drawString(this.getTextoInformativo(), getPosX()+84, desplazarDañoRecibido-48);
-        }
-        else if(this.isPrecavido()) {
-        	Color c = new Color(55,55,255);
-        	g2.setColor(c);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
-            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
-        }
-        else if(this.isAgresivo()) {
-        	Color c = new Color(255,55,55);
-        	g2.setColor(c);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
-            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
-        }
-        else if(this.isAcelerado()) {
-        	Color c = new Color(55,255,255);
-        	g2.setColor(c);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
-            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
-        }
-        else if(this.isPotenciado()) {
-        	Color c = new Color(255,255,55);
-        	g2.setColor(c);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
-            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
-        }
-        else if(this.isSangrando()) {
-        	Color c = new Color(255,0,0);
-        	g2.setColor(c);
+        else if(this.isDañoEspecial()) {
+        	g2.setColor(colorDeDaño);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
             g2.drawString(this.getTextoDañoRecibido() , getPosX()+84, desplazarDañoRecibido-48);
-        }
-        else if(this.isMotivado()) {
-        	Color c = new Color(255,200,0);
-        	g2.setColor(c);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
-            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
-        }
-        else if(this.isDesmotivado()) {
-        	Color c = new Color(0,200,255);
-        	g2.setColor(c);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
-            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
-        }
-        else if(this.isLisiado()) {
-        	Color c = new Color(155,0,155);
-        	g2.setColor(c);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
-            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
-        }
-        else if(this.isReduciendoDefensa()) {
-        	Color c = new Color(155,155,255);
-        	g2.setColor(c);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
-            g2.drawString(this.getTextoDañoRecibido() , getPosX()+84, desplazarDañoRecibido-48);
-        }
-        else if(this.isReportando()) {
-        	Color c = new Color(55,55,55);
-        	g2.setColor(c);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
-            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
-        }
-        else if(this.isIncendiado()) {
-        	Color c = new Color(255,155,0);
-        	g2.setColor(c);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
-            g2.drawString(this.getTextoDañoRecibido() , getPosX()+84, desplazarDañoRecibido-48);
-        }
-        else if(this.isDebilitado()) {
-        	Color c = new Color(55,55,155);
-        	g2.setColor(c);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
-            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
         }
         else if(this.isMarcado()) {
         	Color c = new Color(155,255,255);
@@ -323,7 +242,7 @@ public class Unidad {
             g2.drawString(this.getTextoDañoRecibido(), getPosX()+84, desplazarDañoRecibido-48);
         }
         /////////
-        if(this.estaStun) {
+        if(this.getEstaStun()) {
         	Image KO = configurarImagen("/efectos/stun", 3);
         	g2.drawImage(KO, dibujarX+10, dibujarY, null);
         }  
@@ -354,7 +273,7 @@ public class Unidad {
 	    	pdj.ReproducirSE(6);
 	    	this.setEvadiendo(true);
 	        textoMostrado = "MISS!";
-	        Habilidades.setearEstado(this, textoMostrado);
+	        Habilidades.setearEfectoDeEstado(this, textoMostrado, Color.white);
 	        Habilidades.ganarNeoCreditos(this, 10);
 	    }
 	    else {
@@ -363,7 +282,7 @@ public class Unidad {
 	    		this.setBloqueando(true);
 	    		this.setHP(this.getHP() - (dañoFinal/4));
 		        textoMostrado = "BLOCK!";
-		        Habilidades.setearEstado(this, textoMostrado);
+		        Habilidades.setearEfectoDeEstado(this, textoMostrado, Color.white);
 		        Habilidades.ganarNeoCreditos(this, 12);
 	    	}
 	    	else if (this.escudos > 0) {
@@ -371,19 +290,20 @@ public class Unidad {
 		        pdj.ReproducirSE(9);
 		        this.setRompiendo(true);
 		        textoMostrado = "BREAK!";
-		        Habilidades.setearEstado(this, textoMostrado);
+		        Habilidades.setearEfectoDeEstado(this, textoMostrado, Color.white);
 		        Habilidades.ganarNeoCreditos(unidad, 7);
 		    } else {
 		    	if (isCritical) {
 			    	SEId = 3;
 			    	this.realizaUnCritico = true;
 			        textoMostrado = "CRITICAL " + dañoFinal + "!";
+			        Habilidades.setearDaño(this, textoMostrado, Color.yellow);
 			    } else {
 			        textoMostrado = "" + dañoFinal;
+			        Habilidades.setearDaño(this, textoMostrado, Color.white);
 			    }
 		        this.setHP(this.getHP() - dañoFinal);
 		        pdj.ReproducirSE(SEId);
-		        Habilidades.setearDaño(this, textoMostrado);
 		        Habilidades.ganarNeoCreditos(unidad, 5);
 		        unidad.robarVida(dañoFinal, this);
 		    }
@@ -391,7 +311,7 @@ public class Unidad {
 	}
 	
 	public void realizarAtaque(Unidad unidad, ArrayList<Unidad> enemigos) {
-		boolean isCritical = Math.random() <= ((this.getPCRT() + this.getPcrtMod()) / 100);
+		boolean isCritical = Math.random() <= ((this.getPCRT() + this.getPcrtMod()) / 100.0);
 		if(unidad != null) {
 			int daño = this.getAtq() + this.getAtqMod();
 			if (isCritical) {
@@ -404,7 +324,7 @@ public class Unidad {
 
 	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
 		Unidad objetivo = elegirObjetivo(unidades);
-		boolean isCritical = Math.random() <= ((this.getPCRT() + this.getPcrtMod()) / 100);  
+		boolean isCritical = Math.random() <= ((this.getPCRT() + this.getPcrtMod()) / 100.0);  
 		if(objetivo != null) {
 			int daño = this.getAtq() + this.getAtqMod();
 			if (isCritical) {
@@ -465,9 +385,10 @@ public class Unidad {
 	}
 	
 	public void robarVida(int daño, Unidad unidad) {
+		Color c = new Color(255, 255, 0);
 		if(unidad.getTimerMarcado() > 0) {
 			Habilidades.restaurarHPPlano(this, daño/2);
-			Habilidades.setearEstado(this, "+" + daño/2);
+			Habilidades.setearEfectoDeEstado(this, "+" + daño/2, c);
 			this.setCurando(true);
 		}
 	}
@@ -502,7 +423,6 @@ public class Unidad {
 	    actualizarTimer(this::getTimerDebilitado, this::setTimerDebilitado, () -> Habilidades.potenciarUnidad(this));
 	    actualizarTimer(this::getTimerMotivado, this::setTimerMotivado, () -> Habilidades.desmotivarUnidad(this));
 	    actualizarTimer(this::getTimerDesmotivado, this::setTimerDesmotivado, () -> Habilidades.motivarUnidad(this));
-	    actualizarTimer(this::getTimerRdcDefAcc, this::setTimerRdcDefAcc, () -> Habilidades.aumentarDefensaAcc(this, this.getRdcDefAcc()));
 	    actualizarTimer(this::getTimerLisiado, this::setTimerLisiado, () -> Habilidades.renovarMovilidad(this));
 	    actualizarTimer(this::getTimerMarcado, this::setTimerMarcado, () -> Habilidades.desmarcarUnidad(this));
 	}
@@ -535,23 +455,12 @@ public class Unidad {
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {}
 	//METODOS VARIOS///////////////////////////////////////////////////////
 	public void cancelarTextoDeEfectos() {
-		this.setPrecavido(false);
-		this.setAgresivo(false);
-		this.setAcelerado(false);
-		this.setPotenciado(false);
-		this.setEvadiendo(false);
-		this.setRompiendo(false);
 		this.setCurando(false);
-		this.setBloqueando(false);
-		this.setSangrando(false);
-		this.setMotivado(false);
-		this.setDesmotivado(false);
-		this.setDebilitado(false);
 		this.setReduciendoDefensa(false);
-		this.setLisiado(false);
 		this.setReportando(false);
-		this.setIncendiado(false);
 		this.setMarcado(false);
+		this.setEfectoDeEstado(false);
+		this.setDañoEspecial(false);
 	}
 	
 	public int porcentajeHP(int valor) {
@@ -1151,43 +1060,11 @@ public class Unidad {
 	public boolean isHabilidad2() {return habilidad2;}
 	public void setHabilidad2(boolean habilidad2) {this.habilidad2 = habilidad2;}
 	//ESTADOS//////////////////////////////////////////////////////////////////////////////
-	public boolean isPrecavido() {return precavido;}
-	public void setPrecavido(boolean precavido) {this.precavido = precavido;}
-	public boolean isAgresivo() {return agresivo;}
-	public void setAgresivo(boolean agresivo) {this.agresivo = agresivo;}
-	public boolean isAcelerado() {return acelerado;}
-	public void setAcelerado(boolean acelerado) {this.acelerado = acelerado;}
-	public boolean isPotenciado() {return potenciado;}
-	public void setPotenciado(boolean potenciado) {this.potenciado = potenciado;}
-	public boolean isSangrando() {return sangrando;}
-	public void setSangrando(boolean sangrando) {this.sangrando = sangrando;}
-	public boolean isMotivado() {return motivado;}
-	public void setMotivado(boolean motivado) {this.motivado = motivado;}
-	public boolean isDesmotivado() {
-		return desmotivado;
-	}
-	public void setDesmotivado(boolean desmotivado) {
-		this.desmotivado = desmotivado;
-	}
-	public boolean isLisiado() {return lisiado;}
-	public void setLisiado(boolean lisiado) {this.lisiado = lisiado;}
-	public boolean isIncendiado() {
-		return incendiado;
-	}
-	public void setIncendiado(boolean incendiado) {
-		this.incendiado = incendiado;
-	}
 	public boolean isMarcado() {
 		return marcado;
 	}
 	public void setMarcado(boolean marcado) {
 		this.marcado = marcado;
-	}
-	public boolean isDebilitado() {
-		return debilitado;
-	}
-	public void setDebilitado(boolean debilitado) {
-		this.debilitado = debilitado;
 	}
 	public boolean isEvadiendo() {return evadiendo;}
 	public void setEvadiendo(boolean evadiendo) {this.evadiendo = evadiendo;}
@@ -1204,6 +1081,30 @@ public class Unidad {
 	}
 	public void setReportando(boolean reportando) {
 		this.reportando = reportando;
+	}
+	public Color getColorDeMensaje() {
+		return colorDeMensaje;
+	}
+	public void setColorDeMensaje(Color colorDeMensaje) {
+		this.colorDeMensaje = colorDeMensaje;
+	}
+	public Color getColorDeDaño() {
+		return colorDeDaño;
+	}
+	public void setColorDeDaño(Color colorDeDaño) {
+		this.colorDeDaño = colorDeDaño;
+	}
+	public boolean isEfectoDeEstado() {
+		return EfectoDeEstado;
+	}
+	public void setEfectoDeEstado(boolean efectoDeEstado) {
+		EfectoDeEstado = efectoDeEstado;
+	}
+	public boolean isDañoEspecial() {
+		return dañoEspecial;
+	}
+	public void setDañoEspecial(boolean dañoEspecial) {
+		this.dañoEspecial = dañoEspecial;
 	}
 	public int getTimerPrecavido() {return timerPrecavido;}
 	public void setTimerPrecavido(int timerPrecavido) {this.timerPrecavido = timerPrecavido;}
