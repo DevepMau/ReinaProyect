@@ -161,7 +161,7 @@ public class Habilidades {
 		    pdj.ReproducirSE(2);
 		    unidad.setHP(unidad.getHP() - unidad.getValorSangrado());
 		    Habilidades.setearDaño(unidad, "-"+unidad.getValorSangrado(), color);
-			unidad.setSangrando(true);
+			unidad.setDañoEspecial(true);
 		}).start();	
 	}
 	
@@ -176,7 +176,7 @@ public class Habilidades {
 		    pdj.ReproducirSE(2);
 		    unidad.setHP(unidad.getHP() - unidad.getHPMax()/20);
 		    Habilidades.setearDaño(unidad, "-"+unidad.getHPMax()/20, color);
-			unidad.setIncendiado(true);
+			unidad.setDañoEspecial(true);
 		}).start();	
 	}
 		
