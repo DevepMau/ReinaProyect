@@ -1,44 +1,72 @@
 package principal;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
 import unidades.Unidad;
 
 public class Habilidades {
 	
+	public static void setearEfectoDeEstado(Unidad unidad, String texto, Color color) {
+		unidad.setColorDeMensaje(color);
+		unidad.setTextoInformativo(texto);
+		unidad.setearSacudida(true);
+		unidad.setDuracionSacudida(15);
+		unidad.setEfectoDeEstado(true);
+	}
+	
+	public static void setearDaño(Unidad unidad, String texto, Color color) {
+		unidad.setColorDeDaño(color);
+		unidad.setTextoDañoRecibido(texto);
+		unidad.setearSacudida(true);
+		unidad.setDuracionSacudida(15);
+		unidad.setDañoEspecial(true);
+	}
+	
 	//HABILIDADES CON ACUMULADOR////////////////////////////////////////////
 	
-	public static void reducirDefensaAcc(Unidad unidad, int acc) {
-		Estadisticas.reducirDefensa(unidad, 5 * acc);
+	public static void oxidarArmadura(Unidad unidad) {
+		Color color = new Color(181, 101, 29);
+		if(unidad.getRdcDefAcc() < 3) {
+			Estadisticas.reducirDefensa(unidad, 5);
+			unidad.setRdcDefAcc(unidad.getRdcDefAcc() + 1);
+		}
+		Habilidades.setearEfectoDeEstado(unidad, "RUST!", color);		
 	}
 	
-	public static void aumentarDefensaAcc(Unidad unidad, int acc) {
-		Estadisticas.aumentarDefensa(unidad, 5 * acc);
-		unidad.setRdcDefAcc(0);
+	public static void renovarArmadura(Unidad unidad) {
+		Estadisticas.aumentarDefensa(unidad, 5 * unidad.getRdcDefAcc());
 	}
 	
-	//HABILIDADES COMPLEMENTARIAS///////////////////////////////////////////
+	//HABILIDADES DE MARCA//////////////////////////////////////////////////
 	
 	public static void marcarUnidad(Unidad unidad) {
+		Color color = new Color(0, 255, 200);
+		if(unidad.getTimerMarcado() == -1) {
+			Estadisticas.reducirTasaBloqueo(unidad, 15);
+			Estadisticas.reducirEvasion(unidad, 15);
+			Estadisticas.reducirVelocidad(unidad, 15);
+		}
 		unidad.setMarcado(true);
+		Habilidades.setearEfectoDeEstado(unidad, "SET!", color);
 		unidad.setTimerMarcado(5);
 	}
 	
 	public static void desmarcarUnidad(Unidad unidad) {
+		Estadisticas.aumentarTasaBloqueo(unidad, 15);
+		Estadisticas.aumentarEvasion(unidad, 15);
+		Estadisticas.aumentarVelocidad(unidad, 15);
 		unidad.setMarcado(false);
 		unidad.setTimerMarcado(-1);
 	}
 	
-	public static void setearEstado(Unidad unidad, String texto) {
-		unidad.setTextoInformativo(texto);
-		unidad.setearSacudida(true);
-		unidad.setDuracionSacudida(15);
-	}
-	
-	public static void setearDaño(Unidad unidad, String texto) {
-		unidad.setTextoDañoRecibido(texto);
-		unidad.setearSacudida(true);
-		unidad.setDuracionSacudida(15);
+	public static void explotarMarca(Unidad unidad, Unidad objetivo) {
+		Color color = new Color(0, 255, 200);
+		int dañoFinal = (unidad.getAtq()+unidad.getAtqMod());
+		Habilidades.restaurarHP(unidad, 15);
+		Estadisticas.aumentarAtaque(unidad, 2);
+		Habilidades.setearEfectoDeEstado(objetivo, "OVER!", color);
+		objetivo.setHP(objetivo.getHP() - dañoFinal);
 	}
 	
 	//HABILIDADES DE REGENERACION////////////////////////////////////////////
@@ -54,13 +82,15 @@ public class Habilidades {
 	}
 	
 	public static void restaurarHP(Unidad unidad, int porcentajeCuracion) {
-		 int curacion = (unidad.getHPMax() * porcentajeCuracion) / 100;
-		 if(curacion + unidad.getHP() > unidad.getHPMax()) {
-				unidad.setHP(unidad.getHPMax());
-			}
-			else {
-				unidad.setHP(unidad.getHP() + curacion);
-			}
+		Color color = new Color(57, 255, 20);
+		int curacion = (unidad.getHPMax() * porcentajeCuracion) / 100;
+		if(curacion + unidad.getHP() > unidad.getHPMax()) {
+			unidad.setHP(unidad.getHPMax());
+		}
+		else {
+			unidad.setHP(unidad.getHP() + curacion);
+		}
+		Habilidades.setearEfectoDeEstado(unidad, "HEAL!", color);
 	}
 	
 	public static void restaurarSP(Unidad unidad, int porcentajeEnergia) {
@@ -111,21 +141,32 @@ public class Habilidades {
 		}
 	}
 	
+	public static void stunearUnidad(Unidad unidad) {
+		unidad.setEstaActivo(false);
+		unidad.setEstaStun(true);
+		unidad.setearSacudida(true);
+		unidad.setDuracionSacudida(15);
+	}
+	
+	//HABILIDADES DE VARIOS HIT'S////////////////////////////////////////////
+	
 	public static void provocarHemorragia(Unidad unidad, PanelDeJuego pdj) {
+		Color color = new Color(255, 0, 0);
 		new Thread(() -> {
 		    try {
-		        Thread.sleep(500);
+		        Thread.sleep(300);
 		    } catch (InterruptedException e) {
 		        e.printStackTrace();
 		    }
 		    pdj.ReproducirSE(2);
 		    unidad.setHP(unidad.getHP() - unidad.getValorSangrado());
-		    Habilidades.setearDaño(unidad, "-"+unidad.getValorSangrado());
+		    Habilidades.setearDaño(unidad, "-"+unidad.getValorSangrado(), color);
 			unidad.setSangrando(true);
 		}).start();	
 	}
 	
 	public static void provocarIncendiar(Unidad unidad, PanelDeJuego pdj) {
+		Color color = new Color(255, 155, 0);
 		new Thread(() -> {
 		    try {
 		        Thread.sleep(500);
@@ -134,92 +175,111 @@ public class Habilidades {
 		    }
 		    pdj.ReproducirSE(2);
 		    unidad.setHP(unidad.getHP() - unidad.getHPMax()/20);
-		    Habilidades.setearDaño(unidad, "-"+unidad.getHPMax()/20);
+		    Habilidades.setearDaño(unidad, "-"+unidad.getHPMax()/20, color);
 			unidad.setIncendiado(true);
 		}).start();	
 	}
-	
-	public static void stunearUnidad(Unidad unidad) {
-		unidad.setEstaActivo(false);
-		unidad.setEstaStun(true);
-	}
-	
-	public static void pocionDeLibido(Unidad unidad) {
-		aumentarAgresividad(unidad);
-		aumentarAgresividad(unidad);
-	}
-	
-	public static void pocionAnticonceptiva(Unidad unidad) {
-		aumentarProteccion(unidad);
-		aumentarProteccion(unidad);
-	}
-	
+		
 	//HABILIDADES COMPUESTAS/////////////////////////////////////////////////
 	
 	public static void aumentarAgresividad(Unidad unidad) {
-		Estadisticas.aumentarAtaque(unidad, 5);
-		Estadisticas.aumentarProbCrit(unidad, 5);
+		Color color = new Color(255, 0, 0);
+		if(unidad.getTimerAgresivo() == -1) {
+			Estadisticas.aumentarAtaque(unidad, 10);
+			Estadisticas.aumentarProbCrit(unidad, 10);
+		}
+		Habilidades.setearEfectoDeEstado(unidad, "RAGE!", color);
+		unidad.setTimerAgresivo(5);
+	}
+	
+	public static void reducirAgresividad(Unidad unidad) {
+		Estadisticas.reducirAtaque(unidad, 10);
+		Estadisticas.reducirProbCrit(unidad, 10);
 	}
 	
 	public static void aumentarProteccion(Unidad unidad) {
-		Estadisticas.aumentarDefensa(unidad, 5);
-		Estadisticas.aumentarTasaBloqueo(unidad, 5);
+		Color color = new Color(55, 55, 255);
+		if(unidad.getTimerPrecavido() == -1) {
+			Estadisticas.aumentarDefensa(unidad, 10);
+			Estadisticas.aumentarTasaBloqueo(unidad, 10);
+		}
+		Habilidades.setearEfectoDeEstado(unidad, "HARD!", color);
+		unidad.setTimerPrecavido(5);
+	}
+	
+	public static void reducirProteccion(Unidad unidad) {
+		Estadisticas.reducirDefensa(unidad, 10);
+		Estadisticas.reducirEvasion(unidad, 10);
 	}
 	
 	public static void aumentarAgilidad(Unidad unidad) {
-		Estadisticas.aumentarEvasion(unidad, 5);
-		Estadisticas.aumentarVelocidad(unidad, 5);
+		Color color = new Color(0, 155, 0);
+		if(unidad.getTimerAcelerado() == -1) {
+			Estadisticas.aumentarEvasion(unidad, 10);
+			Estadisticas.aumentarVelocidad(unidad, 10);
+		}
+		Habilidades.setearEfectoDeEstado(unidad, "FAST!", color);
+		unidad.setTimerAcelerado(5);	
+	}
+	
+	public static void reducirAgilidad(Unidad unidad) {
+		Estadisticas.reducirEvasion(unidad, 10);
+		Estadisticas.reducirVelocidad(unidad, 10);
 	}
 	
 	public static void potenciarUnidad(Unidad unidad) {
-		aumentarAgresividad(unidad);
-		aumentarProteccion(unidad);
-		aumentarAgilidad(unidad);
+		Color color = new Color(255, 255, 0);
+		if(unidad.getTimerPotenciado() == -1) {
+			Estadisticas.aumentarAtaque(unidad, 10);
+			Estadisticas.aumentarDefensa(unidad, 10);
+			Estadisticas.aumentarEvasion(unidad, 10);
+			Estadisticas.aumentarProbCrit(unidad, 10);
+			Estadisticas.aumentarTasaBloqueo(unidad, 10);
+			Estadisticas.aumentarVelocidad(unidad, 10);
+		}
+		Habilidades.setearEfectoDeEstado(unidad, "OP!", color);
+		unidad.setTimerPotenciado(5);
+	}
+	
+	public static void debilitarUnidad(Unidad unidad) {
+		Estadisticas.reducirAtaque(unidad, 10);
+		Estadisticas.reducirDefensa(unidad, 10);
+		Estadisticas.reducirEvasion(unidad, 10);
+		Estadisticas.reducirProbCrit(unidad, 10);
+		Estadisticas.reducirTasaBloqueo(unidad, 10);
+		Estadisticas.reducirVelocidad(unidad, 10);
 	}
 	
 	public static void motivarUnidad(Unidad unidad) {
-		aumentarAgresividad(unidad);
-		aumentarAgresividad(unidad);
-		Estadisticas.aumentarVelocidad(unidad, 10);
-		Estadisticas.aumentarEvasion(unidad, 10);
+		Color color = new Color(255, 140, 0);
+		if(unidad.getTimerMotivado() == -1) {
+			Estadisticas.aumentarAtaque(unidad, 10);
+			Estadisticas.aumentarVelocidad(unidad, 10);
+			Estadisticas.aumentarEvasion(unidad, 10);
+		}
+		Habilidades.setearEfectoDeEstado(unidad, "DANCE!", color);
+		unidad.setTimerMotivado(5);
+	}
+	
+	public static void desmotivarUnidad(Unidad unidad) {
+		Estadisticas.reducirAtaque(unidad, 10);
+		Estadisticas.reducirVelocidad(unidad, 10);
+		Estadisticas.reducirEvasion(unidad, 10);
+	}
+	
+	public static void destruirMovilidad(Unidad unidad) {
+		Color color = new Color(75, 0, 130);
+		if(unidad.getTimerLisiado() == -1) {
+			Estadisticas.reducirVelocidad(unidad, 100);
+			Estadisticas.reducirEvasion(unidad, 100);
+		}
+		Habilidades.setearEfectoDeEstado(unidad, "HURT!", color);
+		stunearUnidad(unidad);
+		unidad.setTimerLisiado(3);
 	}
 	
 	public static void renovarMovilidad(Unidad unidad) {
 		Estadisticas.aumentarVelocidad(unidad, 100);
 		Estadisticas.aumentarEvasion(unidad, 100);
 	}
-	
-	public static void reducirAgresividad(Unidad unidad) {
-		Estadisticas.reducirAtaque(unidad, 5);
-		Estadisticas.reducirProbCrit(unidad, 5);
-	}
-	
-	public static void reducirProteccion(Unidad unidad) {
-		Estadisticas.reducirDefensa(unidad, 5);
-		Estadisticas.reducirEvasion(unidad, 5);
-	}
-	
-	public static void reducirAgilidad(Unidad unidad) {
-		Estadisticas.reducirEvasion(unidad, 5);
-		Estadisticas.reducirVelocidad(unidad, 5);
-	}
-	
-	public static void debilitarUnidad(Unidad unidad) {
-		reducirAgresividad(unidad);
-		reducirProteccion(unidad);
-		reducirAgilidad(unidad);
-	}
-	
-	public static void desmotivarUnidad(Unidad unidad) {
-		reducirAgresividad(unidad);
-		reducirAgresividad(unidad);
-		Estadisticas.reducirVelocidad(unidad, 10);
-		Estadisticas.reducirEvasion(unidad, 10);
-	}
-	
-	public static void destruirMovilidad(Unidad unidad) {
-		Estadisticas.reducirVelocidad(unidad, 100);
-		Estadisticas.reducirEvasion(unidad, 100);
-	}
-	
 }
