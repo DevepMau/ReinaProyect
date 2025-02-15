@@ -38,6 +38,10 @@ public class Estadisticas {
 		unidad.setBloqMod(unidad.getBloqMod() + valor);
 	}
 	
+	public static void aumentarEscudos(Unidad unidad, int valor) {
+		unidad.setEscudos(unidad.getEscudos() + valor);
+	}
+	
 	public static void reducirAtaque(Unidad unidad, int valor) {
 		unidad.setAtqMod(unidad.getAtqMod() - valor);
 	}
@@ -60,6 +64,10 @@ public class Estadisticas {
 	
 	public static void reducirTasaBloqueo(Unidad unidad, int valor) {
 		unidad.setBloqMod(unidad.getBloqMod() - valor);
+	}
+	
+	public static void reducirEscudos(Unidad unidad, int valor) {
+		unidad.setEscudos(unidad.getEscudos() - valor);
 	}
 
 }
