@@ -79,8 +79,8 @@ public class Unidad {
 	private int desplazamientoSacudidaY = 0;
 	private int desplazarDañoRecibido;
     //ELEMENTOS DE LA UNIDAD/////////////////////////
-	private BufferedImage[] imagenesBody = new BufferedImage[5];
-	private BufferedImage[] imagenesDead = new BufferedImage[5];
+	public BufferedImage[] imagenesBody = new BufferedImage[5];
+	public BufferedImage[] imagenesDead = new BufferedImage[5];
 	private int tiempoMov = 20;
 	private int imageMov = 0;
 	private int direccion = 1; // 1 para incrementar, -1 para decrementar
@@ -197,7 +197,7 @@ public class Unidad {
         int dibujarX = getPosX() + desplazamientoSacudidaX;
         int dibujarY = getPosY() + desplazamientoSacudidaY;
         if(isAlive()) {
-        	mostrarImagenes(g2, dibujarX+10, dibujarY-20+alturaPorClase, imageMov);
+        	mostrarImagenes(g2, dibujarX+10, dibujarY-20+getAlturaPorClase(), imageMov);
         } 
         else {
         	mostrarMuerte(g2, dibujarX+10, dibujarY-20, imageMov);
@@ -479,7 +479,7 @@ public class Unidad {
 	    int hp = calcularBarraHP();
 	    int altura = -pdj.tamañoDeBaldosa - (pdj.tamañoDeBaldosa / 8) + 16;
 	    int posX = getPosX() + 10;
-	    int posY = getPosY() - 10 + altura + this.alturaDeBarraHP;
+	    int posY = getPosY() - 10 + altura + this.getAlturaDeBarraHP();
 
 	    //MEDIR ANCHO DE TEXTO
 	    FontMetrics metrics = g2.getFontMetrics();
@@ -502,21 +502,21 @@ public class Unidad {
 	    // Dibujar la barra de vida
 	    Color c = new Color(0, 0, 0, 200);
 	    g2.setColor(c);
-	    g2.fillRoundRect(posX, getPosY() + altura + this.alturaDeBarraHP, barraHP, pdj.tamañoDeBaldosa / 5, 5, 5);
+	    g2.fillRoundRect(posX, getPosY() + altura + this.getAlturaDeBarraHP(), barraHP, pdj.tamañoDeBaldosa / 5, 5, 5);
 
 	    g2.setColor(Color.red);
-	    g2.fillRoundRect(posX, getPosY() + altura + this.alturaDeBarraHP, hp, pdj.tamañoDeBaldosa / 5, 5, 5);
+	    g2.fillRoundRect(posX, getPosY() + altura + this.getAlturaDeBarraHP(), hp, pdj.tamañoDeBaldosa / 5, 5, 5);
 
 	    c = new Color(255, 255, 255);
 	    g2.setColor(c);
 	    g2.setStroke(new BasicStroke(2));
-	    g2.drawRoundRect(posX, getPosY() + altura + this.alturaDeBarraHP, barraHP, pdj.tamañoDeBaldosa / 5, 5, 5);
+	    g2.drawRoundRect(posX, getPosY() + altura + this.getAlturaDeBarraHP(), barraHP, pdj.tamañoDeBaldosa / 5, 5, 5);
 	}
 	
 	public void dibujarEscudos(Graphics2D g2) {
 	    int altura = -pdj.tamañoDeBaldosa - (pdj.tamañoDeBaldosa / 8) + 16;
 	    int posX = getPosX() + 85;
-	    int posY = getPosY() - 8 + altura + this.alturaDeBarraHP;
+	    int posY = getPosY() - 8 + altura + this.getAlturaDeBarraHP();
 
 	    if (this.escudos > 0) {
 	        // Dibujar el rectángulo del escudo
@@ -537,7 +537,7 @@ public class Unidad {
 	public void dibujarFaltas(Graphics2D g2) {
 		int altura = -pdj.tamañoDeBaldosa - (pdj.tamañoDeBaldosa / 8) + 16;
 	    int posX = getPosX() + 75;
-	    int posY = getPosY() + 25 + altura + this.alturaDeBarraHP;
+	    int posY = getPosY() + 25 + altura + this.getAlturaDeBarraHP();
 	    
 	    if(this.faltasCometidas == 1) {
 	    	g2.setColor(Color.ORANGE);
@@ -555,9 +555,9 @@ public class Unidad {
 	public void dibujarCorazon(Graphics2D g2) {
 		int altura = -pdj.tamañoDeBaldosa - (pdj.tamañoDeBaldosa / 8) + 16;
 	    int posX = getPosX();
-	    int posY = getPosY() + altura + this.alturaDeBarraHP;
+	    int posY = getPosY() + altura + this.getAlturaDeBarraHP();
 	    Image corazon = configurarImagen("/efectos/heart", 4);
-	    g2.drawImage(corazon, posX, posY+this.alturaDeAccesorio-20+imageMov*2, null);
+	    g2.drawImage(corazon, posX, posY+this.getAlturaDeAccesorio()-20+imageMov*2, null);
 	}	
 	public void efectosVisualesPersonalizados(Graphics2D g2){}
 	//METODOS DE VARIOS///////////////////////////////////////////////////////
@@ -629,18 +629,18 @@ public class Unidad {
 	
 	public void definirIdTez() {
 		if(this.idFaccion == 1) {
-			this.idTez = obtenerValorEntre(1,3);
+			this.setIdTez(obtenerValorEntre(1,3));
 		}
 		else if(this.idFaccion == 2) {
-			this.idTez = obtenerValorEntre(4,5);
+			this.setIdTez(obtenerValorEntre(4,5));
 		}
 		else if(this.idFaccion == 4) {
 			if(this.clase != "Novata Cauta" && this.clase != "Novata Confiable") {
-				this.idTez = obtenerValorEntre(1,5);
+				this.setIdTez(obtenerValorEntre(1,5));
 			}
 		}
 		else {
-			this.idTez = obtenerValorEntre(1,5);
+			this.setIdTez(obtenerValorEntre(1,5));
 		}
 	}
 	
@@ -670,254 +670,20 @@ public class Unidad {
 		}
 		return equipo;
 	}
-	
-	public void generarCuerpo() {
-		definirIdTez();
-		cargarDummy();
-		if(this.idFaccion == 1) {
-			imagenesBody[4] = configurarImagen("/imagenes/accesorios/boina1",3);
-			String color = elegirEquipo();
-			if(this.getGenero() == 1) {
-				//SI ES HOMBRE/////////////////////////////////////////////////////////////////////////
-				if(this.clase == "Heroe Federal") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/caballo-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/hombre/bici-boy", 3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo-heroe", 3);
-					//imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
-					alturaPorClase = -10;
-				}
-				else if(this.clase == "Cebador De Mate") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/mates-"+color+"-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-1",3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
-					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
-				}
-				else if(this.clase == "Payador Picante") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/guitarra-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-1",3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
-					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
-				}
-				else if(this.clase == "Gaucho Moderno") {
-					imagenesBody[3] = configurarImagen("/imagenes/hombre/cutter-"+this.idTez,3);
-					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-subido-"+this.idTez,3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo-gaucho", 3);
-					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
-				}
-			}
-			//SI ES MUJER////////////////////////////////////////////////////////////////////////////
-			else {
-				if(this.clase == "Heroe Federal") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/caballo-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/mujer/bici-girl-"+this.idTez, 3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo-heroe", 3);
-					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
-					alturaPorClase = -10;
-				}
-				if(this.clase == "Cebador De Mate") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/mates-"+color+"-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
-					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
-				}
-				else if(this.clase == "Payador Picante") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/guitarra-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
-					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
-				}
-				else if(this.clase == "Gaucho Moderno") {
-					imagenesBody[3] = configurarImagen("/imagenes/hombre/cutter-"+this.idTez,3);
-					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo-gaucho", 3);
-					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
-				}
-			}
-		}
-		else if(this.idFaccion == 2) {
-			//SI ES HOMBRE/////////////////////////////////////////////////////////////////////////
-			if(this.getGenero() == 1) {
-				if(this.clase == "Alumno Modelo") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/libro-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-1",3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
-					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
-				}
-				else if(this.clase == "Shaolin Escolar") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-shaolin-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-shaolin",3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
-					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-shaolin-"+this.idTez, 3);
-				}
-				else if(this.clase == "Medico Tradicionalista") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/quimicos-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-1",3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
-					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
-				}
-				else if(this.clase == "Dragon Pirotecnico") {
-					imagenesBody[4] = configurarImagen("/imagenes/accesorios/dragon", 3);
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/cañon-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-dragon",3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
-					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
-					alturaDeAccesorio = 5;
-					this.alturaDeBarraHP = -20;
-				}
-			}
-			else {
-				//SI ES MUJER/////////////////////////////////////////////////////////////////////////
-				if(this.clase == "Alumno Modelo") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/libro-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
-					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
-				}
-				else if(this.clase == "Shaolin Escolar") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-shaolin-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
-					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
-				}
-				else if(this.clase == "Medico Tradicionalista") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/quimicos-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
-					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
-				}
-				else if(this.clase == "Dragon Pirotecnico") {
-					imagenesBody[4] = configurarImagen("/imagenes/accesorios/dragon", 3);
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/cañon-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-dragon-"+this.idTez,3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
-					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
-					alturaDeAccesorio = 5;
-					this.alturaDeBarraHP = -20;
-				}
-			}
-		}
-		else if(this.idFaccion == 3) {
-			String color = elegirColor();
-			//SI ES HOMBRE/////////////////////////////////////////////////////////////////////////
-			if(this.getGenero() == 1) {
-				if(this.clase == "Niño Cheung") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-pose-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/hombre/pantalon-pose",3);
-					imagenesBody[1] = configurarImagen("/imagenes/hombre/cuerpo-chino-boy", 3);
-					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
-				}
-				else if(this.clase == "Puño Furioso") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/nunchaku-"+color+"-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/unisex/cortos-pose-"+this.idTez,3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo-chaqueta", 3);
-					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
-				}
-				else if(this.clase == "Maestro Del Chi") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-pose-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/hombre/piernas-maestro-boy",3);
-					imagenesBody[1] = configurarImagen("/imagenes/hombre/cuerpo-maestro-boy", 3);
-					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
-				}
-				else if(this.clase == "Aspirante A Dragon") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/nunchaku-rojo-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/unisex/piernas-amarillo",3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo-amarillo", 3);
-					imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
-				}
-			}
-			else {
-				//SI ES MUJER/////////////////////////////////////////////////////////////////////////
-				if(this.clase == "Niño Cheung") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-pose-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-pose-"+this.idTez,3);
-					imagenesBody[1] = configurarImagen("/imagenes/mujer/cuerpo-chino-girl", 3);
-					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
-				}
-				else if(this.clase == "Puño Furioso") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/nunchaku-"+color+"-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/unisex/cortos-pose-"+this.idTez,3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo-chaqueta", 3);
-					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-coleta-"+this.idTez, 3);
-				}
-				else if(this.clase == "Maestro Del Chi") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-pose-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/mujer/piernas-maestro-girl-"+this.idTez,3);
-					imagenesBody[1] = configurarImagen("/imagenes/mujer/cuerpo-maestro-girl", 3);
-					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
-				}
-				else if(this.clase == "Aspirante A Dragon") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/nunchaku-rojo-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/unisex/piernas-amarillo",3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo-amarillo", 3);
-					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-bollos-"+this.idTez, 3);
-				}
-			}
-		}
-		else if(this.idFaccion == 4) {
-			if(this.getGenero() == 0) {
-				if(this.clase == "Novata Timida") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-timida-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
-					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-timida-"+this.idTez, 3);
-				}
-				else if(this.clase == "Novata Cauta") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
-					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-girl-"+this.idTez, 3);
-				}
-				else if(this.clase == "Novata Confiable") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-seña-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
-					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-coleta-"+this.idTez, 3);
-				}
-				else if(this.clase == "Delegada") {
-					imagenesBody[4] = configurarImagen("/imagenes/accesorios/mano-de-lente-"+this.idTez,3);
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-libreta-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
-					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-delegada-"+this.idTez, 3);
-				}
-				else if(this.clase == "Influencer") {
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-celular-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-"+this.idTez,3);
-					imagenesBody[1] = configurarImagen("/imagenes/unisex/cuerpo"+this.idTez, 3);
-					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-influencer-"+this.idTez, 3);
-				}
-				else if(this.clase == "Idol Galactica") {
-					//imagenesBody[4] = configurarImagen("/imagenes/accesorios/dragon", 3);
-					imagenesBody[3] = configurarImagen("/imagenes/unisex/manos-idol-"+this.idTez, 3);
-					imagenesBody[2] = configurarImagen("/imagenes/mujer/falda-olanes",3);
-					imagenesBody[1] = configurarImagen("/imagenes/mujer/cuerpo-idol", 3);
-					imagenesBody[0] = configurarImagen("/imagenes/mujer/cabeza-idol-"+this.idTez, 3);
-					//alturaDeAccesorio = 5;
-					//this.alturaDeBarraHP = -20;
-				}
-			}
-		}
-	}
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	public void cargarDummy() {
-		imagenesBody[4] = null;
-		imagenesBody[3] = configurarImagen("/imagenes/dummy/dummy-manos",3);
-		imagenesBody[2] = configurarImagen("/imagenes/dummy/dummy-piernas",3);
-		imagenesBody[1] = configurarImagen("/imagenes/dummy/dummy-cuerpo", 3);
-		imagenesBody[0] = configurarImagen("/imagenes/dummy/dummy-cabeza", 3);
+	public void generarCuerpo() {
+		pdj.idr.cargarImagenesDeUnidad(this);
 	}
+	
 	public void cargarDummyMuerto() {
-		imagenesBody[4] = null;
-		imagenesDead[2] = configurarImagen("/imagenes/dummy/dead-piernas", 3);
-		imagenesDead[1] = configurarImagen("/imagenes/dummy/dead-cuerpo", 3);
-		imagenesDead[0] = configurarImagen("/imagenes/dummy/dead-cabeza", 3);
-		imagenesDead[3] = configurarImagen("/imagenes/dummy/dead-manos", 3);
+		pdj.idr.cargarImagenesDeDummyMuerto(this);
 	}
+	
 	public void mostrarImagenes(Graphics2D g2, int posX, int posY, int dezplazamiento) {
 		g2.drawImage(imagenesBody[2], posX, posY+46, null);
 		g2.drawImage(imagenesBody[1], posX, posY+28+dezplazamiento, null);
 		g2.drawImage(imagenesBody[0], posX, posY+dezplazamiento*2, null);
-		g2.drawImage(imagenesBody[4], posX-1, posY+this.alturaDeAccesorio-20+dezplazamiento*2, null);
+		g2.drawImage(imagenesBody[4], posX-1, posY+this.getAlturaDeAccesorio()-20+dezplazamiento*2, null);
 		g2.drawImage(imagenesBody[3], posX, posY+24+dezplazamiento, null);
 	}
 	public void mostrarMuerte(Graphics2D g2, int posX, int posY, int dezplazamiento) {
@@ -966,10 +732,16 @@ public class Unidad {
 	public void setListaDeHabilidades(String[] habilidades) {this.listaDeHabilidades = habilidades;}
 	public int getHabilidadElegida() {return habilidadElegida;}
 	public void setHabilidadElegida(int habilidadElegida) {this.habilidadElegida = habilidadElegida;}
+	public int getIdTez() {
+		return idTez;
+	}
+	public void setIdTez(int idTez) {
+		this.idTez = idTez;
+	}
 	public String getAccion() {return tipoDeAccion;}
 	public void setAccion(String accion) {this.tipoDeAccion = accion;}
-	public int getAlturaBarraHP() {return this.alturaDeBarraHP;}
-	public void setAlturaBarraHP(int altura) {this.alturaDeBarraHP = altura;}
+	public int getAlturaBarraHP() {return this.getAlturaDeBarraHP();}
+	public void setAlturaBarraHP(int altura) {this.setAlturaDeBarraHP(altura);}
 	public int getEscudos() {return this.escudos;}
 	public void setEscudos(int cant) {this.escudos = cant;}
 	public int getFaltasCometidas() {return this.faltasCometidas;}
@@ -1150,5 +922,23 @@ public class Unidad {
 	public void setValorSangrado(int valorSangrado) {this.valorSangrado = valorSangrado;}
 	public int getRdcDefAcc() {return rdcDefAcc;}
 	public void setRdcDefAcc(int rdcDefAcc) {this.rdcDefAcc = rdcDefAcc;}
+	public int getAlturaPorClase() {
+		return alturaPorClase;
+	}
+	public void setAlturaPorClase(int alturaPorClase) {
+		this.alturaPorClase = alturaPorClase;
+	}
+	public int getAlturaDeAccesorio() {
+		return alturaDeAccesorio;
+	}
+	public void setAlturaDeAccesorio(int alturaDeAccesorio) {
+		this.alturaDeAccesorio = alturaDeAccesorio;
+	}
+	public int getAlturaDeBarraHP() {
+		return alturaDeBarraHP;
+	}
+	public void setAlturaDeBarraHP(int alturaDeBarraHP) {
+		this.alturaDeBarraHP = alturaDeBarraHP;
+	}
 
 }
