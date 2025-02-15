@@ -14,6 +14,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javax.imageio.ImageIO;
+
+import principal.Estadisticas;
 import principal.Habilidades;
 import principal.PanelDeJuego;
 import principal.Utilidades;
@@ -261,6 +263,7 @@ public class Unidad {
 		        textoMostrado = "BREAK!";
 		        Habilidades.setearEfectoDeEstado(this, textoMostrado, Color.white);
 		        Habilidades.ganarNeoCreditos(unidad, 7);
+		        contarFaltas(unidad, 1);
 		    } else {
 		    	if (isCritical) {
 			    	SEId = 3;
@@ -278,6 +281,7 @@ public class Unidad {
 		        if(unidad.getClase() == "Novata Timida") {
 		        	Habilidades.maldicionAleatoria(this);
 		        }
+		        contarFaltas(unidad, 1);
 		    }
 	    }  
 	}
@@ -358,9 +362,8 @@ public class Unidad {
 	}
 	
 	public void contarFaltas(Unidad unidad, int cant) {
-		if(unidad.getGenero() == 0) {
-			this.setFaltasCometidas(this.getFaltasCometidas() + cant);
-			this.faltasCometidas++;
+		if(this.getGenero() == 0) {
+			Estadisticas.aumentarFaltas(unidad, cant);
 		}
 	}
 	
@@ -376,6 +379,7 @@ public class Unidad {
 		if(!enemigos.isEmpty()) {
 			for(Unidad unidad : enemigos) {
 				if(unidad.getClase() == "Delegada") {
+					System.out.println();
 					this.setMostrarFaltas(true);
 				}
 			}
