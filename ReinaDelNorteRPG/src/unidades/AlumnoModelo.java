@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 
+import principal.Estadisticas;
 import principal.Habilidades;
 import principal.PanelDeJuego;
 import principal.Zona;
@@ -101,7 +102,12 @@ public class AlumnoModelo extends Unidad{
 	public void denunciaColectiva(ArrayList<Unidad> unidades) {
 		if(!unidades.isEmpty()) {
 			for(Unidad unidad : unidades) {
-				unidad.setHP(unidad.getHP() - unidad.getHPMax()/10);
+				if(unidad.getEscudos() > 0) {
+					Estadisticas.reducirEscudos(unidad, 1);
+				}
+				else {
+					unidad.setHP(unidad.getHP() - unidad.getHPMax()/10);
+				}
 		        Habilidades.stunearUnidad(unidad);
 			}
 		}
