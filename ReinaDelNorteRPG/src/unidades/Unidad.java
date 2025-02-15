@@ -27,36 +27,37 @@ public class Unidad {
 	private Zona zona;
 	private int posX = 0;
 	private int posY = 0;
-	//INDICADORES DE SALUD Y NOMBRE//////////////////////////////////
+	//INDICADORES DE SALUD Y TEXTO DE UNIDAD///////////////////////////
 	int barraHP = 72;
+	private Color colorDeMensaje;
+	private Color colorDeDaño;
 	private String textoDañoRecibido;
 	private String textoInformativo;
+	private int alturaPorClase = 0;
+	private int alturaDeAccesorio = 0;
+	private int alturaDeBarraHP = 0;
+	//VARIABLES DE HABILIDADES///////////////////////////////////////
+	private String[] listaDeHabilidades = new String[1];
+	private String tipoDeAccion = "";
+	private int habilidadElegida = -1;
 	private int cdHabilidad1 = 0;
 	private int cdHabilidad2 = 0;
 	private boolean habilidad1 = true;
 	private boolean habilidad2 = true;
+	private boolean objetivoUnico = true;
 	//ESTADOS Y COMPORTAMIENTOS//////////////////////////////////////
 	private boolean esAliado = false;
 	private boolean estaActivo = true;
-	private boolean estaVivo = true;	
-	private boolean estaMarcado;
+	private boolean estaVivo = true;
+	private boolean mostrarFaltas = false;
 	private boolean estaStun;
 	private boolean estaEnamorado;
-	private Color colorDeMensaje;
-	private Color colorDeDaño;
-	//ACCIONES//////////////////////////////////////////////////////
-	private boolean realizaUnCritico;
-	private boolean evadiendo;
-	private boolean rompiendo;
-	private boolean curando;
-	private boolean bloqueando;
-	private boolean reduciendoDefensa;
-	private boolean reportando;
-	//ESTADOS////////////////////////////////////////////////////////
 	private boolean marcado;
 	private boolean EfectoDeEstado;
 	private boolean dañoEspecial;
-	//CONTADORES DE ESTADOS//////////////////////////////////////////
+	//ACCIONES//////////////////////////////////////////////////////
+	private boolean realizaUnCritico;
+	//TIMERS DE ESTADOS/////////////////////////////////////////////
 	private int timerPrecavido = -1;
 	private int timerAgresivo = -1;
 	private int timerAcelerado = -1;
@@ -74,40 +75,32 @@ public class Unidad {
 	private int rdcDefAcc = 0;
 	//VARIABLES PARA LA SACUDIDA/////////////////////////////////////
 	private boolean enSacudida = false;
-	private int duracionSacudida = 0; // Duración en frames
+	private int duracionSacudida = 0;
 	private int desplazamientoSacudidaX = 0;
 	private int desplazamientoSacudidaY = 0;
 	private int desplazarDañoRecibido;
-    //ELEMENTOS DE LA UNIDAD/////////////////////////
-	public BufferedImage[] imagenesBody = new BufferedImage[5];
-	public BufferedImage[] imagenesDead = new BufferedImage[5];
+	//MOVIMIENTO DE UNIDAD//////////////////////////////////////////
+	private int direccion = 1;
 	private int tiempoMov = 20;
 	private int imageMov = 0;
-	private int direccion = 1; // 1 para incrementar, -1 para decrementar
-	private String tipoDeAccion = "";
-	private String[] listaDeHabilidades = new String[1];
-	private int habilidadElegida = -1;
-	private boolean objetivoUnico = true;
-	private boolean mostrarFaltas = false;
-	private int alturaPorClase = 0;
-	private int alturaDeAccesorio = 0;
-	private int alturaDeBarraHP = 0;
+    //ELEMENTOS DE LA UNIDAD////////////////////////////////////////
+	public BufferedImage[] imagenesBody = new BufferedImage[5];
+	public BufferedImage[] imagenesDead = new BufferedImage[5];
 	private int idFaccion;
+	private int genero;
 	private int idTez = 0;
+	private String nombre;
+	private String clase;
+	private String tipo;
+	private Unidad unidadObjetivoEnemigo = null;
+	//ACUMULADORES DE LA UNIDAD////////////////////////////////////
 	private int escudos = 0;
 	private int faltasCometidas = 0;
 	private int neocreditos = 0;
 	private int neoCreditosRecientes = 0;
 	private int dañoCausado = 0;
-	private int puñosAcumulados;
+	private int puñosAcumulados = 0;
 	private int cargarEnamoramiento = 0;
-	private int contador = 5;
-	private int vidaPerdida = 0;
-	private Unidad unidadObjetivoEnemigo = null;
-	private String nombre;
-	private String clase;
-	private String tipo;
-	private int genero;
 	//ESTADISTICAS DE LA UNIDAD/////////////////////////////////////
 	private int hp;
 	private int hpMax;
@@ -133,7 +126,6 @@ public class Unidad {
 	////////////////////////////////////////////////////////////////
 	public Unidad(Zona zona,boolean aliado, PanelDeJuego pdj) {
 		this.pdj = pdj;
-		//this.gdh = gdh;
 		this.textoInformativo = "";
 		this.textoDañoRecibido = "";
 		this.setZona(zona);
@@ -141,12 +133,7 @@ public class Unidad {
 		this.setPosY(zona.y);
 		this.setAliado(aliado);
 		this.genero = elegirAleatorio(2);
-		if(aliado) {
-			desplazarDañoRecibido = 384;
-		}
-		else {
-			desplazarDañoRecibido = 96;
-		}
+		this.desplazarDañoRecibido = aliado ? 384 : 96;
 		this.generarCuerpo();
 		this.cargarDummyMuerto();
 	}
@@ -159,7 +146,6 @@ public class Unidad {
 		    tiempoMov--;
 		} else {
 		    tiempoMov = 25;
-		    // Cambiar la dirección
 		    direccion *= -1;
 		}
         if (estaEnSacudida()) {
@@ -184,16 +170,13 @@ public class Unidad {
         	setAlive(false);
         }
     }	
+	//DIBUJAR////////////////////////////////////////////////////////////////////////////////
 	public void dibujar(Graphics2D g2) {
         this.g2 = g2;  
         dibujarVida();
-        if(isEstaEnamorado()) {
-        	dibujarCorazon(g2);
-        }
+        if(isEstaEnamorado()) {dibujarCorazon(g2);}
         dibujarEscudos(g2);
-        if(getMostrarFaltas()) {
-        	dibujarFaltas(g2);
-        }
+        if(getMostrarFaltas()) {dibujarFaltas(g2);}
         int dibujarX = getPosX() + desplazamientoSacudidaX;
         int dibujarY = getPosY() + desplazamientoSacudidaY;
         if(isAlive()) {
@@ -207,19 +190,11 @@ public class Unidad {
         	Image marca = configurarImagen("/efectos/mark", 4);
         	g2.drawImage(marca, dibujarX, dibujarY, null);
         }
-        //////////////////////////////////////////////////////////////
-        if(this.isCurando()) {
-            g2.setColor(Color.green);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
-            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
-        }
-        
-        else if(this.isEfectoDeEstado()) {
+        if(this.isEfectoDeEstado()) {
         	g2.setColor(colorDeMensaje);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
             g2.drawString(this.getTextoInformativo(), getPosX()+84, desplazarDañoRecibido-48);
         }
-        
         else if(this.realizaUnCritico) {
         	g2.setColor(Color.YELLOW);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
@@ -230,18 +205,11 @@ public class Unidad {
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
             g2.drawString(this.getTextoDañoRecibido() , getPosX()+84, desplazarDañoRecibido-48);
         }
-        else if(this.isMarcado()) {
-        	Color c = new Color(155,255,255);
-        	g2.setColor(c);
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
-            g2.drawString(this.getTextoInformativo() , getPosX()+84, desplazarDañoRecibido-48);
-        }
         else {
         	g2.setColor(Color.WHITE);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
             g2.drawString(this.getTextoDañoRecibido(), getPosX()+84, desplazarDañoRecibido-48);
         }
-        /////////
         if(this.getEstaStun()) {
         	Image KO = configurarImagen("/efectos/stun", 3);
         	g2.drawImage(KO, dibujarX+10, dibujarY, null);
@@ -259,7 +227,7 @@ public class Unidad {
 			realizarAtaqueEnemigo(enemigos);
 		}
 	}
-	
+
 	public void recibirDaño(int damage, boolean isCritical, Unidad unidad) {
 		int daño = damage;
 		if(this.getHPMax() > unidad.getHPMax() && unidad.getClase() == "Puño Furioso") {
@@ -271,7 +239,6 @@ public class Unidad {
         String textoMostrado = "";
 	    if (this.elegirAleatorio(100) < (this.getEva() + this.getEvaMod()) && unidad.getClase() != "Dragon Pirotecnico") {
 	    	pdj.ReproducirSE(6);
-	    	this.setEvadiendo(true);
 	        textoMostrado = "MISS!";
 	        Habilidades.setearEfectoDeEstado(this, textoMostrado, Color.white);
 	        Habilidades.ganarNeoCreditos(this, 10);
@@ -279,7 +246,6 @@ public class Unidad {
 	    else {
 	    	if(this.elegirAleatorio(100) < (this.getBloq() + this.getBloqMod())) {
 	    		pdj.ReproducirSE(9);
-	    		this.setBloqueando(true);
 	    		this.setHP(this.getHP() - (dañoFinal/4));
 		        textoMostrado = "BLOCK!";
 		        Habilidades.setearEfectoDeEstado(this, textoMostrado, Color.white);
@@ -288,7 +254,6 @@ public class Unidad {
 	    	else if (this.escudos > 0) {
 		        escudos--;
 		        pdj.ReproducirSE(9);
-		        this.setRompiendo(true);
 		        textoMostrado = "BREAK!";
 		        Habilidades.setearEfectoDeEstado(this, textoMostrado, Color.white);
 		        Habilidades.ganarNeoCreditos(unidad, 7);
@@ -338,17 +303,6 @@ public class Unidad {
 		}
 	}
 	
-	public Unidad getProtector(ArrayList<Unidad> unidades) {
-		if(!unidades.isEmpty()) {
-			for(Unidad unidad : unidades) {
-				if(unidad.getClase() == "Influencer") {
-					return unidad;
-				}
-			}
-		}
-		return null;
-	}	
-	
 	public void reflejarDaño(Unidad unidad, int daño) {
 		if(unidad.getClase() == "Shaolin Escolar" || unidad.getClase() == "Aspirante A Dragon") {
 			int i = (daño/2);
@@ -389,14 +343,13 @@ public class Unidad {
 		if(unidad.getTimerMarcado() > 0) {
 			Habilidades.restaurarHPPlano(this, daño/2);
 			Habilidades.setearEfectoDeEstado(this, "+" + daño/2, c);
-			this.setCurando(true);
 		}
 	}
 	
 	public void contarFaltas(Unidad unidad, int cant) {
 		if(unidad.getGenero() == 0) {
 			this.setFaltasCometidas(this.getFaltasCometidas() + cant);
-			//this.faltasCometidas++;
+			this.faltasCometidas++;
 		}
 	}
 	
@@ -450,15 +403,10 @@ public class Unidad {
 		}
 	}
 	
-	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
-	}	
+	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {}	
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {}
 	//METODOS VARIOS///////////////////////////////////////////////////////
 	public void cancelarTextoDeEfectos() {
-		this.setCurando(false);
-		this.setReduciendoDefensa(false);
-		this.setReportando(false);
-		this.setMarcado(false);
 		this.setEfectoDeEstado(false);
 		this.setDañoEspecial(false);
 	}
@@ -551,7 +499,8 @@ public class Unidad {
 	    	g2.setColor(Color.RED);
 	    	g2.drawString("X X X", posX-20, posY);
 	    }
-	}	
+	}
+	
 	public void dibujarCorazon(Graphics2D g2) {
 		int altura = -pdj.tamañoDeBaldosa - (pdj.tamañoDeBaldosa / 8) + 16;
 	    int posX = getPosX();
@@ -559,9 +508,11 @@ public class Unidad {
 	    Image corazon = configurarImagen("/efectos/heart", 4);
 	    g2.drawImage(corazon, posX, posY+this.getAlturaDeAccesorio()-20+imageMov*2, null);
 	}	
+	
 	public void efectosVisualesPersonalizados(Graphics2D g2){}
-	//METODOS DE VARIOS///////////////////////////////////////////////////////
+	
 	//METODOS DE ELECCION/////////////////////////////////////////////////////
+	
 	public Unidad elegirObjetivo(ArrayList<Unidad> unidades) {
 		Unidad unidadSeleccionada = null;
 	    if (!unidades.isEmpty()) {
@@ -598,13 +549,16 @@ public class Unidad {
 	    Random random = new Random();
 	    return random.nextInt(i);
 	}	
+	
 	public int obtenerValorEntre(int min, int max) {
 	    if (min > max) {
 	        throw new IllegalArgumentException("El valor mínimo no puede ser mayor que el máximo.");
 	    }
 	    return (int) (Math.random() * (max - min + 1) + min);
 	}
+	
 	//METODOS AUXILIARES//////////////////////////////////////////////////////
+	
 	public void posicionar(Zona zona) {
 		setPosX(zona.x);
 		setPosY(zona.y);
@@ -670,7 +624,9 @@ public class Unidad {
 		}
 		return equipo;
 	}
+	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	public void generarCuerpo() {
 		pdj.idr.cargarImagenesDeUnidad(this);
 	}
@@ -686,36 +642,19 @@ public class Unidad {
 		g2.drawImage(imagenesBody[4], posX-1, posY+this.getAlturaDeAccesorio()-20+dezplazamiento*2, null);
 		g2.drawImage(imagenesBody[3], posX, posY+24+dezplazamiento, null);
 	}
+	
 	public void mostrarMuerte(Graphics2D g2, int posX, int posY, int dezplazamiento) {
 		g2.drawImage(imagenesDead[2], posX, posY+46, null);
 		g2.drawImage(imagenesDead[1], posX, posY+28+dezplazamiento, null);
 		g2.drawImage(imagenesDead[0], posX, posY+dezplazamiento*2, null);
 		g2.drawImage(imagenesDead[3], posX, posY+24+dezplazamiento, null);
 	}
+	
 	public boolean cumpleReqDeHab1() {return false;}
 	public boolean cumpleReqDeHab2() {return false;}
 	public void configurarTipoDeaccion() {}
+	
 	//GETTERS & SETTERS////////////////////////////////////////////////////////
-	public boolean isAliado() {return esAliado;}
-	public void setAliado(boolean aliado) {this.esAliado = aliado;}
-	public boolean isAlive() {return estaVivo;}
-	public void setAlive(boolean vivo) {this.estaVivo = vivo;}
-	public boolean isEstaActivo() {return estaActivo;}
-	public void setEstaActivo(boolean estaActivo) {this.estaActivo = estaActivo;}
-	public boolean isObjetivoUnico() {return objetivoUnico;}
-	public void setObjetivoUnico(boolean singleTarget) {this.objetivoUnico = singleTarget;}
-	public String getTextoInformativo() {return textoInformativo;}
-	public void setTextoInformativo(String textoInformativo) {this.textoInformativo = textoInformativo;}
-	public String getTextoDañoRecibido() {return textoDañoRecibido;}
-	public void setTextoDañoRecibido(String textoDañoRecibido) {this.textoDañoRecibido = textoDañoRecibido;}
-	//GETTERS & SETTERS DE EFECTOS//////////////////////////////////////////////
-	public boolean getEstaMarcado() {return this.estaMarcado;}
-	public void setEstaMArcado(boolean boo) {this.estaMarcado = boo;}
-	public boolean getEstaStun() {return estaStun;}
-	public void setEstaStun(boolean estaKO) {this.estaStun = estaKO;}
-	public boolean isEstaEnamorado() {return estaEnamorado;}
-	public void setEstaEnamorado(boolean estaEnamorado) {this.estaEnamorado = estaEnamorado;}
-	//GETTER & SETTERS MISCELANEOS///////////////////////////////////////////////
 	public Zona getZona() {return zona;}
 	public void setZona(Zona zona) {this.zona = zona;}
 	public int getPosX() {return posX;}
@@ -726,51 +665,34 @@ public class Unidad {
 	public void setearSacudida(boolean enSacudida) {this.enSacudida = enSacudida;}
 	public int getDuracionSacudida() {return duracionSacudida;}
 	public void setDuracionSacudida(int duracionSacudida) {this.duracionSacudida = duracionSacudida;}
-	public int getVidaPerdida() {return vidaPerdida;}
-	public void setVidaPerdida(int vida) {this.vidaPerdida = vida;}
 	public String[] getListaDeHabilidades() {return listaDeHabilidades;}
 	public void setListaDeHabilidades(String[] habilidades) {this.listaDeHabilidades = habilidades;}
 	public int getHabilidadElegida() {return habilidadElegida;}
 	public void setHabilidadElegida(int habilidadElegida) {this.habilidadElegida = habilidadElegida;}
-	public int getIdTez() {
-		return idTez;
-	}
-	public void setIdTez(int idTez) {
-		this.idTez = idTez;
-	}
+	public int getCdHabilidad1() {return cdHabilidad1;}
+	public void setCdHabilidad1(int cdHabilidad1) {this.cdHabilidad1 = cdHabilidad1;}
+	public int getCdHabilidad2() {return cdHabilidad2;}
+	public void setCdHabilidad2(int cdHabilidad2) {this.cdHabilidad2 = cdHabilidad2;}
+	public boolean isHabilidad1() {return habilidad1;}
+	public void setHabilidad1(boolean habilidad1) {this.habilidad1 = habilidad1;}
+	public boolean isHabilidad2() {return habilidad2;}
+	public void setHabilidad2(boolean habilidad2) {this.habilidad2 = habilidad2;}
 	public String getAccion() {return tipoDeAccion;}
 	public void setAccion(String accion) {this.tipoDeAccion = accion;}
 	public int getAlturaBarraHP() {return this.getAlturaDeBarraHP();}
 	public void setAlturaBarraHP(int altura) {this.setAlturaDeBarraHP(altura);}
-	public int getEscudos() {return this.escudos;}
-	public void setEscudos(int cant) {this.escudos = cant;}
-	public int getFaltasCometidas() {return this.faltasCometidas;}
-	public void setFaltasCometidas(int cant) {this.faltasCometidas = cant;}
+	public String getTextoInformativo() {return textoInformativo;}
+	public void setTextoInformativo(String textoInformativo) {this.textoInformativo = textoInformativo;}
+	public String getTextoDañoRecibido() {return textoDañoRecibido;}
+	public void setTextoDañoRecibido(String textoDañoRecibido) {this.textoDañoRecibido = textoDañoRecibido;}
+	public boolean isObjetivoUnico() {return objetivoUnico;}
+	public void setObjetivoUnico(boolean singleTarget) {this.objetivoUnico = singleTarget;}
+	public int getIdTez() {return idTez;}
+	public void setIdTez(int idTez) {this.idTez = idTez;}
 	public boolean getMostrarFaltas() {return this.mostrarFaltas;}
 	public void setMostrarFaltas(boolean boo) {this.mostrarFaltas = boo;}
-	public int getNeocreditos() {return neocreditos;}
-	public void setNeocreditos(int neocreditos) {this.neocreditos = neocreditos;}
-	public int getNeoCreditosRecientes() {
-		return neoCreditosRecientes;
-	}
-	public void setNeoCreditosRecientes(int neoCreditosRecientes) {
-		this.neoCreditosRecientes = neoCreditosRecientes;
-	}
-	public int getDañoCausado() {return dañoCausado;}
-	public void setDañoCausado(int dañoCausado) {this.dañoCausado = dañoCausado;}
-	public Unidad getUnidadObjetivoEnemigo() {
-		return unidadObjetivoEnemigo;
-	}
-	public void setUnidadObjetivoEnemigo(Unidad unidadObjetivoEnemigo) {
-		this.unidadObjetivoEnemigo = unidadObjetivoEnemigo;
-	}
-	public int getPuñosAcumulados() {return puñosAcumulados;}
-	public void setPuñosAcumulados(int puñosAcumulados) {this.puñosAcumulados = puñosAcumulados;}
-	public int getCargarEnamoramiento() {return cargarEnamoramiento;}
-	public void setCargarEnamoramiento(int cargarEnamoramiento) {this.cargarEnamoramiento = cargarEnamoramiento;}
-	public int getContador() {return contador;}
-	public void setContador(int contador) {this.contador = contador;}
-	//GETTERS & SETTERS STATS BASE/////////////////////////////////////////////
+	public Unidad getUnidadObjetivoEnemigo() {return unidadObjetivoEnemigo;}
+	public void setUnidadObjetivoEnemigo(Unidad unidadObjetivoEnemigo) {this.unidadObjetivoEnemigo = unidadObjetivoEnemigo;}
 	public String getTipo() {return tipo;}
 	public void setTipo(String st) {this.tipo = st;}
 	public int getGenero() {return genero;}
@@ -781,6 +703,37 @@ public class Unidad {
 	public void setClase(String clase) {this.clase = clase;}
 	public String getNombre() {return nombre;}
 	public void setNombre(String nombre) {this.nombre = nombre;}
+	public Color getColorDeMensaje() {return colorDeMensaje;}
+	public void setColorDeMensaje(Color colorDeMensaje) {this.colorDeMensaje = colorDeMensaje;}
+	public Color getColorDeDaño() {return colorDeDaño;}
+	public void setColorDeDaño(Color colorDeDaño) {this.colorDeDaño = colorDeDaño;}
+	public boolean isEfectoDeEstado() {return EfectoDeEstado;}
+	public void setEfectoDeEstado(boolean efectoDeEstado) {EfectoDeEstado = efectoDeEstado;}
+	public boolean isDañoEspecial() {return dañoEspecial;}
+	public void setDañoEspecial(boolean dañoEspecial) {this.dañoEspecial = dañoEspecial;}
+	public void setValorSangrado(int valorSangrado) {this.valorSangrado = valorSangrado;}
+	public int getRdcDefAcc() {return rdcDefAcc;}
+	public void setRdcDefAcc(int rdcDefAcc) {this.rdcDefAcc = rdcDefAcc;}
+	public int getAlturaPorClase() {return alturaPorClase;}
+	public void setAlturaPorClase(int alturaPorClase) {this.alturaPorClase = alturaPorClase;}
+	public int getAlturaDeAccesorio() {return alturaDeAccesorio;}
+	public void setAlturaDeAccesorio(int alturaDeAccesorio) {this.alturaDeAccesorio = alturaDeAccesorio;}
+	public int getAlturaDeBarraHP() {return alturaDeBarraHP;}
+	public void setAlturaDeBarraHP(int alturaDeBarraHP) {this.alturaDeBarraHP = alturaDeBarraHP;}
+	//G&S DE ESTADOS///////////////////////////////////////////////////////////
+	public boolean isAliado() {return esAliado;}
+	public void setAliado(boolean aliado) {this.esAliado = aliado;}
+	public boolean isAlive() {return estaVivo;}
+	public void setAlive(boolean vivo) {this.estaVivo = vivo;}
+	public boolean isEstaActivo() {return estaActivo;}
+	public void setEstaActivo(boolean estaActivo) {this.estaActivo = estaActivo;}
+	public boolean getEstaStun() {return estaStun;}
+	public void setEstaStun(boolean estaKO) {this.estaStun = estaKO;}
+	public boolean isEstaEnamorado() {return estaEnamorado;}
+	public void setEstaEnamorado(boolean estaEnamorado) {this.estaEnamorado = estaEnamorado;}
+	public boolean isMarcado() {return marcado;}
+	public void setMarcado(boolean marcado) {this.marcado = marcado;}
+	//G&S ESTADISTICAS/////////////////////////////////////////////////////////
 	public int getHP() {return hp;}
 	public void setHP(int hp) {this.hp = hp;}
 	public int getHPMax() {return hpMax;}
@@ -803,7 +756,6 @@ public class Unidad {
 	public void setEva(int eva) {this.eva = eva;}
 	public int getBloq() {return bloq;}
 	public void setBloq(int capacidadBloqueo) {this.bloq = capacidadBloqueo;}
-	//GETTERS & SETTERS STATS MOD//////////////////////////////////////////////
 	public int getHpMaxMod() {return hpMaxMod;}
 	public void setHpMaxMod(int hpMaxMod) {this.hpMaxMod = hpMaxMod;}
 	public int getSpMaxMod() {return spMaxMod;}
@@ -822,62 +774,7 @@ public class Unidad {
 	public void setDcrtMod(double dcrtMod) { this.dcrtMod = dcrtMod;}
 	public int getBloqMod() {return bloqMod;}
 	public void setBloqMod(int blockMod) {this.bloqMod = blockMod;}
-	//CD Y HABILIDADES/////////////////////////////////////////////////////////////////////
-	public int getCdHabilidad1() {return cdHabilidad1;}
-	public void setCdHabilidad1(int cdHabilidad1) {this.cdHabilidad1 = cdHabilidad1;}
-	public int getCdHabilidad2() {return cdHabilidad2;}
-	public void setCdHabilidad2(int cdHabilidad2) {this.cdHabilidad2 = cdHabilidad2;}
-	public boolean isHabilidad1() {return habilidad1;}
-	public void setHabilidad1(boolean habilidad1) {this.habilidad1 = habilidad1;}
-	public boolean isHabilidad2() {return habilidad2;}
-	public void setHabilidad2(boolean habilidad2) {this.habilidad2 = habilidad2;}
-	//ESTADOS//////////////////////////////////////////////////////////////////////////////
-	public boolean isMarcado() {
-		return marcado;
-	}
-	public void setMarcado(boolean marcado) {
-		this.marcado = marcado;
-	}
-	public boolean isEvadiendo() {return evadiendo;}
-	public void setEvadiendo(boolean evadiendo) {this.evadiendo = evadiendo;}
-	public boolean isRompiendo() {return rompiendo;}
-	public void setRompiendo(boolean rompiendo) {this.rompiendo = rompiendo;}
-	public boolean isCurando() {return curando;}
-	public void setCurando(boolean curando) {this.curando = curando;}
-	public boolean isBloqueando() {return bloqueando;}
-	public void setBloqueando(boolean bloqueando) {this.bloqueando = bloqueando;}
-	public boolean isReduciendoDefensa() {return reduciendoDefensa;}
-	public void setReduciendoDefensa(boolean reduciendoDefensa) {this.reduciendoDefensa = reduciendoDefensa;}
-	public boolean isReportando() {
-		return reportando;
-	}
-	public void setReportando(boolean reportando) {
-		this.reportando = reportando;
-	}
-	public Color getColorDeMensaje() {
-		return colorDeMensaje;
-	}
-	public void setColorDeMensaje(Color colorDeMensaje) {
-		this.colorDeMensaje = colorDeMensaje;
-	}
-	public Color getColorDeDaño() {
-		return colorDeDaño;
-	}
-	public void setColorDeDaño(Color colorDeDaño) {
-		this.colorDeDaño = colorDeDaño;
-	}
-	public boolean isEfectoDeEstado() {
-		return EfectoDeEstado;
-	}
-	public void setEfectoDeEstado(boolean efectoDeEstado) {
-		EfectoDeEstado = efectoDeEstado;
-	}
-	public boolean isDañoEspecial() {
-		return dañoEspecial;
-	}
-	public void setDañoEspecial(boolean dañoEspecial) {
-		this.dañoEspecial = dañoEspecial;
-	}
+	//G&S TIMERS///////////////////////////////////////////////////////////////
 	public int getTimerPrecavido() {return timerPrecavido;}
 	public void setTimerPrecavido(int timerPrecavido) {this.timerPrecavido = timerPrecavido;}
 	public int getTimerAgresivo() {return timerAgresivo;}
@@ -890,55 +787,34 @@ public class Unidad {
 	public void setTimerSangrando(int timerSangrando) {this.timerSangrando = timerSangrando;}
 	public int getTimerMotivado() {return timerMotivado;}
 	public void setTimerMotivado(int timerMotivado) {this.timerMotivado = timerMotivado;}
-	public int getTimerDesmotivado() {
-		return timerDesmotivado;
-	}
-	public void setTimerDesmotivado(int timerDesmotivado) {
-		this.timerDesmotivado = timerDesmotivado;
-	}
+	public int getTimerDesmotivado() {return timerDesmotivado;}
+	public void setTimerDesmotivado(int timerDesmotivado) {this.timerDesmotivado = timerDesmotivado;}
 	public int getTimerRdcDefAcc() {return timerRdcDefAcc;}
 	public void setTimerRdcDefAcc(int timerRdcDefAcc) {this.timerRdcDefAcc = timerRdcDefAcc;}
 	public int getTimerLisiado() {return timerLisiado;}
 	public void setTimerLisiado(int timerLisiado) {this.timerLisiado = timerLisiado;}
 	public int getValorSangrado() {return valorSangrado;}
-	public int getTimerIncendiado() {
-		return timerIncendiado;
-	}
-	public void setTimerIncendiado(int timerIncendiado) {
-		this.timerIncendiado = timerIncendiado;
-	}
-	public int getTimerMarcado() {
-		return timerMarcado;
-	}
-	public void setTimerMarcado(int timerMarcado) {
-		this.timerMarcado = timerMarcado;
-	}
-	public int getTimerDebilitado() {
-		return timerDebilitado;
-	}
-	public void setTimerDebilitado(int timerDebilitado) {
-		this.timerDebilitado = timerDebilitado;
-	}
-	public void setValorSangrado(int valorSangrado) {this.valorSangrado = valorSangrado;}
-	public int getRdcDefAcc() {return rdcDefAcc;}
-	public void setRdcDefAcc(int rdcDefAcc) {this.rdcDefAcc = rdcDefAcc;}
-	public int getAlturaPorClase() {
-		return alturaPorClase;
-	}
-	public void setAlturaPorClase(int alturaPorClase) {
-		this.alturaPorClase = alturaPorClase;
-	}
-	public int getAlturaDeAccesorio() {
-		return alturaDeAccesorio;
-	}
-	public void setAlturaDeAccesorio(int alturaDeAccesorio) {
-		this.alturaDeAccesorio = alturaDeAccesorio;
-	}
-	public int getAlturaDeBarraHP() {
-		return alturaDeBarraHP;
-	}
-	public void setAlturaDeBarraHP(int alturaDeBarraHP) {
-		this.alturaDeBarraHP = alturaDeBarraHP;
-	}
+	public int getTimerIncendiado() {return timerIncendiado;}
+	public void setTimerIncendiado(int timerIncendiado) {this.timerIncendiado = timerIncendiado;}
+	public int getTimerMarcado() {return timerMarcado;}
+	public void setTimerMarcado(int timerMarcado) {this.timerMarcado = timerMarcado;}
+	public int getTimerDebilitado() {return timerDebilitado;}
+	public void setTimerDebilitado(int timerDebilitado) {this.timerDebilitado = timerDebilitado;}
+	//G&S ACUMULADORES/////////////////////////////////////////////////////////
+	public int getEscudos() {return this.escudos;}
+	public void setEscudos(int cant) {this.escudos = cant;}
+	public int getFaltasCometidas() {return this.faltasCometidas;}
+	public void setFaltasCometidas(int cant) {this.faltasCometidas = cant;}
+	public int getNeocreditos() {return neocreditos;}
+	public void setNeocreditos(int neocreditos) {this.neocreditos = neocreditos;}
+	public int getNeoCreditosRecientes() {return neoCreditosRecientes;}
+	public void setNeoCreditosRecientes(int neoCreditosRecientes) {this.neoCreditosRecientes = neoCreditosRecientes;}
+	public int getDañoCausado() {return dañoCausado;}
+	public void setDañoCausado(int dañoCausado) {this.dañoCausado = dañoCausado;}
+	public int getPuñosAcumulados() {return puñosAcumulados;}
+	public void setPuñosAcumulados(int puñosAcumulados) {this.puñosAcumulados = puñosAcumulados;}
+	public int getCargarEnamoramiento() {return cargarEnamoramiento;}
+	public void setCargarEnamoramiento(int cargarEnamoramiento) {this.cargarEnamoramiento = cargarEnamoramiento;}
+	///////////////////////////////////////////////////////////////////////////
 
 }
