@@ -2,6 +2,7 @@ package principal;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Random;
 
 import unidades.Unidad;
 
@@ -148,7 +149,74 @@ public class Habilidades {
 		unidad.setDuracionSacudida(15);
 	}
 	
+	public static void penalizarUnidad(Unidad unidad, ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
+		Color color = new Color(139, 0, 0);
+		int cantAliadas = contarMujeres(aliados);
+		int cantEnemigas = contarMujeres(enemigos);
+		if(unidad.getTimerJuzgado() == -1) {
+			if(unidad.getGenero() == 0) {
+				Estadisticas.reducirAtaque(unidad, 1 * cantEnemigas);
+				Estadisticas.reducirProbCrit(unidad, 2 * cantEnemigas);
+				unidad.setTimerJuzgado(5);
+			}
+			else if(unidad.getGenero() == 1) {
+				Estadisticas.reducirAtaque(unidad, 1 * (cantAliadas + cantEnemigas));
+				Estadisticas.reducirProbCrit(unidad, 2 * (cantAliadas + cantEnemigas));
+				unidad.setTimerJuzgado(5);
+			}
+		}
+		Habilidades.setearEfectoDeEstado(unidad, "JUDGE!", color);
+		if(unidad.getCantAliadas() == 0 || unidad.getCantEnemigas() == 0) {
+			unidad.setCantAliadas(cantAliadas);
+			unidad.setCantEnemigas(cantEnemigas);
+		}
+	}
+	
+	public static void despenalizarUnidad(Unidad unidad, ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
+		if(unidad.getGenero() == 0) {
+			Estadisticas.aumentarAtaque(unidad, 1 * unidad.getCantEnemigas());
+			Estadisticas.aumentarProbCrit(unidad, 2 * unidad.getCantEnemigas());
+		}
+		else {
+			Estadisticas.aumentarAtaque(unidad, 1 * (unidad.getCantAliadas() + unidad.getCantEnemigas()));
+			Estadisticas.aumentarProbCrit(unidad, 2 * (unidad.getCantAliadas() + unidad.getCantEnemigas()));
+		}
+		unidad.setCantAliadas(0);
+		unidad.setCantEnemigas(0);
+	}
+	
+	public static void maldicionAleatoria(Unidad unidad) {
+		int i = elegirAleatorio(4);
+		if(i == 0) {
+			Estadisticas.reducirAtaque(unidad, 1);
+		}
+		else if(i == 1) {
+			Estadisticas.reducirDefensa(unidad, 1);
+		}
+		else if(i == 2) {
+			Estadisticas.reducirProbCrit(unidad, 1);
+		}
+		else {
+			Estadisticas.reducirEvasion(unidad, 1);
+		}
+		
+	}
+	
 	//HABILIDADES DE VARIOS HIT'S////////////////////////////////////////////
+	
+	public static void protegerUnidad(Unidad unidad, int valor, PanelDeJuego pdj) {
+		Color color = new Color(70, 130, 180);
+		new Thread(() -> {
+		    try {
+		        Thread.sleep(300);
+		    } catch (InterruptedException e) {
+		        e.printStackTrace();
+		    }
+		    pdj.ReproducirSE(4);
+		    Estadisticas.aumentarEscudos(unidad, valor);
+		    Habilidades.setearEfectoDeEstado(unidad, "GUARD!", color);
+		}).start();	
+	}
 	
 	public static void provocarHemorragia(Unidad unidad, PanelDeJuego pdj) {
 		Color color = new Color(255, 0, 0);
@@ -198,7 +266,7 @@ public class Habilidades {
 	}
 	
 	public static void aumentarProteccion(Unidad unidad) {
-		Color color = new Color(55, 55, 255);
+		Color color = new Color(70, 130, 180);
 		if(unidad.getTimerPrecavido() == -1) {
 			Estadisticas.aumentarDefensa(unidad, 10);
 			Estadisticas.aumentarTasaBloqueo(unidad, 10);
@@ -281,5 +349,21 @@ public class Habilidades {
 	public static void renovarMovilidad(Unidad unidad) {
 		Estadisticas.aumentarVelocidad(unidad, 100);
 		Estadisticas.aumentarEvasion(unidad, 100);
+	}
+	
+	//METODOS VARIOS/////////////////////////////////////////////////////////////////
+	private static int contarMujeres(ArrayList<Unidad> unidades) {
+		int cont = 0;
+		for(Unidad unidad : unidades) {
+			if(unidad.getGenero() == 0) {
+				cont++;
+			}
+		}
+		return cont;
+	}
+	
+	public static int elegirAleatorio(int i) {
+	    Random random = new Random();
+	    return random.nextInt(i);
 	}
 }
