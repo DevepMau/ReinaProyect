@@ -64,14 +64,12 @@ public class HeroeFederal extends Unidad{
         int dañoFinal = Math.max(1, daño - reduccion);
 	    if (unidad.elegirAleatorio(100) < (unidad.getEva() + unidad.getEvaMod())) {
 	    	pdj.ReproducirSE(6);
-	    	unidad.setEvadiendo(true);
 	        Habilidades.setearEfectoDeEstado(unidad, "MISS!", Color.white);
 	    }
 	    else {
 	    	if (unidad.getEscudos() > 0) {
 		        unidad.setEscudos(0);
 		        pdj.ReproducirSE(9);
-		        unidad.setRompiendo(true);
 		        Habilidades.setearEfectoDeEstado(unidad, "BREAK!", Color.white);
 		    } else {
 		    	 pdj.ReproducirSE(3);

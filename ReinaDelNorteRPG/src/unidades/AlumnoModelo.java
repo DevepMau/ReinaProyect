@@ -103,7 +103,6 @@ public class AlumnoModelo extends Unidad{
 			for(Unidad unidad : unidades) {
 				unidad.setHP(unidad.getHP() - unidad.getHPMax()/10);
 		        Habilidades.stunearUnidad(unidad);
-		        unidad.setReportando(true);
 			}
 		}
 	}

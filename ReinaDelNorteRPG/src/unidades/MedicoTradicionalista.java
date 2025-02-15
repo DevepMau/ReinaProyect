@@ -89,7 +89,6 @@ public class MedicoTradicionalista extends Unidad {
 			pdj.ReproducirSE(4);
 			Habilidades.restaurarHP(unidad, 20);
 			Habilidades.ganarNeoCreditos(this, 10);
-			unidad.setCurando(true);
 			if(unidad.getTimerLisiado() > 0) {
 				unidad.setTimerLisiado(-1);
 			}

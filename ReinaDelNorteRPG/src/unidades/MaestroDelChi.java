@@ -2,7 +2,6 @@ package unidades;
 
 import java.util.ArrayList;
 
-import principal.Estadisticas;
 import principal.Habilidades;
 import principal.PanelDeJuego;
 import principal.Zona;
@@ -104,7 +103,7 @@ public class MaestroDelChi extends Unidad {
 	public boolean haySinMarcar(ArrayList<Unidad> unidades) {
 		if(!unidades.isEmpty()) {
 			for(Unidad unidad : unidades) {
-				if(!unidad.getEstaMarcado()) {
+				if(!unidad.isMarcado()) {
 					return true;
 				}
 			}
@@ -114,7 +113,7 @@ public class MaestroDelChi extends Unidad {
 	public Unidad elegirObjetivoSinMarcar(ArrayList<Unidad> unidades) {
 	    ArrayList<Unidad> unidadesSinMarcar = new ArrayList<>();
 	    for (Unidad unidad : unidades) {
-	        if (!unidad.getEstaMarcado()) {
+	        if (!unidad.isMarcado()) {
 	            unidadesSinMarcar.add(unidad);
 	        }
 	    }

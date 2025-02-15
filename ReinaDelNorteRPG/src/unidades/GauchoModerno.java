@@ -69,14 +69,12 @@ public class GauchoModerno extends Unidad {
         String textoMostrado = "";
 	    if (unidad.elegirAleatorio(100) < (unidad.getEva() + unidad.getEvaMod())) {
 	    	pdj.ReproducirSE(6);
-	    	unidad.setEvadiendo(true);
 	        textoMostrado = "MISS!";
 	        Habilidades.setearEfectoDeEstado(unidad, textoMostrado, Color.white);
 	    }
 	    else {
 	    	if(this.elegirAleatorio(100) < (unidad.getBloq() + unidad.getBloqMod())) {
 	    		pdj.ReproducirSE(9);
-	    		unidad.setBloqueando(true);
 	    		unidad.setHP(unidad.getHP() - (dañoFinal/4));
 		        textoMostrado = "BLOCK!";
 		        Habilidades.setearEfectoDeEstado(unidad, textoMostrado, Color.white);
@@ -84,7 +82,6 @@ public class GauchoModerno extends Unidad {
 	    	else if (unidad.getEscudos() > 0) {
 		        unidad.setEscudos(unidad.getEscudos() - 1);
 		        pdj.ReproducirSE(9);
-		        unidad.setRompiendo(true);
 		        textoMostrado = "BREAK!";
 		        Habilidades.setearEfectoDeEstado(unidad, textoMostrado, Color.white);
 		    } else {

@@ -95,7 +95,6 @@ public class PayadorPicante extends Unidad {
         String textoMostrado = "";
 	    if (unidad.elegirAleatorio(100) < (unidad.getEva() + unidad.getEvaMod())) {
 	    	pdj.ReproducirSE(6);
-	    	unidad.setEvadiendo(true);
 	        textoMostrado = "MISS!";
 	        Habilidades.setearEfectoDeEstado(unidad, textoMostrado, Color.white);
 	    }
@@ -103,7 +102,6 @@ public class PayadorPicante extends Unidad {
 	    	if (unidad.getEscudos() > 0) {
 		        unidad.setEscudos(unidad.getEscudos() - 1);
 		        pdj.ReproducirSE(9);
-		        unidad.setRompiendo(true);
 		        textoMostrado = "BREAK!";
 		        Habilidades.setearEfectoDeEstado(unidad, textoMostrado, Color.white);
 		    } else {
