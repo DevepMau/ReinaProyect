@@ -28,6 +28,7 @@ public class PanelDeJuego extends JPanel implements Runnable {
 	public Sonido musica = new Sonido();
 	public Sonido se = new Sonido();
 	public UI ui = new UI(this);
+	public InicializadorDeRecursos idr = new InicializadorDeRecursos(this);
 	public Combate combate = new Combate(this);
 	public GeneradorDeNombres gdn = new GeneradorDeNombres(this);
 
