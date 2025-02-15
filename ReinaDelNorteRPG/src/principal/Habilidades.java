@@ -247,6 +247,36 @@ public class Habilidades {
 			unidad.setDañoEspecial(true);
 		}).start();	
 	}
+	
+	public static void reportarUnidad(Unidad lanzador, Unidad objetivo, PanelDeJuego pdj) {
+		Color color = new Color(139, 0, 0);
+		pdj.ReproducirSE(2);
+		int daño = lanzador.getAtq() + lanzador.getAtqMod();
+		if(objetivo.getFaltasCometidas() >= 3) {
+			objetivo.setHP(objetivo.getHP() - daño);
+			objetivo.setFaltasCometidas(0);
+			Estadisticas.aumentarAtaque(lanzador, 2);
+			Estadisticas.reducirAtaque(objetivo, 2);
+			Habilidades.stunearUnidad(objetivo);
+			Habilidades.setearEfectoDeEstado(objetivo, "BENCH!", color);
+		}
+		else if(objetivo.getFaltasCometidas() >= 3) {
+			objetivo.setHP(objetivo.getHP() - daño);
+			objetivo.setFaltasCometidas(0);
+			Estadisticas.aumentarAtaque(lanzador, 1);
+			Estadisticas.reducirAtaque(objetivo, 1);
+			Habilidades.setearEfectoDeEstado(objetivo, "SCOLD!", color);
+		}
+		else if(objetivo.getFaltasCometidas() >= 3) {
+			objetivo.setHP(objetivo.getHP() - daño);
+			objetivo.setFaltasCometidas(0);
+			Habilidades.setearEfectoDeEstado(objetivo, "SCOLD!", color);
+		}
+		else {
+			Estadisticas.aumentarFaltas(objetivo, 1);
+			Habilidades.setearEfectoDeEstado(objetivo, "WARN!", color);
+		}
+	}
 		
 	//HABILIDADES COMPUESTAS/////////////////////////////////////////////////
 	
