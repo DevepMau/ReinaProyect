@@ -70,6 +70,7 @@ public class Unidad {
 	private int timerIncendiado = -1;
 	private int timerMarcado = -1;
 	private int timerDebilitado = -1;
+	private int timerJuzgado = -1;
 	//ELEMENTOS DE ESTADOS///////////////////////////////////////////
 	private int valorSangrado;
 	private int rdcDefAcc = 0;
@@ -93,6 +94,9 @@ public class Unidad {
 	private String clase;
 	private String tipo;
 	private Unidad unidadObjetivoEnemigo = null;
+	private String nombreDeUltimoObjetivo = "";
+	private int cantAliadas;
+	private int cantEnemigas;
 	//ACUMULADORES DE LA UNIDAD////////////////////////////////////
 	private int escudos = 0;
 	private int faltasCometidas = 0;
@@ -271,11 +275,15 @@ public class Unidad {
 		        pdj.ReproducirSE(SEId);
 		        Habilidades.ganarNeoCreditos(unidad, 5);
 		        unidad.robarVida(dañoFinal, this);
+		        if(unidad.getClase() == "Novata Timida") {
+		        	Habilidades.maldicionAleatoria(this);
+		        }
 		    }
 	    }  
 	}
 	
 	public void realizarAtaque(Unidad unidad, ArrayList<Unidad> enemigos) {
+		this.setNombreDeUltimoObjetivo(unidad.getClase());
 		boolean isCritical = Math.random() <= ((this.getPCRT() + this.getPcrtMod()) / 100.0);
 		if(unidad != null) {
 			int daño = this.getAtq() + this.getAtqMod();
@@ -289,6 +297,9 @@ public class Unidad {
 
 	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
 		Unidad objetivo = elegirObjetivo(unidades);
+		if(!unidades.isEmpty()) {
+			this.setNombreDeUltimoObjetivo(objetivo.getClase());
+		}
 		boolean isCritical = Math.random() <= ((this.getPCRT() + this.getPcrtMod()) / 100.0);  
 		if(objetivo != null) {
 			int daño = this.getAtq() + this.getAtqMod();
@@ -355,6 +366,11 @@ public class Unidad {
 	
 	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
 		iniciarTimersDeEstado();
+		actualizarTimer(this::getTimerJuzgado, this::setTimerJuzgado, () -> Habilidades.despenalizarUnidad(this, aliados, enemigos));
+		if(this.getNombreDeUltimoObjetivo() == "Novata Timida") {
+			Habilidades.penalizarUnidad(this, aliados, enemigos);
+			this.setNombreDeUltimoObjetivo("");
+		}
 		Habilidades.restaurarSP(this, 5);
 		Habilidades.repartirNeoCreditos(aliados, this);
 		if(!enemigos.isEmpty()) {
@@ -720,6 +736,24 @@ public class Unidad {
 	public void setAlturaDeAccesorio(int alturaDeAccesorio) {this.alturaDeAccesorio = alturaDeAccesorio;}
 	public int getAlturaDeBarraHP() {return alturaDeBarraHP;}
 	public void setAlturaDeBarraHP(int alturaDeBarraHP) {this.alturaDeBarraHP = alturaDeBarraHP;}
+	public String getNombreDeUltimoObjetivo() {
+		return nombreDeUltimoObjetivo;
+	}
+	public void setNombreDeUltimoObjetivo(String nombreDeUltimoObjetivo) {
+		this.nombreDeUltimoObjetivo = nombreDeUltimoObjetivo;
+	}
+	public int getCantEnemigas() {
+		return cantEnemigas;
+	}
+	public void setCantEnemigas(int cantEnemigas) {
+		this.cantEnemigas = cantEnemigas;
+	}
+	public int getCantAliadas() {
+		return cantAliadas;
+	}
+	public void setCantAliadas(int cantAliadas) {
+		this.cantAliadas = cantAliadas;
+	}
 	//G&S DE ESTADOS///////////////////////////////////////////////////////////
 	public boolean isAliado() {return esAliado;}
 	public void setAliado(boolean aliado) {this.esAliado = aliado;}
@@ -800,6 +834,12 @@ public class Unidad {
 	public void setTimerMarcado(int timerMarcado) {this.timerMarcado = timerMarcado;}
 	public int getTimerDebilitado() {return timerDebilitado;}
 	public void setTimerDebilitado(int timerDebilitado) {this.timerDebilitado = timerDebilitado;}
+	public int getTimerJuzgado() {
+		return timerJuzgado;
+	}
+	public void setTimerJuzgado(int timerJuzgado) {
+		this.timerJuzgado = timerJuzgado;
+	}
 	//G&S ACUMULADORES/////////////////////////////////////////////////////////
 	public int getEscudos() {return this.escudos;}
 	public void setEscudos(int cant) {this.escudos = cant;}
