@@ -93,7 +93,7 @@ public class MedicoTradicionalista extends Unidad {
 				unidad.setTimerLisiado(-1);
 			}
 			if(unidad.getRdcDefAcc() > 0) {
-				Habilidades.renovarArmadura(unidad);
+				Habilidades.cancelarOxidarArmadura(unidad);
 			}
 			unidad.setTimerSangrando(0);	
 			unidad.setTimerIncendiado(0);	
