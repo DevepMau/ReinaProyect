@@ -2,6 +2,7 @@ package unidades;
 
 import java.util.ArrayList;
 
+import principal.Estadisticas;
 import principal.Habilidades;
 import principal.PanelDeJuego;
 import principal.Zona;
@@ -11,6 +12,7 @@ public class NovataTimida extends Unidad{
 	private String[] listaDeHabilidades = new String[1];
 	private boolean habilitar = true;
 	private int escudosIniciales = 0;
+	private int contador = 3;
 
 	public NovataTimida(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
@@ -67,6 +69,14 @@ public class NovataTimida extends Unidad{
 				Habilidades.protegerUnidad(this, this.escudosIniciales, pdj);
 				habilitar = false;
 			}
+		}
+		if(!aliados.isEmpty() && this.contador > 0) {
+			for(Unidad unidad : aliados) {
+				if(!this.equals(unidad) && unidad.getTipo() == "Combatiente") {
+					Estadisticas.aumentarAtaque(unidad, 1);
+				}
+			}
+			contador--;
 		}
 	}
 	public String[] getListaDeHabilidades() {return listaDeHabilidades;}
