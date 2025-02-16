@@ -300,7 +300,22 @@ public class Habilidades {
 		Estadisticas.reducirDefensa(unidad, 10);
 	}
 	
+	public static void desmoralizarUnidad(Unidad unidad) {
+		Color color = new Color(255, 160, 180);
+		if(unidad.getTimerDesmoralizar() == -1) {
+			Estadisticas.reducirAtaque(unidad, 5);
+			Estadisticas.reducirVelocidad(unidad, 5);
+			Estadisticas.reducirEvasion(unidad, 5);
+		}
+		Habilidades.setearEfectoDeEstado(unidad, "DOWN!", color);
+		unidad.setTimerDesmoralizar(5);
+	}
 	
+	public static void cancelarDesmoralizarUnidad(Unidad unidad) {
+		Estadisticas.aumentarAtaque(unidad, 5);
+		Estadisticas.aumentarVelocidad(unidad, 5);
+		Estadisticas.aumentarEvasion(unidad, 5);
+	}
 		
 	//HABILIDADES COMPUESTAS/////////////////////////////////////////////////
 	
