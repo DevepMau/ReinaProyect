@@ -35,7 +35,7 @@ public class Habilidades {
 		Habilidades.setearEfectoDeEstado(unidad, "RUST!", color);		
 	}
 	
-	public static void renovarArmadura(Unidad unidad) {
+	public static void cancelarOxidarArmadura(Unidad unidad) {
 		Estadisticas.aumentarDefensa(unidad, 5 * unidad.getRdcDefAcc());
 	}
 	
@@ -172,7 +172,7 @@ public class Habilidades {
 		}
 	}
 	
-	public static void despenalizarUnidad(Unidad unidad, ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
+	public static void cancelarPenalizarUnidad(Unidad unidad, ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
 		if(unidad.getGenero() == 0) {
 			Estadisticas.aumentarAtaque(unidad, 1 * unidad.getCantEnemigas());
 			Estadisticas.aumentarProbCrit(unidad, 2 * unidad.getCantEnemigas());
@@ -295,7 +295,7 @@ public class Habilidades {
 		unidad.setTimerTendencia(5);
 	}
 	
-	public static void noTendencia(Unidad unidad) {
+	public static void cancelarTendencia(Unidad unidad) {
 		Estadisticas.reducirTasaBloqueo(unidad, 30);
 		Estadisticas.reducirDefensa(unidad, 10);
 	}
@@ -329,7 +329,7 @@ public class Habilidades {
 		unidad.setTimerAgresivo(5);
 	}
 	
-	public static void reducirAgresividad(Unidad unidad) {
+	public static void cancelarAumentarAgresividad(Unidad unidad) {
 		Estadisticas.reducirAtaque(unidad, 10);
 		Estadisticas.reducirProbCrit(unidad, 10);
 	}
@@ -344,7 +344,7 @@ public class Habilidades {
 		unidad.setTimerPrecavido(5);
 	}
 	
-	public static void reducirProteccion(Unidad unidad) {
+	public static void cancelarAumentarProteccion(Unidad unidad) {
 		Estadisticas.reducirDefensa(unidad, 10);
 		Estadisticas.reducirEvasion(unidad, 10);
 	}
@@ -359,7 +359,7 @@ public class Habilidades {
 		unidad.setTimerAcelerado(5);	
 	}
 	
-	public static void reducirAgilidad(Unidad unidad) {
+	public static void cancelarAumentarAgilidad(Unidad unidad) {
 		Estadisticas.reducirEvasion(unidad, 10);
 		Estadisticas.reducirVelocidad(unidad, 10);
 	}
@@ -378,7 +378,7 @@ public class Habilidades {
 		unidad.setTimerPotenciado(5);
 	}
 	
-	public static void debilitarUnidad(Unidad unidad) {
+	public static void cancelarPotenciarUnidad(Unidad unidad) {
 		Estadisticas.reducirAtaque(unidad, 10);
 		Estadisticas.reducirDefensa(unidad, 10);
 		Estadisticas.reducirEvasion(unidad, 10);
@@ -398,7 +398,7 @@ public class Habilidades {
 		unidad.setTimerMotivado(5);
 	}
 	
-	public static void desmotivarUnidad(Unidad unidad) {
+	public static void cancelarMotivarUnidad(Unidad unidad) {
 		Estadisticas.reducirAtaque(unidad, 10);
 		Estadisticas.reducirVelocidad(unidad, 10);
 		Estadisticas.reducirEvasion(unidad, 10);
@@ -415,7 +415,7 @@ public class Habilidades {
 		unidad.setTimerLisiado(3);
 	}
 	
-	public static void renovarMovilidad(Unidad unidad) {
+	public static void cancelarDestruirMovilidad(Unidad unidad) {
 		Estadisticas.aumentarVelocidad(unidad, 100);
 		Estadisticas.aumentarEvasion(unidad, 100);
 	}
