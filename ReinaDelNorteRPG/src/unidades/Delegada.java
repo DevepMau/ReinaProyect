@@ -1,6 +1,8 @@
 package unidades;
 
 import java.util.ArrayList;
+
+import principal.Habilidades;
 import principal.PanelDeJuego;
 import principal.Zona;
 
@@ -15,16 +17,16 @@ public class Delegada extends Unidad {
 		this.setClase("Delegada");
 		this.setIdFaccion(4);
 		this.setGenero(0);
-		this.setHPMax(obtenerValorEntre(40,70));
+		this.setHPMax(obtenerValorEntre(110,130));
 		this.setHP(this.getHPMax());
 		this.setSP(0);
 		this.setSPMax(0);
-		this.setAtq(obtenerValorEntre(11,16));
-		this.setDef(obtenerValorEntre(3,6));
+		this.setAtq(obtenerValorEntre(12,15));
+		this.setDef(obtenerValorEntre(10,20));
 		this.setPCRT(0);
 		this.setDCRT(1.5);
 		this.setEva(0);
-		this.setVel(obtenerValorEntre(7,12));
+		this.setVel(obtenerValorEntre(10,20));
 		this.listaDeHabilidades[0] = "REGAÑAR";
 		this.generarCuerpo();
 	}
@@ -54,32 +56,7 @@ public class Delegada extends Unidad {
 	//HABILIDADES////////////////////////////////////////////////////////////////////////
 	public void reportar(Unidad unidad) {
 		if(unidad != null) {
-			if(unidad.getFaltasCometidas() >= 3) {
-				unidad.recibirDaño((unidad.getAtq() + unidad.getAtqMod() + this.getAtqMod()), false, 20);
-				unidad.setEstaDebilitado(true);
-				unidad.setAtqMod(unidad.getAtqMod() - obtenerValorEntre(2,4));
-				unidad.setPcrtMod(unidad.getPcrtMod() - 0.05);
-				unidad.setEvaMod(unidad.getEvaMod() - 0.05);
-				unidad.setFaltasCometidas(0);
-				this.setAtqMod(this.getAtqMod() + 1);
-				this.setVelMod(this.getVelMod() + 1);
-				pdj.ReproducirSE(3);
-			}
-			else if(unidad.getFaltasCometidas() == 2) {
-				unidad.recibirDaño((unidad.getAtq() + unidad.getAtqMod())/2, false, 20);
-				this.setAtqMod(this.getAtqMod() + 1);
-				unidad.setFaltasCometidas(0);
-				pdj.ReproducirSE(3);
-			}
-			else if(unidad.getFaltasCometidas() == 1){
-				unidad.recibirDaño((unidad.getAtq() + unidad.getAtqMod())/3, false, 20);
-				unidad.setEstaDebilitado(true);
-				unidad.setFaltasCometidas(0);
-				pdj.ReproducirSE(3);
-			}
-			else {
-				unidad.setFaltasCometidas(unidad.getFaltasCometidas() + 1);
-			}
+			Habilidades.reportarUnidad(this, unidad, pdj);
 		}
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
