@@ -277,6 +277,30 @@ public class Habilidades {
 			Habilidades.setearEfectoDeEstado(objetivo, "WARN!", color);
 		}
 	}
+	
+	public static void difamarUnidad(Unidad lanzador, Unidad objetivo) {
+		Color color = new Color(204, 204, 0);
+		Estadisticas.aumentarDefensa(lanzador, 1);
+		Estadisticas.reducirDefensa(objetivo, 1);
+		Habilidades.setearEfectoDeEstado(objetivo, "SLUR", color);
+	}
+	
+	public static void tendencia(Unidad unidad) {
+		Color color = new Color(255, 20, 147);
+		if(unidad.getTimerTendencia() == -1) {
+			Estadisticas.aumentarTasaBloqueo(unidad, 50);
+			Estadisticas.aumentarDefensa(unidad, 10);
+		}
+		Habilidades.setearEfectoDeEstado(unidad, "TREND!", color);
+		unidad.setTimerTendencia(5);
+	}
+	
+	public static void noTendencia(Unidad unidad) {
+		Estadisticas.reducirTasaBloqueo(unidad, 30);
+		Estadisticas.reducirDefensa(unidad, 10);
+	}
+	
+	
 		
 	//HABILIDADES COMPUESTAS/////////////////////////////////////////////////
 	
