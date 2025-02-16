@@ -73,6 +73,7 @@ public class Unidad {
 	private int timerMarcado = -1;
 	private int timerDebilitado = -1;
 	private int timerJuzgado = -1;
+	private int timerTendencia = -1;
 	//ELEMENTOS DE ESTADOS///////////////////////////////////////////
 	private int valorSangrado;
 	private int rdcDefAcc = 0;
@@ -287,6 +288,7 @@ public class Unidad {
 	}
 	
 	public void realizarAtaque(Unidad unidad, ArrayList<Unidad> enemigos) {
+		Unidad defensor = getDefensor(enemigos);
 		this.setNombreDeUltimoObjetivo(unidad.getClase());
 		boolean isCritical = Math.random() <= ((this.getPCRT() + this.getPcrtMod()) / 100.0);
 		if(unidad != null) {
@@ -294,12 +296,34 @@ public class Unidad {
 			if (isCritical) {
 				daño *= (this.getDCRT() + this.getDcrtMod());
 			}
-			unidad.recibirDaño(daño, isCritical, this);
+			if(defensor != null) {
+				if(defensor.elegirAleatorio(100) < (defensor.getBloq() + defensor.getBloqMod())) {
+					defensor.recibirDaño(daño, isCritical, this);
+				}
+				else {
+					unidad.recibirDaño(daño, isCritical, this);
+				}
+			}
+			else {
+				unidad.recibirDaño(daño, isCritical, this);
+			}
 			this.reflejarDaño(unidad, daño);
 		}
 	}
+	
+	public Unidad getDefensor(ArrayList<Unidad> unidades) {
+		if(!unidades.isEmpty()) {
+			for(Unidad unidad : unidades) {
+				if(unidad.getClase() == "Influencer") {
+					return unidad;
+				}
+			}
+		}
+		return null;
+	}
 
 	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
+		Unidad defensor = getDefensor(unidades);
 		Unidad objetivo = elegirObjetivo(unidades);
 		if(!unidades.isEmpty()) {
 			this.setNombreDeUltimoObjetivo(objetivo.getClase());
@@ -310,7 +334,17 @@ public class Unidad {
 			if (isCritical) {
 				daño *= (this.getDCRT() + this.getDcrtMod());
 			}
-			objetivo.recibirDaño(daño, isCritical, this);
+			if(defensor != null) {
+				if(defensor.elegirAleatorio(100) < (defensor.getBloq() + defensor.getBloqMod())) {
+					defensor.recibirDaño(daño, isCritical, this);
+				}
+				else {
+					objetivo.recibirDaño(daño, isCritical, this);
+				}
+			}
+			else {
+				objetivo.recibirDaño(daño, isCritical, this);
+			}
 			this.reflejarDaño(objetivo, daño);
 			if(this.getClase() == "Dragon Pirotecnico") {
 				this.setUnidadObjetivoEnemigo(objetivo);
@@ -398,6 +432,7 @@ public class Unidad {
 	    actualizarTimer(this::getTimerDesmotivado, this::setTimerDesmotivado, () -> Habilidades.motivarUnidad(this));
 	    actualizarTimer(this::getTimerLisiado, this::setTimerLisiado, () -> Habilidades.renovarMovilidad(this));
 	    actualizarTimer(this::getTimerMarcado, this::setTimerMarcado, () -> Habilidades.desmarcarUnidad(this));
+	    actualizarTimer(this::getTimerTendencia, this::setTimerTendencia, () -> Habilidades.noTendencia(this));
 	}
 
 	private void actualizarTimer(Supplier<Integer> getter, Consumer<Integer> setter, Runnable habilidad) {
@@ -843,6 +878,12 @@ public class Unidad {
 	}
 	public void setTimerJuzgado(int timerJuzgado) {
 		this.timerJuzgado = timerJuzgado;
+	}
+	public int getTimerTendencia() {
+		return timerTendencia;
+	}
+	public void setTimerTendencia(int timerTendencia) {
+		this.timerTendencia = timerTendencia;
 	}
 	//G&S ACUMULADORES/////////////////////////////////////////////////////////
 	public int getEscudos() {return this.escudos;}
