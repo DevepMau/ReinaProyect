@@ -66,12 +66,10 @@ public class Unidad {
 	private int timerPotenciado = -1;
 	private int timerSangrando = -1;
 	private int timerMotivado = -1;
-	private int timerDesmotivado = -1;
 	private int timerRdcDefAcc = -1;
 	private int timerLisiado = -1;
 	private int timerIncendiado = -1;
 	private int timerMarcado = -1;
-	private int timerDebilitado = -1;
 	private int timerJuzgado = -1;
 	private int timerTendencia = -1;
 	private int timerDesmoralizar = -1;
@@ -404,7 +402,7 @@ public class Unidad {
 	
 	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
 		iniciarTimersDeEstado();
-		actualizarTimer(this::getTimerJuzgado, this::setTimerJuzgado, () -> Habilidades.despenalizarUnidad(this, aliados, enemigos));
+		actualizarTimer(this::getTimerJuzgado, this::setTimerJuzgado, () -> Habilidades.cancelarPenalizarUnidad(this, aliados, enemigos));
 		if(this.getNombreDeUltimoObjetivo() == "Novata Timida") {
 			Habilidades.penalizarUnidad(this, aliados, enemigos);
 			this.setNombreDeUltimoObjetivo("");
@@ -424,16 +422,14 @@ public class Unidad {
 	public void iniciarTimersDeEstado() {
 		actualizarHemorragia();
 		actualizarIncendiar();
-	    actualizarTimer(this::getTimerPrecavido, this::setTimerPrecavido, () -> Habilidades.reducirProteccion(this));
-	    actualizarTimer(this::getTimerAgresivo, this::setTimerAgresivo, () -> Habilidades.reducirAgresividad(this));
-	    actualizarTimer(this::getTimerAcelerado, this::setTimerAcelerado, () -> Habilidades.reducirAgilidad(this));
-	    actualizarTimer(this::getTimerPotenciado, this::setTimerPotenciado, () -> Habilidades.debilitarUnidad(this));
-	    actualizarTimer(this::getTimerDebilitado, this::setTimerDebilitado, () -> Habilidades.potenciarUnidad(this));
-	    actualizarTimer(this::getTimerMotivado, this::setTimerMotivado, () -> Habilidades.desmotivarUnidad(this));
-	    actualizarTimer(this::getTimerDesmotivado, this::setTimerDesmotivado, () -> Habilidades.motivarUnidad(this));
-	    actualizarTimer(this::getTimerLisiado, this::setTimerLisiado, () -> Habilidades.renovarMovilidad(this));
+	    actualizarTimer(this::getTimerPrecavido, this::setTimerPrecavido, () -> Habilidades.cancelarAumentarProteccion(this));
+	    actualizarTimer(this::getTimerAgresivo, this::setTimerAgresivo, () -> Habilidades.cancelarAumentarAgresividad(this));
+	    actualizarTimer(this::getTimerAcelerado, this::setTimerAcelerado, () -> Habilidades.cancelarAumentarAgilidad(this));
+	    actualizarTimer(this::getTimerPotenciado, this::setTimerPotenciado, () -> Habilidades.cancelarPotenciarUnidad(this));
+	    actualizarTimer(this::getTimerMotivado, this::setTimerMotivado, () -> Habilidades.cancelarMotivarUnidad(this));
+	    actualizarTimer(this::getTimerLisiado, this::setTimerLisiado, () -> Habilidades.cancelarDestruirMovilidad(this));
 	    actualizarTimer(this::getTimerMarcado, this::setTimerMarcado, () -> Habilidades.desmarcarUnidad(this));
-	    actualizarTimer(this::getTimerTendencia, this::setTimerTendencia, () -> Habilidades.noTendencia(this));
+	    actualizarTimer(this::getTimerTendencia, this::setTimerTendencia, () -> Habilidades.cancelarTendencia(this));
 	    actualizarTimer(this::getTimerDesmoralizar, this::setTimerDesmoralizar, () -> Habilidades.cancelarDesmoralizarUnidad(this));
 	}
 
@@ -862,8 +858,6 @@ public class Unidad {
 	public void setTimerSangrando(int timerSangrando) {this.timerSangrando = timerSangrando;}
 	public int getTimerMotivado() {return timerMotivado;}
 	public void setTimerMotivado(int timerMotivado) {this.timerMotivado = timerMotivado;}
-	public int getTimerDesmotivado() {return timerDesmotivado;}
-	public void setTimerDesmotivado(int timerDesmotivado) {this.timerDesmotivado = timerDesmotivado;}
 	public int getTimerRdcDefAcc() {return timerRdcDefAcc;}
 	public void setTimerRdcDefAcc(int timerRdcDefAcc) {this.timerRdcDefAcc = timerRdcDefAcc;}
 	public int getTimerLisiado() {return timerLisiado;}
@@ -873,8 +867,6 @@ public class Unidad {
 	public void setTimerIncendiado(int timerIncendiado) {this.timerIncendiado = timerIncendiado;}
 	public int getTimerMarcado() {return timerMarcado;}
 	public void setTimerMarcado(int timerMarcado) {this.timerMarcado = timerMarcado;}
-	public int getTimerDebilitado() {return timerDebilitado;}
-	public void setTimerDebilitado(int timerDebilitado) {this.timerDebilitado = timerDebilitado;}
 	public int getTimerJuzgado() {
 		return timerJuzgado;
 	}
