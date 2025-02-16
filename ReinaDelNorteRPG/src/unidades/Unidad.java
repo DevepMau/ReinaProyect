@@ -74,6 +74,7 @@ public class Unidad {
 	private int timerDebilitado = -1;
 	private int timerJuzgado = -1;
 	private int timerTendencia = -1;
+	private int timerDesmoralizar = -1;
 	//ELEMENTOS DE ESTADOS///////////////////////////////////////////
 	private int valorSangrado;
 	private int rdcDefAcc = 0;
@@ -433,6 +434,7 @@ public class Unidad {
 	    actualizarTimer(this::getTimerLisiado, this::setTimerLisiado, () -> Habilidades.renovarMovilidad(this));
 	    actualizarTimer(this::getTimerMarcado, this::setTimerMarcado, () -> Habilidades.desmarcarUnidad(this));
 	    actualizarTimer(this::getTimerTendencia, this::setTimerTendencia, () -> Habilidades.noTendencia(this));
+	    actualizarTimer(this::getTimerDesmoralizar, this::setTimerDesmoralizar, () -> Habilidades.cancelarDesmoralizarUnidad(this));
 	}
 
 	private void actualizarTimer(Supplier<Integer> getter, Consumer<Integer> setter, Runnable habilidad) {
@@ -884,6 +886,12 @@ public class Unidad {
 	}
 	public void setTimerTendencia(int timerTendencia) {
 		this.timerTendencia = timerTendencia;
+	}
+	public int getTimerDesmoralizar() {
+		return timerDesmoralizar;
+	}
+	public void setTimerDesmoralizar(int timerDesmoralizar) {
+		this.timerDesmoralizar = timerDesmoralizar;
 	}
 	//G&S ACUMULADORES/////////////////////////////////////////////////////////
 	public int getEscudos() {return this.escudos;}
