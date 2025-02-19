@@ -219,18 +219,6 @@ public class InicializadorDeRecursos {
 					unidad.imagenesBody[1] = pdj.ui.configurarImagen("/imagenes/unisex/cuerpo"+unidad.getIdTez(), 3);
 					unidad.imagenesBody[0] = pdj.ui.configurarImagen("/imagenes/mujer/cabeza-timida-"+unidad.getIdTez(), 3);
 				}
-				else if(unidad.getClase() == "Novata Cauta") {
-					unidad.imagenesBody[3] = pdj.ui.configurarImagen("/imagenes/unisex/manos-"+unidad.getIdTez(), 3);
-					unidad.imagenesBody[2] = pdj.ui.configurarImagen("/imagenes/mujer/falda-"+unidad.getIdTez(),3);
-					unidad.imagenesBody[1] = pdj.ui.configurarImagen("/imagenes/unisex/cuerpo"+unidad.getIdTez(), 3);
-					unidad.imagenesBody[0] = pdj.ui.configurarImagen("/imagenes/mujer/cabeza-girl-"+unidad.getIdTez(), 3);
-				}
-				else if(unidad.getClase() == "Novata Confiable") {
-					unidad.imagenesBody[3] = pdj.ui.configurarImagen("/imagenes/unisex/manos-seña-"+unidad.getIdTez(), 3);
-					unidad.imagenesBody[2] = pdj.ui.configurarImagen("/imagenes/mujer/falda-"+unidad.getIdTez(),3);
-					unidad.imagenesBody[1] = pdj.ui.configurarImagen("/imagenes/unisex/cuerpo"+unidad.getIdTez(), 3);
-					unidad.imagenesBody[0] = pdj.ui.configurarImagen("/imagenes/mujer/cabeza-coleta-"+unidad.getIdTez(), 3);
-				}
 				else if(unidad.getClase() == "Delegada") {
 					unidad.imagenesBody[4] = pdj.ui.configurarImagen("/imagenes/accesorios/mano-de-lente-"+unidad.getIdTez(),3);
 					unidad.imagenesBody[3] = pdj.ui.configurarImagen("/imagenes/unisex/manos-libreta-"+unidad.getIdTez(), 3);
@@ -244,14 +232,14 @@ public class InicializadorDeRecursos {
 					unidad.imagenesBody[1] = pdj.ui.configurarImagen("/imagenes/unisex/cuerpo"+unidad.getIdTez(), 3);
 					unidad.imagenesBody[0] = pdj.ui.configurarImagen("/imagenes/mujer/cabeza-influencer-"+unidad.getIdTez(), 3);
 				}
-				else if(unidad.getClase() == "Idol Galactica") {
-					//imagenesBody[4] = configurarImagen("/imagenes/accesorios/dragon", 3);
-					unidad.imagenesBody[3] = pdj.ui.configurarImagen("/imagenes/unisex/manos-idol-"+unidad.getIdTez(), 3);
+				else if(unidad.getClase() == "Doncella del Cerezo") {
+					unidad.imagenesBody[4] = pdj.ui.configurarImagen("/imagenes/accesorios/horquilla", 3);
+					unidad.imagenesBody[3] = pdj.ui.configurarImagen("/imagenes/mujer/manos-abanico-"+unidad.getIdTez(), 3);
 					unidad.imagenesBody[2] = pdj.ui.configurarImagen("/imagenes/mujer/falda-olanes",3);
-					unidad.imagenesBody[1] = pdj.ui.configurarImagen("/imagenes/mujer/cuerpo-idol", 3);
-					unidad.imagenesBody[0] = pdj.ui.configurarImagen("/imagenes/mujer/cabeza-idol-"+unidad.getIdTez(), 3);
-					//alturaDeAccesorio = 5;
-					//this.alturaDeBarraHP = -20;
+					unidad.imagenesBody[1] = pdj.ui.configurarImagen("/imagenes/mujer/cuerpo-hanfu", 3);
+					unidad.imagenesBody[0] = pdj.ui.configurarImagen("/imagenes/mujer/cabeza-coleta-"+unidad.getIdTez(), 3);
+					unidad.setAlturaDeAccesorio(13);
+					//unidad.setAlturaDeBarraHP(-20);
 				}
 			}
 		}
