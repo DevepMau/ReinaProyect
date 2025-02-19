@@ -456,6 +456,30 @@ public class Unidad {
 		}
 	}
 	
+	public void usarHabilidadOfensiva(Unidad unidad, boolean puedeEsquivar, boolean puedeBloquear, int dañoAdicional, Runnable habilidad) { 
+	    int daño = this.getAtq() + this.getAtqMod() + dañoAdicional;
+	    int reduccion = (int) (daño * ((unidad.getDef() + unidad.getDefMod()) / 100.0));
+	    int dañoFinal = Math.max(1, daño - reduccion);
+	    if (puedeEsquivar && unidad.elegirAleatorio(100) < (unidad.getEva() + unidad.getEvaMod())) {
+	        pdj.ReproducirSE(6);
+	        Habilidades.setearEfectoDeEstado(unidad, "MISS!", Color.white);
+	    } else {
+	        if (puedeBloquear && this.elegirAleatorio(100) < (unidad.getBloq() + unidad.getBloqMod())) {
+	            pdj.ReproducirSE(9);
+	            unidad.setHP(unidad.getHP() - (dañoFinal / 4));
+	            Habilidades.setearEfectoDeEstado(unidad, "BLOCK!", Color.white);
+	        } else if (unidad.getEscudos() > 0) {
+	            unidad.setEscudos(unidad.getEscudos() - 1);
+	            pdj.ReproducirSE(9);
+	            Habilidades.setearEfectoDeEstado(unidad, "BREAK!", Color.white);
+	        } else {
+	            unidad.setHP(unidad.getHP() - dañoFinal);
+	            pdj.ReproducirSE(3);
+	            habilidad.run();
+	        }
+	    }
+	}
+	
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {}	
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {}
 	//METODOS VARIOS///////////////////////////////////////////////////////
