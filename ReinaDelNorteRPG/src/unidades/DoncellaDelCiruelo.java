@@ -1,44 +1,50 @@
 package unidades;
 
 import java.util.ArrayList;
+
+import principal.Estadisticas;
+import principal.Habilidades;
 import principal.PanelDeJuego;
 import principal.Zona;
 
-public class IdolGalactica extends Unidad{
+public class DoncellaDelCiruelo extends Unidad{
 	
 	private int spHabilidad1;
+	private int spHabilidad2;
+	private int contador = 5;
 	private String[] listaDeHabilidades = new String[2];
 
-	public IdolGalactica(Zona zona, boolean aliado, PanelDeJuego pdj) {
+	public DoncellaDelCiruelo(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
 		this.setNombre("");
 		this.setTipo("Elite");
-		this.setClase("Idol Galactica");
+		this.setClase("Doncella del Cerezo");
 		this.setGenero(0);
 		this.setIdFaccion(4);
-		this.setHPMax(obtenerValorEntre(80,110));
+		this.setHPMax(obtenerValorEntre(150,220));
 		this.setHP(this.getHPMax());
-		this.setSPMax(obtenerValorEntre(90,120));
+		this.setSPMax(obtenerValorEntre(70,90));
 		this.setSP(this.getSPMax());
-		this.setAtq(obtenerValorEntre(9,13));
-		this.setDef(obtenerValorEntre(3,6));
-		this.setPCRT(0.5);
+		this.setAtq(obtenerValorEntre(15,22));
+		this.setDef(obtenerValorEntre(20,30));
+		this.setPCRT(50);
 		this.setDCRT(2);
-		this.setEva(0.3);
-		this.setVel(obtenerValorEntre(15,20));
-		this.spHabilidad1 = 20;
-		this.listaDeHabilidades[0] = "ANIMAR";
-		this.listaDeHabilidades[1] = "ROMPE-CORAZON";
+		this.setEva(15);
+		this.setVel(obtenerValorEntre(20,30));
+		this.spHabilidad1 = 10;
+		this.spHabilidad2 = 40;
+		this.listaDeHabilidades[0] = "ABOFETEAR";
+		this.listaDeHabilidades[1] = "DAR DISCURSO";
 		this.generarCuerpo();
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
-		if(this.hayUnidadMuyHerida(aliados)) {
-			this.setHabilidadElegida(0);
+		if(!this.cumpleReqDeHab2()) {
+			this.setHabilidadElegida(1);
 			usarHabilidadEnemigo(aliados, enemigos);
 		}
-		else if(!this.haySinMarcar(enemigos)) {
-			this.setHabilidadElegida(1);
+		else if(this.cumpleReqDeHab1()) {
+			this.setHabilidadElegida(0);
 			usarHabilidadEnemigo(aliados, enemigos);
 		}
 		else {
@@ -53,16 +59,15 @@ public class IdolGalactica extends Unidad{
 	public void usarHabilidadEnemigo(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
 		if(this.getHabilidadElegida() == 0) {
 			if(!aliados.isEmpty()) {
-				Unidad unidad = elegirObjetivo(aliados);
-				curar(unidad);
+				Unidad unidad = elegirObjetivo(enemigos);
+				abofetear(unidad);
 			}
 		}
 		else {
 			if(!enemigos.isEmpty()) {
-				for(Unidad unidad : enemigos) {
-					romperCorazones(unidad);
+				for(Unidad unidad : aliados) {
+					discursoInspirador(unidad);
 				}
-				this.setCargarEnamoramiento(0);
 			}
 		}
 	}
@@ -72,52 +77,34 @@ public class IdolGalactica extends Unidad{
 	}
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {	
 		if(this.getHabilidadElegida() == 0) {
-			curar(unidad);
+			abofetear(unidad);
 		}
 		else {
 			for(Unidad unidadObjetivo : unidades) {
-				romperCorazones(unidadObjetivo);
+				discursoInspirador(unidadObjetivo);
 			}
 			this.setCargarEnamoramiento(0);
 		}
 		
 	}
 	//HABILIDADES///////////////////////////////////////////////////////////////////
-	public void curar(Unidad unidad) {
+	public void abofetear(Unidad unidad) {
 		this.setSP(this.getSP() - this.spHabilidad1);
 		if(unidad != null) {
-			pdj.ReproducirSE(4);
-			unidad.setAtqMod(unidad.getAtqMod() + 1);
-			unidad.setVelMod(unidad.getVelMod() + 5);
-			unidad.restaurarHP(unidad.getHPMax()/4);
-			unidad.setRealizandoCuracion(true);
-			unidad.setearSacudida(true);
-			unidad.setDuracionSacudida(20);
+			pdj.ReproducirSE(2);
+			Habilidades.desmoralizarUnidad(unidad);
+			this.setCdHabilidad1(1);
+			this.setHabilidad1(false);
 		}
 	}
-	public void romperCorazones(Unidad unidad) {
-		int daño = (this.getAtq()+((this.getAtq()/2)*(this.getCargarEnamoramiento()+1)));
+	public void discursoInspirador(Unidad unidad) {
 		if(unidad != null) {
-			pdj.ReproducirSE(8);
-			if(unidad.isEstaEnamorado()) {
-				unidad.setearSacudida(true);
-				unidad.setDuracionSacudida(20);
-				unidad.setEstaEnamorado(false);
-				unidad.recibirDaño(daño, false, 20);
-				this.restaurarSP(daño/2);
-			}
+			Habilidades.protegerUnidad(unidad, 1, pdj);
+			this.setCdHabilidad2(5);
+			this.setHabilidad2(false);
 		}
 	}
 	//METODOS AUXILIARES////////////////////////////////////////////////////////////
-	public boolean hayUnidadMuyHerida(ArrayList<Unidad> unidades) {
-	    for (Unidad unidad : unidades) {
-	        int porcentajeHP = (unidad.getHP() * 100) / unidad.getHPMax();
-	        if (porcentajeHP < 50) {
-	            return true;
-	        }
-	    }
-	    return false;
-	}
 	public Unidad elegirObjetivo(ArrayList<Unidad> unidades) {
 	    Unidad unidadSeleccionada = null;
 	    int menorPorcentajeHP = Integer.MAX_VALUE;
@@ -130,63 +117,53 @@ public class IdolGalactica extends Unidad{
 	    }
 	    return unidadSeleccionada;
 	}
-	public boolean haySinMarcar(ArrayList<Unidad> unidades) {
-		if(!unidades.isEmpty()) {
-			for(Unidad unidad : unidades) {
-				if(!unidad.isEstaEnamorado()) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	public Unidad elegirObjetivoSinMarcar(ArrayList<Unidad> unidades) {
-	    ArrayList<Unidad> unidadesSinMarcar = new ArrayList<>();
-	    for (Unidad unidad : unidades) {
-	        if (!unidad.isEstaEnamorado()) {
-	            unidadesSinMarcar.add(unidad);
-	        }
-	    }
-	    if (!unidadesSinMarcar.isEmpty()) {
-	        return unidadesSinMarcar.get(this.elegirAleatorio(unidadesSinMarcar.size()));
-	    }
-	    return null;
-	}
+	
 	public boolean cumpleReqDeHab1() {
-		if(this.getSP() > 0) {
-			if(this.getSP() >= this.spHabilidad1) {
-				return true;
-			}
-		}
-		return false;
-	}
-	public boolean cumpleReqDeHab2() {
-		if(this.getCargarEnamoramiento() > 0) {
+		if(this.getSP() >= this.spHabilidad1 && this.isHabilidad1()) {
 			return true;
 		}
 		return false;
 	}
+	
+	public boolean cumpleReqDeHab2() {
+		if(this.getSP() >= this.spHabilidad2 && this.isHabilidad2()) {
+			return true;
+		}
+		return false;
+	}
+	
 	public void configurarTipoDeaccion() {
 		if(this.getHabilidadElegida() == 0) {
 			this.setObjetivoUnico(true);
-			this.setAccion("APOYAR");
+			this.setAccion("ATACAR");
 		}
 		else {
 			this.setObjetivoUnico(false);
-			this.setAccion("ATACAR");
+			this.setAccion("APOYAR");
 		}
 	}
 	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
+		if(this.getCdHabilidad1() == 0) {
+			this.setHabilidad1(true);
+		}
+		else {
+			this.setCdHabilidad1(this.getCdHabilidad1() - 1);
+		}
+		if(this.getCdHabilidad2() == 0) {
+			this.setHabilidad2(true);
+		}
+		else {
+			this.setCdHabilidad2(this.getCdHabilidad2() - 1);
+		}
 		super.pasivaDeClase(aliados, enemigos);
-		if(!aliados.isEmpty() && this.getContador() > 0) {
+		if(!aliados.isEmpty() && this.contador > 0) {
 			for(Unidad unidad : aliados) {
 				if(!this.equals(unidad)) {
-					unidad.setAtqMod(unidad.getAtqMod() + 1);
-					unidad.setDefMod(unidad.getDefMod() + 1);
-					unidad.setVelMod(unidad.getVelMod() + 1);
+					Estadisticas.aumentarAtaque(unidad, 1);
+					Estadisticas.aumentarDefensa(unidad, 1);
 				}
 			}
-			this.setContador(this.getContador() - 1);
+			contador--;
 		}
 	}
 	public String[] getListaDeHabilidades() {return listaDeHabilidades;}
