@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+
+import principal.Habilidades;
 import principal.PanelDeJuego;
 import principal.Zona;
 
@@ -52,24 +54,21 @@ public class AspiranteADragon extends Unidad{
 	//METODOS DE ENEMIGO////////////////////////////////////////////////////////////
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
 		if(this.getHabilidadElegida() == 0) {
-			if(this.getPuñosAcumulados() >= 5) {
-				//potenciacion
-			}
 			Unidad unidad = elegirObjetivoMasFuerte(unidades);
 			comboLetal(unidad);	
 		}
 	}
 	//METODOS DE JUGADOR////////////////////////////////////////////////////////////
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {
-		if(this.getPuñosAcumulados() >= 5) {
-			//habillidad potenciadora
-		}
 		comboLetal(unidad);
 	}
 	//HABILIDADES///////////////////////////////////////////////////////////////////
 	public void comboLetal(Unidad unidad) {
 		int daño = this.getAtq() + this.getAtqMod();
-		unidad.recibirGolpesMúltiples(daño, 2 , true, this);
+		unidad.recibirGolpesMúltiples(daño, this.getPuñosAcumulados() , true, this);
+		if(this.getPuñosAcumulados() >= 5) {
+			Habilidades.potenciarUnidad(this);
+		}
 		this.setPuñosAcumulados(1);
 	}
 	
