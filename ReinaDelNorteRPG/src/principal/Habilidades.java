@@ -307,6 +307,7 @@ public class Habilidades {
 			Estadisticas.reducirVelocidad(unidad, 5);
 			Estadisticas.reducirEvasion(unidad, 5);
 		}
+		unidad.setHP(unidad.getHP() - unidad.getHPMax()/10);
 		Habilidades.setearEfectoDeEstado(unidad, "DOWN!", color);
 		unidad.setTimerDesmoralizar(5);
 	}
