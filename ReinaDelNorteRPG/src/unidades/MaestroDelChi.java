@@ -61,8 +61,10 @@ public class MaestroDelChi extends Unidad {
 		}
 		else {
 			if(!enemigos.isEmpty()) {
-				for(Unidad unidad : enemigos) {
-					explotar(unidad);
+				for(Unidad unidadObjetivo : enemigos) {
+					Habilidades.desmarcarUnidad(unidadObjetivo);
+					super.usarHabilidadOfensiva(unidadObjetivo, false, false, this.getSPMax()/10,() -> Habilidades.explotarMarca(this, unidadObjetivo));
+					this.cargas = 0;
 				}
 			}
 		}
@@ -74,7 +76,9 @@ public class MaestroDelChi extends Unidad {
 		}
 		else {
 			for(Unidad unidadObjetivo : unidades) {
-				explotar(unidadObjetivo);
+				Habilidades.desmarcarUnidad(unidadObjetivo);
+				super.usarHabilidadOfensiva(unidadObjetivo, false, false, this.getSPMax()/10,() -> Habilidades.explotarMarca(this, unidadObjetivo));
+				this.cargas = 0;
 			}
 		}
 	}
@@ -85,18 +89,6 @@ public class MaestroDelChi extends Unidad {
 			pdj.ReproducirSE(8);
 			Habilidades.marcarUnidad(unidad);
 			this.cargas++;
-		}
-	}
-	
-	public void explotar(Unidad unidad) {
-		if(unidad != null) {
-			pdj.ReproducirSE(8);
-			if(unidad.getTimerMarcado() > 0) {
-				Habilidades.desmarcarUnidad(unidad);
-				Habilidades.explotarMarca(this, unidad);
-				this.cargas = 0;
-			}
-			
 		}
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////

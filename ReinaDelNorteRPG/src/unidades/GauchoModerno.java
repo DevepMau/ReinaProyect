@@ -1,8 +1,6 @@
 package unidades;
 
-import java.awt.Color;
 import java.util.ArrayList;
-
 import principal.Habilidades;
 import principal.PanelDeJuego;
 import principal.Zona;
@@ -53,48 +51,16 @@ public class GauchoModerno extends Unidad {
 		if(this.getHabilidadElegida() == 0) {
 			if(!unidades.isEmpty()) {
 				Unidad unidad = elegirObjetivo(unidades);
-				apuñalar(unidad);
+				super.usarHabilidadOfensiva(unidad, true, true, 0,() -> Habilidades.ataqueActivadorHemorragia(this, unidad));
+				this.setCdHabilidad1(3);
+				this.setHabilidad1(false);
 			}
 		}
 	}
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {	
-		apuñalar(unidad);
-	}
-	//HABILIDADES////////////////////////////////////////////////////////////////////////
-	public void apuñalar(Unidad unidad) {
-		int daño = this.getAtq() + this.getAtqMod();
-	    int reduccion = (int) (daño * ((unidad.getDef() + unidad.getDefMod()) / 100.0));
-        int dañoFinal = Math.max(1, daño - reduccion);
-        String textoMostrado = "";
-	    if (unidad.elegirAleatorio(100) < (unidad.getEva() + unidad.getEvaMod())) {
-	    	pdj.ReproducirSE(6);
-	        textoMostrado = "MISS!";
-	        Habilidades.setearEfectoDeEstado(unidad, textoMostrado, Color.white);
-	    }
-	    else {
-	    	if(this.elegirAleatorio(100) < (unidad.getBloq() + unidad.getBloqMod())) {
-	    		pdj.ReproducirSE(9);
-	    		unidad.setHP(unidad.getHP() - (dañoFinal/4));
-		        textoMostrado = "BLOCK!";
-		        Habilidades.setearEfectoDeEstado(unidad, textoMostrado, Color.white);
-	    	}
-	    	else if (unidad.getEscudos() > 0) {
-		        unidad.setEscudos(unidad.getEscudos() - 1);
-		        pdj.ReproducirSE(9);
-		        textoMostrado = "BREAK!";
-		        Habilidades.setearEfectoDeEstado(unidad, textoMostrado, Color.white);
-		    } else {
-		    	textoMostrado = "BLEED";
-		        unidad.setHP(unidad.getHP() - dañoFinal);
-		        pdj.ReproducirSE(3);
-		        Habilidades.setearEfectoDeEstado(unidad, textoMostrado, Color.RED);
-				unidad.setEfectoDeEstado(true);
-				unidad.setValorSangrado(unidad.getHPMax()/20 + this.getAtqMod());
-				unidad.setTimerSangrando(5);
-		    }
-	    }
-	    this.setCdHabilidad1(3);
+		super.usarHabilidadOfensiva(unidad, true, true, 0,() -> Habilidades.ataqueActivadorHemorragia(this, unidad));
+		this.setCdHabilidad1(3);
 		this.setHabilidad1(false);
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////

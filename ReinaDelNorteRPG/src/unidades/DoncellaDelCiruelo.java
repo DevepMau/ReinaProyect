@@ -60,7 +60,9 @@ public class DoncellaDelCiruelo extends Unidad{
 		if(this.getHabilidadElegida() == 0) {
 			if(!aliados.isEmpty()) {
 				Unidad unidad = elegirObjetivo(enemigos);
-				abofetear(unidad);
+				super.usarHabilidadOfensiva(unidad, false, true, 0,() -> Habilidades.desmoralizarUnidad(unidad));
+				this.setCdHabilidad1(1);
+				this.setHabilidad1(false);
 			}
 		}
 		else {
@@ -77,26 +79,21 @@ public class DoncellaDelCiruelo extends Unidad{
 	}
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {	
 		if(this.getHabilidadElegida() == 0) {
-			abofetear(unidad);
+			super.usarHabilidadOfensiva(unidad, false, true, 0,() -> Habilidades.desmoralizarUnidad(unidad));
+			this.setCdHabilidad1(1);
+			if(this.getCdHabilidad2() > 0) {
+				this.setCdHabilidad2(this.getCdHabilidad2() - 1);
+			}
+			this.setHabilidad1(false);
 		}
 		else {
 			for(Unidad unidadObjetivo : unidades) {
 				discursoInspirador(unidadObjetivo);
 			}
-			this.setCargarEnamoramiento(0);
 		}
 		
 	}
 	//HABILIDADES///////////////////////////////////////////////////////////////////
-	public void abofetear(Unidad unidad) {
-		this.setSP(this.getSP() - this.spHabilidad1);
-		if(unidad != null) {
-			pdj.ReproducirSE(2);
-			Habilidades.desmoralizarUnidad(unidad);
-			this.setCdHabilidad1(1);
-			this.setHabilidad1(false);
-		}
-	}
 	public void discursoInspirador(Unidad unidad) {
 		if(unidad != null) {
 			Habilidades.protegerUnidad(unidad, 1, pdj);

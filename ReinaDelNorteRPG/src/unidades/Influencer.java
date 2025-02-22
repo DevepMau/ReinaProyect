@@ -55,7 +55,9 @@ public class Influencer extends Unidad {
 	public void usarHabilidadEnemigo(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
 		if(this.getHabilidadElegida() == 0) {
 			Unidad unidad = elegirObjetivo(enemigos);
-			difamar(unidad);
+			super.usarHabilidadOfensiva(unidad, true, true, this.getDefMod() ,() -> Habilidades.difamarUnidad(this, unidad));
+			this.setCdHabilidad1(1);
+			this.setHabilidad1(false);
 		}
 		else {
 			tendencia();
@@ -64,27 +66,15 @@ public class Influencer extends Unidad {
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {	
 		if(this.getHabilidadElegida() == 0) {
-			difamar(unidad);
+			super.usarHabilidadOfensiva(unidad, true, true, this.getDefMod() ,() -> Habilidades.difamarUnidad(this, unidad));
+			this.setCdHabilidad1(1);
+			this.setHabilidad1(false);
 		}
 		else {
 			tendencia();
 		}
 	}
 	//HABILIDADES////////////////////////////////////////////////////////////////////////
-	public void difamar(Unidad unidad) {
-		int daño = this.getAtq() + this.getAtqMod() + this.getDefMod();
-		int reduccion = (int) (daño * ((unidad.getDef() + unidad.getDefMod()) / 100.0));
-        int dañoFinal = Math.max(1, daño - reduccion);
-		if(unidad != null) {
-			pdj.ReproducirSE(2);
-			unidad.setHP(unidad.getHP() - dañoFinal);
-			Habilidades.difamarUnidad(this, unidad);
-			this.setSP(this.getSP() - this.spHabilidad1);
-			this.setCdHabilidad1(1);
-			this.setHabilidad1(false);
-		}
-	}
-	
 	public void tendencia() {
 		pdj.ReproducirSE(3);
 		this.setSP(this.getSP() - this.spHabilidad2);

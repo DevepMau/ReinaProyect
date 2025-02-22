@@ -42,21 +42,15 @@ public class Delegada extends Unidad {
 	}
 	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
-		Unidad objetivo = this.elegirObjetivoCon3Marcas(unidades);
-		if(objetivo != null) {
-			reportar(objetivo);
+		Unidad unidad = this.elegirObjetivoCon3Marcas(unidades);
+		if(unidad != null) {
+			super.usarHabilidadOfensiva(unidad, false, false, unidad.getAtqMod() ,() -> Habilidades.reportarUnidad(this, unidad, pdj));
 		}
 	}
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {
 		if(unidad != null) {
-			reportar(unidad);
-		}
-	}
-	//HABILIDADES////////////////////////////////////////////////////////////////////////
-	public void reportar(Unidad unidad) {
-		if(unidad != null) {
-			Habilidades.reportarUnidad(this, unidad, pdj);
+			super.usarHabilidadOfensiva(unidad, false, false, unidad.getAtqMod() ,() -> Habilidades.reportarUnidad(this, unidad, pdj));
 		}
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////

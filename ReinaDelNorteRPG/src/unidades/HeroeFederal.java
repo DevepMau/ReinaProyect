@@ -1,8 +1,6 @@
 package unidades;
 
-import java.awt.Color;
 import java.util.ArrayList;
-
 import principal.Habilidades;
 import principal.PanelDeJuego;
 import principal.Zona;
@@ -49,35 +47,15 @@ public class HeroeFederal extends Unidad{
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
 		if(this.getHabilidadElegida() == 0) {
 			Unidad unidad = elegirObjetivoMasFuerte(unidades);
-			expulsar(unidad);	
+			super.usarHabilidadOfensiva(unidad, false, true, this.getVelMod() ,() -> Habilidades.destruirMovilidad(unidad));
+			this.setCdHabilidad1(1);
+			this.setHabilidad1(false);	
 		}
 	}
 	//METODOS DE JUGADOR////////////////////////////////////////////////////////////
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {
-		expulsar(unidad);
-	}
-	//HABILIDADES///////////////////////////////////////////////////////////////////
-	public void expulsar(Unidad unidad) {
-		this.setSP(this.getSP() - this.spHabilidad1);
-		int daño = this.getAtq() + this.getAtqMod() + this.getVel()/2;
-	    int reduccion = (int) (daño * ((unidad.getDef() + unidad.getDefMod()) / 100.0));
-        int dañoFinal = Math.max(1, daño - reduccion);
-	    if (unidad.elegirAleatorio(100) < (unidad.getEva() + unidad.getEvaMod())) {
-	    	pdj.ReproducirSE(6);
-	        Habilidades.setearEfectoDeEstado(unidad, "MISS!", Color.white);
-	    }
-	    else {
-	    	if (unidad.getEscudos() > 0) {
-		        unidad.setEscudos(0);
-		        pdj.ReproducirSE(9);
-		        Habilidades.setearEfectoDeEstado(unidad, "BREAK!", Color.white);
-		    } else {
-		    	 pdj.ReproducirSE(3);
-		        unidad.setHP(unidad.getHP() - dañoFinal);
-		        Habilidades.destruirMovilidad(unidad);
-		    }
-	    } 
-	    this.setCdHabilidad1(1);
+		super.usarHabilidadOfensiva(unidad, true, true, this.getVelMod() ,() -> Habilidades.destruirMovilidad(unidad));
+		this.setCdHabilidad1(1);
 		this.setHabilidad1(false);
 	}
 	//METODOS AUXILIARES////////////////////////////////////////////////////////////

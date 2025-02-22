@@ -1,8 +1,6 @@
 package unidades;
 
-import java.awt.Color;
 import java.util.ArrayList;
-
 import principal.Habilidades;
 import principal.PanelDeJuego;
 import principal.Zona;
@@ -57,7 +55,9 @@ public class PayadorPicante extends Unidad {
 		if(this.getHabilidadElegida() == 0) {
 			if(!enemigos.isEmpty()) {
 				Unidad unidad = elegirObjetivo(enemigos);
-				chicanear(unidad);
+				super.usarHabilidadOfensiva(unidad, true, true, 0,() -> Habilidades.oxidarArmadura(unidad));
+				this.setCdHabilidad1(1);
+				this.setHabilidad1(false);
 			}
 		}
 		else {
@@ -74,7 +74,9 @@ public class PayadorPicante extends Unidad {
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {	
 		if(this.getHabilidadElegida() == 0) {
-			chicanear(unidad);
+			super.usarHabilidadOfensiva(unidad, true, true, this.getSPMax()/10,() -> Habilidades.oxidarArmadura(unidad));
+			this.setCdHabilidad1(1);
+			this.setHabilidad1(false);
 		}
 		else {
 			this.setSP(this.getSP() - this.spHabilidad2);
@@ -87,33 +89,6 @@ public class PayadorPicante extends Unidad {
 		
 	}
 	//HABILIDADES////////////////////////////////////////////////////////////////////////
-	public void chicanear(Unidad unidad) {
-		this.setSP(this.getSP() - this.spHabilidad1);
-		int daño = this.getAtq() + this.getAtqMod() + this.getSPMax()/10;
-	    int reduccion = (int) (daño * ((unidad.getDef() + unidad.getDefMod()) / 100.0));
-        int dañoFinal = Math.max(1, daño - reduccion);
-        String textoMostrado = "";
-	    if (unidad.elegirAleatorio(100) < (unidad.getEva() + unidad.getEvaMod())) {
-	    	pdj.ReproducirSE(6);
-	        textoMostrado = "MISS!";
-	        Habilidades.setearEfectoDeEstado(unidad, textoMostrado, Color.white);
-	    }
-	    else {
-	    	if (unidad.getEscudos() > 0) {
-		        unidad.setEscudos(unidad.getEscudos() - 1);
-		        pdj.ReproducirSE(9);
-		        textoMostrado = "BREAK!";
-		        Habilidades.setearEfectoDeEstado(unidad, textoMostrado, Color.white);
-		    } else {
-		    	textoMostrado = "-" + dañoFinal;
-		    	pdj.ReproducirSE(3);
-		        unidad.setHP(unidad.getHP() - dañoFinal);
-		        Habilidades.oxidarArmadura(unidad); 
-		    }
-	    } 
-	    this.setCdHabilidad1(1);
-		this.setHabilidad1(false);
-	}
 	public void motivar(Unidad unidad) {
 		if(unidad != null) {
 			pdj.ReproducirSE(7);
