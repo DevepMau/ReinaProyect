@@ -1,13 +1,48 @@
 package principal;
 
+import java.awt.Image;
+
 import unidades.Unidad;
 
 public class InicializadorDeRecursos {
 
 	PanelDeJuego pdj;
+	public Image shieldUp = null;
+	public Image swordUp = null;
+	public Image bootUp = null;
+	public Image dashUp = null;
+	public Image bulleyeUp = null;
+	public Image blockUp = null;
+	public Image shieldDown = null;
+	public Image swordDown = null;
+	public Image bootDown = null;
+	public Image dashDown = null;
+	public Image bulleyeDown = null;
+	public Image blockDown = null;
+	public Image bleed = null;
+	public Image burn = null;
+	public Image fragile = null;
 
 	public InicializadorDeRecursos(PanelDeJuego pdj) {
 		this.pdj = pdj;
+	}
+	
+	public void establecerImgenes() {
+		shieldUp = pdj.ui.configurarImagen("/estados/escudo-up", 4);
+		swordUp = pdj.ui.configurarImagen("/estados/espada-up", 4);
+		bootUp = pdj.ui.configurarImagen("/estados/bota-up", 4);
+		blockUp = pdj.ui.configurarImagen("/estados/mano-up", 4);
+		dashUp = pdj.ui.configurarImagen("/estados/dash-up", 4);
+		bulleyeUp = pdj.ui.configurarImagen("/estados/diana-up", 4);
+		shieldDown = pdj.ui.configurarImagen("/estados/escudo-down", 4);
+		swordDown = pdj.ui.configurarImagen("/estados/espada-down", 4);
+		bootDown = pdj.ui.configurarImagen("/estados/bota-down", 4);
+		blockDown = pdj.ui.configurarImagen("/estados/mano-down", 4);
+		dashDown = pdj.ui.configurarImagen("/estados/dash-down", 4);
+		bulleyeDown = pdj.ui.configurarImagen("/estados/diana-down", 4);
+		bleed = pdj.ui.configurarImagen("/estados/sangre", 4);
+		burn = pdj.ui.configurarImagen("/estados/fuego", 4);
+		fragile = pdj.ui.configurarImagen("/estados/quebrado", 4);
 	}
 
 	public void establecerObjetos() {
