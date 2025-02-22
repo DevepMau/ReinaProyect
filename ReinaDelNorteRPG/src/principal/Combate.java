@@ -25,7 +25,7 @@ import unidades.DragonPirotecnico;
 import unidades.GauchoModerno;
 import unidades.Delegada;
 import unidades.HeroeFederal;
-import unidades.IdolGalactica;
+import unidades.DoncellaDelCiruelo;
 import unidades.Influencer;
 import unidades.MedicoTradicionalista;
 import unidades.NiñoCheung;
@@ -35,6 +35,7 @@ import unidades.Unidad;
 public class Combate {
 	//RECURSOS Y ESTRUCTURAS/////////////////////////////////////////////////
 	PanelDeJuego pdj;
+	Habilidades gdh;
 	Graphics2D g2;
 	private HashMap<Integer, Zona> zonas = new HashMap<>();
 	private HashMap<Integer, Unidad> unidades = new HashMap<>();
@@ -77,25 +78,41 @@ public class Combate {
 		acciones[1] = "HABILIDAD";
 		acciones[2] = "USAR OBJETO";
 		//Nietos////////////////////////////////////////////////////////
-		//unidades.put(4, new CebadorDeMate(zonas.get(0), true, pdj));
-		//unidades.put(5, new GauchoModerno(zonas.get(0), true, pdj));
-		//unidades.put(6, new PayadorPicante(zonas.get(0), true, pdj));
-		//unidades.put(7, new HeroeFederal(zonas.get(0), true, pdj));
+		//unidades.put(0, new CebadorDeMate(zonas.get(0), true, pdj));
+		//unidades.put(1, new GauchoModerno(zonas.get(0), true, pdj));
+		unidades.put(2, new PayadorPicante(zonas.get(0), true, pdj));
+		unidades.put(3, new HeroeFederal(zonas.get(0), true, pdj));
+		unidades.put(4, new CebadorDeMate(zonas.get(0), false, pdj));
+		//unidades.put(5, new GauchoModerno(zonas.get(0), false, pdj));
+		//unidades.put(6, new PayadorPicante(zonas.get(0), false, pdj));
+		//unidades.put(7, new HeroeFederal(zonas.get(0), false, pdj));
 		//Dragon////////////////////////////////////////////////////////
-		unidades.put(4, new AlumnoModelo(zonas.get(0), false, pdj));
-		unidades.put(5, new ShaolinEscolar(zonas.get(0), false, pdj));
-		unidades.put(6, new MedicoTradicionalista(zonas.get(0), false, pdj));
-		unidades.put(7, new DragonPirotecnico(zonas.get(0), false, pdj));
+		//unidades.put(0, new AlumnoModelo(zonas.get(0), true, pdj));
+		//unidades.put(1, new ShaolinEscolar(zonas.get(0), true, pdj));
+		//unidades.put(2, new MedicoTradicionalista(zonas.get(0), true, pdj));
+		//unidades.put(3, new DragonPirotecnico(zonas.get(0), true, pdj));
+		//unidades.put(4, new AlumnoModelo(zonas.get(0), false, pdj));
+		//unidades.put(5, new ShaolinEscolar(zonas.get(0), false, pdj));
+		//unidades.put(6, new MedicoTradicionalista(zonas.get(0), false, pdj));
+		//unidades.put(7, new DragonPirotecnico(zonas.get(0), false, pdj));
 		//Puño/////////////////////////////////////////////////////////
-		//unidades.put(4, new NiñoCheung(zonas.get(0), true, pdj));
-		//unidades.put(5, new PuñoFurioso(zonas.get(0), true, pdj));
-		//unidades.put(6, new MaestroDelChi(zonas.get(0), true, pdj));
-		//unidades.put(7, new AspiranteADragon(zonas.get(0), true, pdj));
+		//unidades.put(0, new NiñoCheung(zonas.get(0), true, pdj));
+		//unidades.put(1, new PuñoFurioso(zonas.get(0), true, pdj));
+		//unidades.put(2, new MaestroDelChi(zonas.get(0), true, pdj));
+		//unidades.put(3, new AspiranteADragon(zonas.get(0), true, pdj));
+		//unidades.put(4, new NiñoCheung(zonas.get(0), false, pdj));
+		//unidades.put(5, new PuñoFurioso(zonas.get(0), false, pdj));
+		//unidades.put(6, new MaestroDelChi(zonas.get(0), false, pdj));
+		//unidades.put(7, new AspiranteADragon(zonas.get(0), false, pdj));
 		//MHJ///////////////////////////////////////////////////////////
-		unidades.put(0, new NovataTimida(zonas.get(0), true, pdj));
-		unidades.put(1, new Delegada(zonas.get(0), true, pdj));
-		unidades.put(2, new Influencer(zonas.get(0), true, pdj));
-		unidades.put(3, new IdolGalactica(zonas.get(0), true, pdj));
+		//unidades.put(0, new NovataTimida(zonas.get(0), true, pdj));
+		//unidades.put(1, new Delegada(zonas.get(0), true, pdj));
+		//unidades.put(2, new Influencer(zonas.get(0), true, pdj));
+		//unidades.put(3, new DoncellaDelCiruelo(zonas.get(0), true, pdj));
+		//unidades.put(4, new NovataTimida(zonas.get(0), true, pdj));
+		//unidades.put(5, new Delegada(zonas.get(0), true, pdj));
+		//unidades.put(6, new Influencer(zonas.get(0), true, pdj));
+		//unidades.put(7, new DoncellaDelCiruelo(zonas.get(0), true, pdj));
 		///////////////////////////////////////////////////////////////
 
 
@@ -138,21 +155,18 @@ public class Combate {
 	
 	public void dibujar(Graphics2D g2) {
 		this.g2 = g2;
-		for (Zona zona : zonas.values()) {
-			zona.dibujar(g2);
-		}
 		dibujarResaltadorDeUnidad();
 		for (Unidad unidad : unidades.values()) {
 		    unidad.dibujar(g2);
 		}
 		if(turnoJugador) {
-			generarMenu(acciones, pdj.tamañoDeBaldosa*3 , pdj.altoDePantalla - pdj.tamañoDeBaldosa*(acciones.length-1), 160, numeroDeInstruccion, instruccionElegida);
+			menuDeAcciones();
 			if(instruccionElegida == 0 || instruccionElegida == 1) {
 				g2.drawImage(lockOn, selector.x, selector.y, null);
 			}
 		}
 		if(unidadEnTurno != null && seleccionarHabilidades) {
-			generarMenu(unidadEnTurno.getListaDeHabilidades(), pdj.tamañoDeBaldosa*6+10 , pdj.altoDePantalla - pdj.tamañoDeBaldosa*(acciones.length-1)+36, 160, numeroDeHabilidad, habilidadElegida);
+			menuDeHabilidades(unidadEnTurno);
 		}
 		if(unidadSeleccionada != null) {
 			dibujarEstadisticasUnidad(unidadSeleccionada);
@@ -180,16 +194,16 @@ public class Combate {
 	    	if(!enemigos.isEmpty()) {
 	    		for(Unidad unidad : enemigos) {
 		    		unidad.setEstaActivo(true);
-		    		if(unidad.getEstaKO()) {
-		    			unidad.setEstaKO(false);
+		    		if(unidad.getEstaStun()) {
+		    			unidad.setEstaStun(false);
 		    		}
 		    	}
 	    	}
 	    	if(!aliados.isEmpty()) {
 	    		for(Unidad unidad : aliados) {
 		    		unidad.setEstaActivo(true);
-		    		if(unidad.getEstaKO()) {
-		    			unidad.setEstaKO(false);
+		    		if(unidad.getEstaStun()) {
+		    			unidad.setEstaStun(false);
 		    		}
 		    	}
 	    	}
@@ -304,7 +318,8 @@ public class Combate {
 		    }
 	    	//ACCIONES ENEMIGAS/////////////////////////////////////////////////////////
 		    else {
-		    	unidadSeleccionada = null;
+		    	//unidadSeleccionada = null;
+		    	unidadSeleccionada = unidades.get(idTurno);
 		    	turnoJugador = false;
 		    	if(timer == 0) {
 		    		numeroDeInstruccion = 0;
@@ -433,43 +448,143 @@ public class Combate {
     return -1;
 	}
 	//METODOS DE MENU/////////////////////////////////////////////////////////	
-	public void generarMenu(String[] opciones, int posX, int posY, int anchoVentana, int variableDeSelecctor, int variableElegida) {
-		int alto = pdj.tamañoDeBaldosa*(opciones.length);
-		int modX = 5;
-		int modW = -10;
-		int modY = 0, modH = 0;
+	public void menuDeAcciones() {
+		int posX = 8;
+		int posY = pdj.altoDePantalla - pdj.tamañoDeBaldosa*3 - 8;
+		int ancho = pdj.tamañoDeBaldosa*4 - 8;
+		int alto = pdj.tamañoDeBaldosa*3;
+		int posPalabras = posY + pdj.tamañoDeBaldosa;
+		int separacion = pdj.tamañoDeBaldosa - (pdj.tamañoDeBaldosa/4);
+		Color ventanaExterior = new Color(128, 20, 20); 
+		Color ventanaExteriorSombra = new Color(90, 0, 0);
+		Color ventanaInterior = new Color(250, 200, 150);
+		Color ventanaInteriorSombra = new Color(60, 0, 0);
+		Color lineas = new Color(90, 0, 0); 
+
+		g2.setColor(ventanaExteriorSombra);
+		g2.fillRoundRect(0, posY + 8, ancho, alto, 5, 5);
+		g2.setColor(ventanaExterior);
+		g2.fillRoundRect(posX, posY, ancho, alto, 5, 5);
+		g2.setColor(ventanaInterior);
+		g2.fillRoundRect(posX + 16, posY + 16, ancho - 32, alto - 32, 5, 5);
+		g2.setColor(ventanaExteriorSombra);
+		g2.fillRoundRect(posX + 16, posY + 16, ancho - 32, alto/20, 5, 5);
+		g2.fillRoundRect(posX + ancho - 24, posY + 16, ancho/20, alto - 32, 5, 5);
+		g2.setColor(lineas);
+		g2.drawRoundRect(posX, posY, ancho, alto, 5, 5);
+		g2.drawRoundRect(posX + 16, posY + 16, ancho - 32, alto - 32, 5, 5);
 		
-		if(alto == 144) {
-			modY = -24;
-			modH = -24;
-		}
-		else if(alto == 96) {
-			modY = -24;
-			modH = -12;
-		}
-		else {
-			modY = -24;
-			modH = 0;
-		}
-		dibujarVentana(posX+modX, posY+modY, anchoVentana+modW, alto+modH);
-		//OPCIONES Y RECUADRO DE SELECCION
 		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 24f));
-		for (int i = 0; i < opciones.length; i++) {
-			g2.setColor(Color.white);
-			g2.drawString(opciones[i], posX+pdj.tamañoDeBaldosa/4, posY+8);
-			if(variableDeSelecctor == i) {
-				if(variableElegida == -1) {
-					g2.setColor(Color.WHITE);
-					g2.fillRoundRect(posX+5, posY-16, anchoVentana-10 , 32, 5, 5);
-					g2.setColor(Color.BLACK);
-					g2.drawString(opciones[i], posX+pdj.tamañoDeBaldosa/4, posY+8);
+		for (int i = 0; i < acciones.length; i++) {
+			g2.setColor(ventanaInteriorSombra);
+			g2.drawString(acciones[i], separacion, posPalabras);
+			
+			if(numeroDeInstruccion == i) {
+				if(instruccionElegida == -1) {
+					g2.setColor(ventanaInteriorSombra);
+					g2.fillRoundRect(posX + 17, posPalabras - 24, ancho - 39 , 32, 5, 5);
+					g2.setColor(ventanaInterior);
+					g2.drawString(acciones[i], separacion, posPalabras);
 				}
 				else {
-					g2.setColor(Color.white);
-					g2.drawRoundRect(posX+5, posY-16, anchoVentana-10 , 32, 5, 5);
+					g2.setColor(ventanaInteriorSombra);
+					g2.drawLine(posX + 16, posPalabras - 24, posX + 16 + ancho - 40, posPalabras - 24); // Línea superior
+					g2.drawLine(posX + 16, posPalabras + 8, posX + 16 + ancho - 40, posPalabras + 8);   // Línea inferior
+				}	
+			}
+			posPalabras += separacion;
+		}
+	}
+	
+	public void menuDeHabilidades(Unidad unidad) {
+		int cantHab = unidad.getListaDeHabilidades().length;
+		int ajusteY = 32;
+		int ajusteAlto = 24;
+		if(cantHab == 2) {
+			ajusteY = 20;
+			ajusteAlto = 12;
+		}
+		int posX = pdj.tamañoDeBaldosa*4 + 8;
+		int posY = pdj.altoDePantalla - pdj.tamañoDeBaldosa*(cantHab) - ajusteY;
+		int ancho = pdj.tamañoDeBaldosa*4 - 8;
+		int alto = pdj.tamañoDeBaldosa*(cantHab) + ajusteAlto;
+		int posPalabras = posY + pdj.tamañoDeBaldosa;
+		int separacion = pdj.tamañoDeBaldosa - (pdj.tamañoDeBaldosa/4);
+		int altoSombra = pdj.tamañoDeBaldosa*3;
+		Color ventanaExterior = new Color(128, 20, 20); 
+		Color ventanaExteriorSombra = new Color(90, 0, 0);
+		Color ventanaInterior = new Color(250, 200, 150);
+		Color ventanaInteriorSombra = new Color(60, 0, 0);
+		Color lineas = new Color(90, 0, 0); 
+		//UI HABILIDADES////////////////////////////////////////////////////
+		g2.setColor(ventanaExteriorSombra);
+		g2.fillRoundRect(posX - 8, posY + 8, ancho, alto, 5, 5);
+		g2.setColor(ventanaExterior);
+		g2.fillRoundRect(posX, posY, ancho, alto, 5, 5);
+		g2.setColor(ventanaInterior);
+		g2.fillRoundRect(posX + 16, posY + 16, ancho - 32, alto - 32, 5, 5);
+		g2.setColor(ventanaExteriorSombra);
+		g2.fillRoundRect(posX + 16, posY + 16, ancho - 32, altoSombra/20, 5, 5);
+		g2.fillRoundRect(posX + ancho - 24, posY + 16, ancho/20, alto - 32, 5, 5);
+		g2.setColor(lineas);
+		g2.drawRoundRect(posX, posY, ancho, alto, 5, 5);
+		g2.drawRoundRect(posX + 16, posY + 16, ancho - 32, alto - 32, 5, 5);
+			
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 24f));
+		for (int i = 0; i < unidad.getListaDeHabilidades().length ; i++) {
+			g2.setColor(ventanaInteriorSombra);
+			g2.drawString(unidad.getListaDeHabilidades()[i], posX + separacion, posPalabras);
+			if(i == 0) {
+				if(!unidad.isHabilidad1()) {
+					g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+					g2.setColor(ventanaExterior);
+					g2.fillRoundRect(posX + ancho + 8, posPalabras - 24, 32, 32, 100, 100);
+					g2.setColor(ventanaInterior);
+					g2.fillRoundRect(posX + ancho + 14, posPalabras - 18, 20, 20, 100, 100);
+					g2.setColor(ventanaExteriorSombra);
+					g2.drawRoundRect(posX + ancho + 8, posPalabras - 24, 32, 32, 100, 100);
+					if(unidad.getCdHabilidad1() + 1 >= 10) {
+						g2.drawString(unidad.getCdHabilidad1() + 1 + "", posX + ancho + 16, posPalabras - 2);
+					}
+					else {
+						g2.drawString(unidad.getCdHabilidad1() + 1 + "", posX + ancho + 20, posPalabras - 2);
+					}
+					g2.setFont(g2.getFont().deriveFont(Font.BOLD, 24f));
 				}
 			}
-			posY += (pdj.tamañoDeBaldosa/2)+(pdj.tamañoDeBaldosa/4);
+			if(i == 1) {
+				if(!unidad.isHabilidad2()) {
+					g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+					g2.setColor(ventanaExterior);
+					g2.fillRoundRect(posX + ancho + 8, posPalabras - 24, 32, 32, 100, 100);
+					g2.setColor(ventanaInterior);
+					g2.fillRoundRect(posX + ancho + 14, posPalabras - 18, 20, 20, 100, 100);
+					g2.setColor(ventanaExteriorSombra);
+					g2.drawRoundRect(posX + ancho + 8, posPalabras - 24, 32, 32, 100, 100);
+					if(unidad.getCdHabilidad2() + 1 >= 10) {
+						g2.drawString(unidad.getCdHabilidad2() + 1 + "", posX + ancho + 16, posPalabras - 2);
+					}
+					else {
+						g2.drawString(unidad.getCdHabilidad2() + 1 + "", posX + ancho + 20, posPalabras - 2);
+					}
+					g2.setFont(g2.getFont().deriveFont(Font.BOLD, 24f));
+				}
+			}
+			
+			if(numeroDeHabilidad == i) {
+				if(habilidadElegida == -1) {
+					g2.setColor(ventanaInteriorSombra);
+					g2.fillRoundRect(posX + 17, posPalabras - 24, ancho - 39 , 32, 5, 5);
+					g2.setColor(ventanaInterior);
+					g2.drawString(unidad.getListaDeHabilidades()[i], posX + separacion, posPalabras);
+				}
+				else {
+					g2.setColor(ventanaInteriorSombra);
+					g2.drawLine(posX + 16, posPalabras - 24, posX + 16 + ancho - 40, posPalabras - 24); // Línea superior
+					g2.drawLine(posX + 16, posPalabras + 8, posX + 16 + ancho - 40, posPalabras + 8);   // Línea inferior
+				}	
+			}
+			posPalabras += separacion;
 		}
 	}
 		
@@ -608,11 +723,11 @@ public class Combate {
 	    	if(unidad.getPcrtMod() != 0) {
 	    		g2.setColor(Color.yellow);
 	    		double d = unidad.getPCRT()+unidad.getPcrtMod();
-	    		g2.drawString("P.CRT: "+(d)*100+"%", posX + 8, posY + ajusteY + 200);
+	    		g2.drawString("P.CRT: "+(d)+"%", posX + 8, posY + ajusteY + 200);
 	    	}
 	    	else {
 	    		g2.setColor(Color.white);
-	    		g2.drawString("P.CRT: "+(unidad.getPCRT())*100+"%", posX + 8, posY + ajusteY + 200);
+	    		g2.drawString("P.CRT: "+(unidad.getPCRT())+"%", posX + 8, posY + ajusteY + 200);
 	    	}
 	    }
 	    else {
@@ -687,7 +802,7 @@ public class Combate {
 	
 	public void actualizarSelector(Unidad unidad, Rectangle resaltador) {
 		if(unidad != null) {
-			resaltador.setLocation(unidad.getPosX(), unidad.getPosY());
+			resaltador.setLocation(unidad.getPosX(), unidad.getPosY()+16);
 		}
 	}
 	
