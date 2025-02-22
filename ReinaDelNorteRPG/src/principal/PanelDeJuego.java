@@ -54,6 +54,7 @@ public class PanelDeJuego extends JPanel implements Runnable {
 	}
 	
 	public void configuracionDeJuego() {
+		idr.establecerImgenes();
 	}
 
 	public void iniciarHiloDeJuego() {
