@@ -415,7 +415,7 @@ public class Habilidades {
 			Estadisticas.reducirVelocidad(unidad, 100);
 			Estadisticas.reducirEvasion(unidad, 100);
 		}
-		Habilidades.setearEfectoDeEstado(unidad, "HURT!", color);
+		Habilidades.setearEfectoDeEstado(unidad, "OUT!", color);
 		stunearUnidad(unidad);
 		unidad.setTimerLisiado(3);
 	}
