@@ -5,7 +5,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
+import javax.swing.Timer;
 
 import unidades.PayadorPicante;
 import unidades.PuñoFurioso;
@@ -42,6 +45,7 @@ public class Combate {
 	private HashMap<Integer, Integer> velocidades = new HashMap<>();
 	private Unidad unidadSeleccionada = null;
 	private Unidad unidadEnTurno = null;
+	private Unidad unidadObservada = null;
 	//CONFIGURACION GENERAL//////////////////////////////////////////////////
 	private String[] acciones = new String[3];
 	private String turnos = "";
@@ -54,6 +58,10 @@ public class Combate {
 	private boolean posicionarUnidades = true;
 	private boolean ordenarUnidades = true;
 	private boolean seleccionarHabilidades = false;
+	//TEXTO EN PANTALLA//////////////////////////////////////////////////////
+	private int offsetTexto = 0; // Desplazamiento del texto
+	private int velocidadDesplazamiento = 3; // Velocidad del desplazamiento
+	private Timer timerTexto;
 	//CONTROL DE TURNO Y BOTONES/////////////////////////////////////////////
 	private boolean habilitarBoton = true;
 	private boolean turnoJugador = true; 
@@ -78,14 +86,14 @@ public class Combate {
 		acciones[1] = "HABILIDAD";
 		acciones[2] = "USAR OBJETO";
 		//Nietos////////////////////////////////////////////////////////
-		//unidades.put(0, new CebadorDeMate(zonas.get(0), true, pdj));
-		//unidades.put(1, new GauchoModerno(zonas.get(0), true, pdj));
+		unidades.put(0, new CebadorDeMate(zonas.get(0), true, pdj));
+		unidades.put(1, new GauchoModerno(zonas.get(0), true, pdj));
 		unidades.put(2, new PayadorPicante(zonas.get(0), true, pdj));
 		unidades.put(3, new HeroeFederal(zonas.get(0), true, pdj));
 		unidades.put(4, new CebadorDeMate(zonas.get(0), false, pdj));
-		//unidades.put(5, new GauchoModerno(zonas.get(0), false, pdj));
-		//unidades.put(6, new PayadorPicante(zonas.get(0), false, pdj));
-		//unidades.put(7, new HeroeFederal(zonas.get(0), false, pdj));
+		unidades.put(5, new GauchoModerno(zonas.get(0), false, pdj));
+		unidades.put(6, new PayadorPicante(zonas.get(0), false, pdj));
+		unidades.put(7, new HeroeFederal(zonas.get(0), false, pdj));
 		//Dragon////////////////////////////////////////////////////////
 		//unidades.put(0, new AlumnoModelo(zonas.get(0), true, pdj));
 		//unidades.put(1, new ShaolinEscolar(zonas.get(0), true, pdj));
@@ -156,8 +164,12 @@ public class Combate {
 	public void dibujar(Graphics2D g2) {
 		this.g2 = g2;
 		dibujarResaltadorDeUnidad();
-		for (Unidad unidad : unidades.values()) {
-		    unidad.dibujar(g2);
+		if(unidadEnTurno != null && seleccionarHabilidades) {
+			menuDeHabilidades(unidadEnTurno);
+		}
+		if(unidadSeleccionada != null) {
+			dibujarEstadisticasUnidad(unidadSeleccionada);
+			dibujarTriangulo(pdj.anchoDePantalla-pdj.tamañoDeBaldosa*4+(-4), pdj.altoDePantalla-pdj.tamañoDeBaldosa*4+(-32));
 		}
 		if(turnoJugador) {
 			menuDeAcciones();
@@ -165,12 +177,12 @@ public class Combate {
 				g2.drawImage(lockOn, selector.x, selector.y, null);
 			}
 		}
-		if(unidadEnTurno != null && seleccionarHabilidades) {
-			menuDeHabilidades(unidadEnTurno);
+		dibujarMarcoDeJuego();
+		for (Unidad unidad : unidades.values()) {
+		    unidad.dibujar(g2);
 		}
-		if(unidadSeleccionada != null) {
-			dibujarEstadisticasUnidad(unidadSeleccionada);
-			dibujarTriangulo(pdj.anchoDePantalla-pdj.tamañoDeBaldosa*4+(-4), pdj.altoDePantalla-pdj.tamañoDeBaldosa*4+(-32));
+		if(unidadObservada != null) {
+			dibujarEstadosDeUnidad(unidadObservada);
 		}
 	}
 	//METODOS PARA JUGAR//////////////////////////////////////////////////////
@@ -220,6 +232,7 @@ public class Combate {
 		    	turnoJugador = true;
 		    	if(instruccionElegida == -1) {
 		    		instruccionElegida = elegirAccion();
+		    		unidadObservada = null;
 		    	}
 		    	//ATAQUE JUGADOR//////////////////////////////////////////////////////////////
 		    	else if(instruccionElegida == 0) {
@@ -240,6 +253,7 @@ public class Combate {
 			    		instruccionElegida = -1;
 			    		posEnLista = 0;
 			    		contadorDeTurnos++;
+			    		unidadObservada = null;
 			    	}
 		    	}
 		    	//HABILIDAD JUGADOR//////////////////////////////////////////////////////////
@@ -271,6 +285,7 @@ public class Combate {
 			    					unidadEnTurno.setHabilidadElegida(-1);
 			    					habilidadElegida = -1;
 			    					instruccionElegida = -1;
+			    					unidadObservada = null;
 			    				}
 		    				}
 		    				else {
@@ -288,6 +303,7 @@ public class Combate {
 			    					unidadEnTurno.setHabilidadElegida(-1);
 			    					habilidadElegida = -1;
 			    					instruccionElegida = -1;
+			    					unidadObservada = null;
 			    				}
 		    				}		
 		    			}
@@ -312,6 +328,7 @@ public class Combate {
 				    		unidadEnTurno.setHabilidadElegida(-1);
 				    		seleccionarHabilidades = false;
 				    		contadorDeTurnos++;
+				    		unidadObservada = null;
 			    		}
 		    		}
 		    	}
@@ -361,6 +378,7 @@ public class Combate {
 	    			posEnLista++;
 	    		}
 	    		habilitarBoton = false;
+	    		offsetTexto = 0;
 	    		pdj.ReproducirSE(1);
 	    	}
 	    	if(pdj.teclado.LEFT == true && habilitarBoton) {
@@ -371,6 +389,7 @@ public class Combate {
 	    			posEnLista--;
 	    		}
 	    		habilitarBoton = false;
+	    		offsetTexto = 0;
 	    		pdj.ReproducirSE(1);
 	    	}
 	    	if(!pdj.teclado.RIGHT && !pdj.teclado.LEFT && !pdj.teclado.Z) {
@@ -533,7 +552,18 @@ public class Combate {
 		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 24f));
 		for (int i = 0; i < unidad.getListaDeHabilidades().length ; i++) {
 			g2.setColor(ventanaInteriorSombra);
-			g2.drawString(unidad.getListaDeHabilidades()[i], posX + separacion, posPalabras);
+			FontMetrics fm = g2.getFontMetrics();
+		    int anchoTexto = fm.stringWidth(unidad.getListaDeHabilidades()[i]);
+		    if (anchoTexto > 120) {
+		    	Shape clipAnterior = g2.getClip();
+		    	g2.setClip(posX + 16, posY + 16, ancho - 32, alto - 32);
+		    	g2.drawString(unidad.getListaDeHabilidades()[i], posX + separacion - offsetTexto, posPalabras);
+		    	g2.setClip(clipAnterior);
+		    	iniciarDesplazamientoTexto(ancho, unidad.getListaDeHabilidades()[i]);
+		        
+		    } else {
+		        g2.drawString(unidad.getListaDeHabilidades()[i], posX + separacion, posPalabras);
+		    }
 			if(i == 0) {
 				if(!unidad.isHabilidad1()) {
 					g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
@@ -576,7 +606,16 @@ public class Combate {
 					g2.setColor(ventanaInteriorSombra);
 					g2.fillRoundRect(posX + 17, posPalabras - 24, ancho - 39 , 32, 5, 5);
 					g2.setColor(ventanaInterior);
-					g2.drawString(unidad.getListaDeHabilidades()[i], posX + separacion, posPalabras);
+					if (anchoTexto > 120) {
+				    	Shape clipAnterior = g2.getClip();
+				    	g2.setClip(posX + 16, posY + 16, ancho - 32, alto - 32);
+				    	g2.drawString(unidad.getListaDeHabilidades()[i], posX + separacion - offsetTexto, posPalabras);
+				    	g2.setClip(clipAnterior);
+				    	iniciarDesplazamientoTexto(ancho, unidad.getListaDeHabilidades()[i]);
+				        
+				    } else {
+				        g2.drawString(unidad.getListaDeHabilidades()[i], posX + separacion, posPalabras);
+				    }
 				}
 				else {
 					g2.setColor(ventanaInteriorSombra);
@@ -612,24 +651,125 @@ public class Combate {
 			y += pdj.tamañoDeBaldosa*2;
 		}
 	}
-	
-	public void dibujarVentana(int x, int y, int width, int height) {
-		Color c = new Color(0,0,0, 200);
-		g2.setColor(c);
-		g2.fillRoundRect(x+5, y, width-10, height, 10, 10);
+
+	public void dibujarEstadosDeUnidad(Unidad unidad) {
+		int posX = pdj.anchoDePantalla - pdj.tamañoDeBaldosa * 3;
+	    int posY = + 24;
+	    int ancho = pdj.tamañoDeBaldosa * 3 - 24 ;
+	    int alto = pdj.tamañoDeBaldosa * 4;
+	    int offsetX = 0;
+	    int offsetY = 5;
+	    int contadorEstados = 0;
+	    
+	    //VENTANA////////////////////////////////////////////
+	    
+	    Color ventanaExterior = new Color(128, 20, 20); 
+		Color ventanaExteriorSombra = new Color(90, 0, 0);
+		Color ventanaInterior = new Color(250, 200, 150);
+		Color ventanaInteriorSombra = new Color(60, 0, 0);
+		Color lineas = new Color(90, 0, 0); 
 		
-		c = new Color(255, 255, 255);
-		g2.setColor(c);
-		g2.drawRoundRect(x, y, width, height, 10, 10);
+		g2.setColor(ventanaExteriorSombra);
+		g2.fillRoundRect(posX - 24, posY -8, ancho + 32, alto + 32, 5, 5);
+		g2.setColor(ventanaExterior);
+	    g2.fillRoundRect(posX - 16, posY - 16, ancho + 32, alto + 32, 5, 5);
+	    g2.setColor(ventanaInterior);
+	    g2.fillRoundRect(posX, posY, ancho, alto, 5, 5);
+	    g2.setColor(ventanaExteriorSombra);
+	    g2.fillRoundRect(posX + ancho - 6, posY, ancho/20, alto, 2, 2);
+	    g2.fillRoundRect(posX, posY, ancho, alto/20, 2, 2);
+	    g2.setColor(lineas);
+	    g2.drawRoundRect(posX, posY, ancho, alto, 5, 5);
+	    g2.drawRoundRect(posX - 16, posY - 16, ancho + 32, alto + 32, 5, 5);
+	    //ESTADOS///////////////////////////////////////////////////////////////
+	    ArrayList<Image> iconos = new ArrayList<>();
+	    if (unidad.getDef() + unidad.getDefMod() < 1) {
+	        iconos.add(pdj.idr.fragile);
+	    } else {
+	        if (unidad.getDefMod() > 0) iconos.add(pdj.idr.shieldUp);
+	        if (unidad.getDefMod() < 0) iconos.add(pdj.idr.shieldDown);
+	    }
+	    if (unidad.getAtqMod() > 0) iconos.add(pdj.idr.swordUp);
+	    if (unidad.getAtqMod() < 0) iconos.add(pdj.idr.swordDown);
+	    if (unidad.getVelMod() > 0) iconos.add(pdj.idr.bootUp);
+	    if (unidad.getVelMod() < 0) iconos.add(pdj.idr.bootDown);
+	    if (unidad.getEvaMod() > 0) iconos.add(pdj.idr.dashUp);
+	    if (unidad.getEvaMod() < 0) iconos.add(pdj.idr.dashDown);  
+	    if (unidad.getBloqMod() > 0) iconos.add(pdj.idr.blockUp);
+	    if (unidad.getBloqMod() < 0) iconos.add(pdj.idr.blockDown);
+	    if (unidad.getPcrtMod() > 0) iconos.add(pdj.idr.bulleyeUp);
+	    if (unidad.getPcrtMod() < 0) iconos.add(pdj.idr.bulleyeDown);
+	    if (unidad.getTimerSangrando() > 0) iconos.add(pdj.idr.bleed);
+	    if (unidad.getTimerIncendiado() > 0) iconos.add(pdj.idr.burn);
+
+	    for (Image icono : iconos) {
+	        g2.drawImage(icono, posX + offsetX, posY + offsetY + pdj.tamañoDeBaldosa*2 + 16, null);
+	        offsetX += icono.getWidth(null) - 4;
+	        contadorEstados++;
+
+	        if (contadorEstados == 4) {
+	            offsetX = 0;  
+	            offsetY += pdj.idr.shieldUp.getHeight(null) + 5; 
+	        }
+	    }
+	    //DATOS///////////////////////////////////////////////////////////////
+	    g2.setColor(ventanaInteriorSombra);
+	    g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
+	    g2.drawString(unidad.getClase(), posX + 4, posY + 54);
+	    g2.drawString("HP: "+unidad.getHP()+"/"+unidad.getHPMax(), posX + 4, posY + 78);
+	    if(unidad.getSPMax() == 0) {
+	    	g2.drawString("SP: -/- ", posX + 4, posY + 102);
+	    }
+	    else {
+	    	g2.drawString("SP: "+unidad.getSP()+"/"+unidad.getSPMax(), posX + 4, posY + 102);
+	    }
+	    
+	    g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
+	    g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
+
+	    FontMetrics fm = g2.getFontMetrics();
+	    int anchoTexto = fm.stringWidth(unidad.getNombre());
+	    if (anchoTexto > 72) {
+	    	Shape clipAnterior = g2.getClip();
+	    	g2.setClip(posX, posY, ancho, alto);
+	    	// Dibujar el texto desplazado dentro del área recortada
+	    	g2.drawString(unidad.getNombre(), posX + 8 - offsetTexto, posY + 32);
+	    	g2.setClip(clipAnterior);
+	    	iniciarDesplazamientoTexto(ancho, unidad.getNombre());
+	        
+	    } else {
+	        g2.drawString(unidad.getNombre(), posX + 4, posY + 32);
+	    }
 	}
 	
-	public void dibujarRetrato(int x, int y, int width, int height) {
-		Color c = new Color(135, 206, 235);
-		g2.setColor(c);
-		g2.setStroke(new BasicStroke(5));
-		g2.fillRoundRect(x+width/4, y+5, width/2, height/2, 100, 100);
-		g2.fillRect(x+width/4, y+height/2, width/2, height/2);
-		g2.drawRoundRect(x+5, y+5, width-10, height-10, 25, 25);
+	public void iniciarDesplazamientoTexto(int ancho, String cadena) {
+	    if (timerTexto == null) {
+	        timerTexto = new Timer(100, e -> {
+	            offsetTexto += velocidadDesplazamiento;
+	            if (offsetTexto > g2.getFontMetrics().stringWidth(cadena)) {
+	                offsetTexto = - ancho + 10; // Reiniciar cuando se salga completamente
+	            }
+	            pdj.repaint(); // Vuelve a dibujar la ventana
+	        });
+	        timerTexto.start();
+	    }
+	}
+	
+	
+	public void dibujarMarcoDeJuego() {
+		Color ventanaExterior = new Color(128, 20, 20); 
+		Color ventanaExteriorSombra = new Color(90, 0, 0);
+		
+		g2.setColor(ventanaExterior);
+		g2.fillRoundRect(0, 0, pdj.anchoDePantalla, 8, 5, 5);
+		g2.fillRoundRect(0, pdj.altoDePantalla - 8, pdj.anchoDePantalla, 8, 5, 5);
+		g2.fillRoundRect(0, 0, 8, pdj.altoDePantalla, 5, 5);
+		g2.fillRoundRect(pdj.anchoDePantalla - 8, 0, 8, pdj.altoDePantalla, 5, 5);
+		g2.setColor(ventanaExteriorSombra);
+		g2.fillRoundRect(8, 8, pdj.anchoDePantalla - 16, 8, 5, 5);
+		g2.fillRoundRect(pdj.anchoDePantalla -16, 8, 8, pdj.altoDePantalla - 16, 5, 5);
+		g2.drawRoundRect(0, 0, pdj.anchoDePantalla, pdj.altoDePantalla, 5, 5);
+		g2.drawRoundRect(8, 8, pdj.anchoDePantalla - 16, pdj.altoDePantalla - 16, 5, 5);
 	}
 	
 	public void dibujarEstadisticasUnidad(Unidad unidad) {
@@ -744,25 +884,6 @@ public class Combate {
 	    return texto + "...";
 	}
 	
-	public void dibujarCartelDeTurno() {
-		g2.setColor(Color.white);
-		g2.drawRect(pdj.tamañoDeBaldosa*4, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*8, pdj.tamañoDeBaldosa);
-		if(turnoJugador) {
-			g2.setColor(Color.BLUE);
-			g2.fillRect(pdj.tamañoDeBaldosa*4, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*8, pdj.tamañoDeBaldosa);
-			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 30f));
-			g2.setColor(Color.white);
-			g2.drawString("Turno: "+unidades.get(idUnidad).getNombre(), pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*5+32);
-		}
-		else {
-			g2.setColor(Color.RED);
-			g2.fillRect(pdj.tamañoDeBaldosa*4, pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*8, pdj.tamañoDeBaldosa);
-			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 30f));
-			g2.setColor(Color.white);
-			g2.drawString("Turno: "+unidades.get(idUnidad).getNombre(), pdj.tamañoDeBaldosa*5, pdj.tamañoDeBaldosa*5+32);
-		}
-	}
-	
 	public void dibujarResaltadorDeUnidad() {
 		g2.drawImage(indicador, resaltador.x, resaltador.y, null);
 	}
@@ -803,6 +924,9 @@ public class Combate {
 	public void actualizarSelector(Unidad unidad, Rectangle resaltador) {
 		if(unidad != null) {
 			resaltador.setLocation(unidad.getPosX(), unidad.getPosY()+16);
+			if(!unidad.isAliado()) {
+				unidadObservada = unidad;
+			}
 		}
 	}
 	
