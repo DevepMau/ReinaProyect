@@ -99,6 +99,12 @@ public class DoncellaDelCiruelo extends Unidad{
 			Habilidades.protegerUnidad(unidad, 1, pdj);
 			this.setCdHabilidad2(5);
 			this.setHabilidad2(false);
+			if(unidad.getCdHabilidad1() > 0) {
+				unidad.setCdHabilidad1(unidad.getCdHabilidad1() - 1);
+			}
+			if(unidad.getCdHabilidad2() > 0) {
+				unidad.setCdHabilidad2(unidad.getCdHabilidad2() - 1);
+			}
 		}
 	}
 	//METODOS AUXILIARES////////////////////////////////////////////////////////////
