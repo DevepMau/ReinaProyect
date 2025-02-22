@@ -63,11 +63,9 @@ public class Habilidades {
 	
 	public static void explotarMarca(Unidad unidad, Unidad objetivo) {
 		Color color = new Color(0, 255, 200);
-		int dañoFinal = (unidad.getAtq()+unidad.getAtqMod());
 		Habilidades.restaurarHP(unidad, 15);
 		Estadisticas.aumentarAtaque(unidad, 2);
-		Habilidades.setearEfectoDeEstado(objetivo, "OVER!", color);
-		objetivo.setHP(objetivo.getHP() - dañoFinal);
+		Habilidades.setearEfectoDeEstado(objetivo, "BOOM!", color);
 	}
 	
 	//HABILIDADES DE REGENERACION////////////////////////////////////////////
@@ -216,6 +214,12 @@ public class Habilidades {
 		    Estadisticas.aumentarEscudos(unidad, valor);
 		    Habilidades.setearEfectoDeEstado(unidad, "GUARD!", color);
 		}).start();	
+	}
+	
+	public static void ataqueActivadorHemorragia(Unidad lanzador, Unidad objetivo) {
+		Habilidades.setearEfectoDeEstado(objetivo, "BLEED!", Color.RED);
+		objetivo.setValorSangrado(objetivo.getHPMax()/20 + lanzador.getAtqMod());
+		objetivo.setTimerSangrando(5);
 	}
 	
 	public static void provocarHemorragia(Unidad unidad, PanelDeJuego pdj) {
