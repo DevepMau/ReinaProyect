@@ -99,6 +99,8 @@ public class Unidad {
 	private String nombreDeUltimoObjetivo = "";
 	private int cantAliadas;
 	private int cantEnemigas;
+	//IMAGENES DE LA UNIDAD////////////////////////////////////////
+	Image piso = configurarImagen("/efectos/floor", 4);
 	//ACUMULADORES DE LA UNIDAD////////////////////////////////////
 	private int escudos = 0;
 	private int faltasCometidas = 0;
@@ -178,7 +180,8 @@ public class Unidad {
     }	
 	//DIBUJAR////////////////////////////////////////////////////////////////////////////////
 	public void dibujar(Graphics2D g2) {
-        this.g2 = g2;  
+        this.g2 = g2; 
+        g2.drawImage(piso, posX, posY+16, null);
         dibujarVida();
         if(isEstaEnamorado()) {dibujarCorazon(g2);}
         dibujarEscudos(g2);
