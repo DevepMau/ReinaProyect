@@ -1,5 +1,8 @@
 package unidades;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.util.ArrayList;
 
 import principal.Habilidades;
@@ -8,7 +11,9 @@ import principal.Zona;
 
 public class CebadorDeMate extends Unidad{
 	
+	private Image imagen = null;
 	private int costeHabilidad1;
+	private int opcion = this.elegirAleatorio(4);
 	private String[] listaDeHabilidades = new String[1];
 
 	public CebadorDeMate(Zona zona, boolean aliado, PanelDeJuego pdj) {
@@ -58,8 +63,11 @@ public class CebadorDeMate extends Unidad{
 	}
 	//HABILIDADES////////////////////////////////////////////////////////////////////////
 	public void cebarMate(Unidad unidad) {
-		this.setSP(this.getSP() - this.costeHabilidad1);;
-		int opcion = this.elegirAleatorio(4);
+		this.setSP(this.getSP() - this.costeHabilidad1);
+		if(unidad.getIdFaccion() == 1) {
+			Habilidades.restaurarHPPlano(unidad, unidad.getHPMax()/4);
+		}
+		//int opcion = 1;
 		if(opcion == 0) {
 			Habilidades.aumentarAgilidad(unidad);	
 		}
@@ -74,6 +82,7 @@ public class CebadorDeMate extends Unidad{
 		}
 		this.setCdHabilidad1(0);
 		this.setHabilidad1(false);
+		opcion = this.elegirAleatorio(4);
 		pdj.ReproducirSE(5);
 	}
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
@@ -93,6 +102,22 @@ public class CebadorDeMate extends Unidad{
 			this.setAccion("");
 		}
 	}
+	public void efectosVisualesPersonalizados(Graphics2D g2) {
+		if(opcion == 0) {
+			imagen = pdj.idr.mateVerde;
+		}
+		else if(opcion == 1) {
+			imagen = pdj.idr.mateAzul;
+		}
+		else if(opcion == 2) {
+			imagen = pdj.idr.mateRojo;
+		}
+		else {
+			imagen = pdj.idr.mateAmarillo;
+		}
+		g2.drawImage(imagen, this.getPosX() - 8, this.getPosY() - 16, null);
+	}
+	
 	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
 		if(this.getCdHabilidad1() == 0) {
 			this.setHabilidad1(true);
