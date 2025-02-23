@@ -43,6 +43,7 @@ public class Combate {
 	private HashMap<Integer, Zona> zonas = new HashMap<>();
 	private HashMap<Integer, Unidad> unidades = new HashMap<>();
 	private HashMap<Integer, Integer> velocidades = new HashMap<>();
+	private ArrayList<Unidad> unidadesAliadas = new ArrayList<Unidad>();
 	private Unidad unidadSeleccionada = null;
 	private Unidad unidadEnTurno = null;
 	private Unidad unidadObservada = null;
@@ -62,6 +63,7 @@ public class Combate {
 	private int offsetTexto = 0; // Desplazamiento del texto
 	private int velocidadDesplazamiento = 3; // Velocidad del desplazamiento
 	private Timer timerTexto;
+	private boolean abrirLibreta = false;
 	//CONTROL DE TURNO Y BOTONES/////////////////////////////////////////////
 	private boolean habilitarBoton = true;
 	private boolean turnoJugador = true; 
@@ -163,19 +165,22 @@ public class Combate {
 	
 	public void dibujar(Graphics2D g2) {
 		this.g2 = g2;
+		
 		dibujarResaltadorDeUnidad();
 		if(unidadEnTurno != null && seleccionarHabilidades) {
 			menuDeHabilidades(unidadEnTurno);
-		}
-		if(unidadSeleccionada != null) {
-			dibujarEstadisticasUnidad(unidadSeleccionada);
-			dibujarTriangulo(pdj.anchoDePantalla-pdj.tamañoDeBaldosa*4+(-4), pdj.altoDePantalla-pdj.tamañoDeBaldosa*4+(-32));
 		}
 		if(turnoJugador) {
 			menuDeAcciones();
 			if(instruccionElegida == 0 || instruccionElegida == 1) {
 				g2.drawImage(lockOn, selector.x, selector.y, null);
 			}
+			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
+			g2.setColor(Color.white);
+			g2.drawString("Press Z to accept.", pdj.anchoDePantalla - pdj.tamañoDeBaldosa*4 + 24, pdj.altoDePantalla - pdj.tamañoDeBaldosa * 2 + 32);
+			g2.drawString("Press X to cancel.", pdj.anchoDePantalla - pdj.tamañoDeBaldosa*4 + 24, pdj.altoDePantalla - pdj.tamañoDeBaldosa * 2 + 56);
+			g2.drawString("Press C for Notepad..", pdj.anchoDePantalla - pdj.tamañoDeBaldosa*4 + 6, pdj.altoDePantalla - pdj.tamañoDeBaldosa * 2 + 80);
+			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
 		}
 		dibujarMarcoDeJuego();
 		for (Unidad unidad : unidades.values()) {
@@ -184,9 +189,18 @@ public class Combate {
 		if(unidadObservada != null) {
 			dibujarEstadosDeUnidad(unidadObservada);
 		}
+		if(unidadSeleccionada != null && abrirLibreta) {
+			dibujarLibretaEscolar(unidadSeleccionada);
+			//dibujarTriangulo(pdj.anchoDePantalla-pdj.tamañoDeBaldosa*4+(-4), pdj.altoDePantalla-pdj.tamañoDeBaldosa*4+(-32));
+		}
 	}
 	//METODOS PARA JUGAR//////////////////////////////////////////////////////
 	public void realizarTurno() {
+		if(pdj.teclado.C == true && habilitarBoton) {
+    		habilitarBoton = false;
+    		abrirLibreta = !abrirLibreta;
+    	}
+		
 		ArrayList<Unidad> enemigos = new ArrayList<>();
 	    ArrayList<Unidad> aliados = new ArrayList<>();  
 	    for (Unidad unidad : unidades.values()) {
@@ -197,6 +211,9 @@ public class Combate {
 	                aliados.add(unidad);
 	            }
 	        }
+	    }
+	    if(!aliados.isEmpty()) {
+	    	this.unidadesAliadas.addAll(aliados);
 	    }
 	    if(contadorDeTurnos == unidades.size()) {
 	    	for(int clave : unidades.keySet()) {
@@ -392,7 +409,7 @@ public class Combate {
 	    		offsetTexto = 0;
 	    		pdj.ReproducirSE(1);
 	    	}
-	    	if(!pdj.teclado.RIGHT && !pdj.teclado.LEFT && !pdj.teclado.Z) {
+	    	if(!pdj.teclado.RIGHT && !pdj.teclado.LEFT && !pdj.teclado.Z && !pdj.teclado.C) {
 	    		habilitarBoton = true;
 	    	}
 	    	if(pdj.teclado.Z == true && habilitarBoton) {
@@ -424,7 +441,7 @@ public class Combate {
     		habilitarBoton = false;
     		pdj.ReproducirSE(0);
     	}
-    	if(!pdj.teclado.UP && !pdj.teclado.DOWN && !pdj.teclado.X && !pdj.teclado.Z) {
+    	if(!pdj.teclado.UP && !pdj.teclado.DOWN && !pdj.teclado.X && !pdj.teclado.Z && !pdj.teclado.C) {
     		habilitarBoton = true;
     	}
     	if(pdj.teclado.Z == true && habilitarBoton) {
@@ -456,7 +473,7 @@ public class Combate {
     		habilitarBoton = false;
     		pdj.ReproducirSE(0);
     	}
-    	if(!pdj.teclado.UP && !pdj.teclado.DOWN && !pdj.teclado.X && !pdj.teclado.Z) {
+    	if(!pdj.teclado.UP && !pdj.teclado.DOWN && !pdj.teclado.X && !pdj.teclado.Z && !pdj.teclado.C) {
     		habilitarBoton = true;
     	}
     	if(pdj.teclado.Z == true && habilitarBoton) {
@@ -772,116 +789,125 @@ public class Combate {
 		g2.drawRoundRect(8, 8, pdj.anchoDePantalla - 16, pdj.altoDePantalla - 16, 5, 5);
 	}
 	
-	public void dibujarEstadisticasUnidad(Unidad unidad) {
-	    int ancho = pdj.tamañoDeBaldosa * 3;
-	    int alto = pdj.tamañoDeBaldosa * 4;
-	    int posX = pdj.anchoDePantalla - ancho - 2;
-	    int posY = pdj.altoDePantalla - alto - 2;
-	    int ajusteY = -24;
-	    boolean dobleLinea = false;
+	public void dibujarLibretaEscolar(Unidad unidad) {
+		int ancho = pdj.tamañoDeBaldosa*8;
+		int alto = pdj.tamañoDeBaldosa*6;
+		int posX = ancho / 2;
+		int posY = alto / 2;
+		Color ventanaExteriorSombra = new Color(90, 0, 0);
+		Color ventanaInterior = new Color(250, 200, 150);
+		Color ventanaInteriorSombra = new Color(60, 0, 0);
+		Color lineas = new Color(90, 0, 0);
+		Color colorPositivo = new Color(0, 180, 0); // Verde para buffs
+		Color colorNegativo = new Color(180, 0, 0); // Rojo para debuffs
+		
+		g2.setColor(ventanaExteriorSombra);
+		g2.fillRoundRect( posX-16, posY+16, ancho+32, alto, 15, 15);
+		g2.setColor(Color.white);
+		g2.drawRoundRect( posX-16, posY+16, ancho+32, alto, 15, 15);
+		g2.setColor(ventanaInterior);
+		g2.fillRoundRect( posX, posY, ancho/2, alto, 15, 15);
+		g2.fillRoundRect( posX + ancho/2, posY, ancho/2, alto, 15, 15);
+		g2.setColor(lineas);
+		g2.drawRoundRect( posX + 8, posY + 8, ancho/5, alto/4, 15, 15);
+		g2.drawRoundRect( posX, posY, ancho/2, alto, 15, 15);
+		g2.drawRoundRect( posX + ancho/2, posY, ancho/2, alto, 15, 15);
+		
+		g2.drawImage(unidad.imagenesBody[0], posY + pdj.tamañoDeBaldosa + 12, posY + 8, null);
+		
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18f));
+		g2.setColor(new Color(150, 100, 50));
+		g2.drawString("Name: ", posX + 8, posY + pdj.tamañoDeBaldosa * 2 + 12);
+		g2.drawString("Type: ", posX + 8, posY + pdj.tamañoDeBaldosa * 2 + 52);
+		g2.drawString("Faction: ", posX + 8, posY + pdj.tamañoDeBaldosa * 2 + 92);
+		g2.drawString("Male:", posX + 96, posY + 32);
+		g2.drawString("Female:", posX + 96, posY + 72);
+		g2.setColor(ventanaInteriorSombra);
+		if(unidades.get(0).getGenero() == 1) {
+			g2.drawString("X", posX + 152, posY + 32);
+		}
+		else {
+			g2.drawString("X", posX + 152, posY + 72);
+		}
+		g2.drawString(unidad.getNombre(), posX + 8, posY + pdj.tamañoDeBaldosa * 2 + 32);
+		g2.drawString(unidad.getClase(), posX + 8, posY + pdj.tamañoDeBaldosa * 2 + 72);
+		g2.drawString(this.nombreDeFaccion(unidad), posX + 8, posY + pdj.tamañoDeBaldosa * 2 + 112);
+		//ESTADISTICAS//////////////////////////////////////////////////////////
+		g2.setColor(new Color(150, 100, 50));
+		g2.drawString("HP: ", posX + pdj.tamañoDeBaldosa * 4 + 24, posY + 32);
+		g2.drawString("SP: ", posX + pdj.tamañoDeBaldosa * 4 + 24, posY + 62);
+		g2.drawString("ATQ: ", posX + pdj.tamañoDeBaldosa * 4 + 24, posY + 92);
+		g2.drawString("DEF: ", posX + pdj.tamañoDeBaldosa * 4 + 24, posY + 122);
+		g2.drawString("EVA: ", posX + pdj.tamañoDeBaldosa * 4 + 24, posY + 152);
+		g2.drawString("T.BLOQ: ", posX + pdj.tamañoDeBaldosa * 4 + 24, posY + 182);
+		g2.drawString("VEL: ", posX + pdj.tamañoDeBaldosa * 4 + 24, posY + 212);
+		g2.drawString("P.CRT: ", posX + pdj.tamañoDeBaldosa * 4 + 24, posY + 242);
+		g2.drawString("D.CRT: ", posX + pdj.tamañoDeBaldosa * 4 + 24, posY + 272);
+		g2.setColor(ventanaInteriorSombra);
+		g2.drawString(""+unidad.getHP()+"/"+unidad.getHPMax(), posX + pdj.tamañoDeBaldosa * 4 + 64, posY + 32);
+		if(unidades.get(0).getHPMax() > 0) {
+			g2.drawString(""+unidad.getSP()+"/"+unidad.getSPMax(), posX + pdj.tamañoDeBaldosa * 4 + 64, posY + 62);
+		}
+		else {
+			g2.drawString("--/--", posX + pdj.tamañoDeBaldosa * 4 + 64, posY + 62);
+		}
+		g2.drawString(""+unidad.getAtq(), posX + pdj.tamañoDeBaldosa * 4 + 64, posY + 92);
+		g2.drawString(""+unidad.getDef()+" %", posX + pdj.tamañoDeBaldosa * 4 + 64, posY + 122);
+		g2.drawString(""+unidad.getEva()+" %", posX + pdj.tamañoDeBaldosa * 4 + 64, posY + 152);
+		g2.drawString(""+unidad.getBloq()+" %", posX + pdj.tamañoDeBaldosa * 4 + 80, posY + 182);
+		g2.drawString(""+unidad.getVel()+" KM/H", posX + pdj.tamañoDeBaldosa * 4 + 64, posY + 212);
+		g2.drawString(""+unidad.getPCRT()+" %", posX + pdj.tamañoDeBaldosa * 4 + 72, posY + 242);
+		g2.drawString("x."+unidad.getDCRT(), posX + pdj.tamañoDeBaldosa * 4 + 72, posY + 272);
+		//AUMENTOS Y DEBILITACIONES/////////////////////////////////////////////
+		int modAtq = unidad.getAtqMod();
+		g2.setColor(modAtq > 0 ? colorPositivo : (modAtq < 0 ? colorNegativo : ventanaInteriorSombra));
+		g2.drawString(modAtq > 0 ? "(+" + modAtq + ")" : (modAtq < 0 ? "(" + modAtq + ")" : ""), posX + pdj.tamañoDeBaldosa * 4 + 96, posY + 92);
 
-	    g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
-	    String nombreCompleto = unidad.getNombre();
-	    FontMetrics metrics = g2.getFontMetrics();
-	    int maxAnchoNombre = ancho - 12;
+		// DEF
+		int modDef = unidad.getDefMod();
+		g2.setColor(modDef > 0 ? colorPositivo : (modDef < 0 ? colorNegativo : ventanaInteriorSombra));
+		g2.drawString(modDef > 0 ? "(+" + modDef + "%)" : (modDef < 0 ? "(" + modDef + "%)" : ""), posX + pdj.tamañoDeBaldosa * 4 + 122, posY + 122);
 
-	    String nombre = nombreCompleto;
-	    String apellido = "";
+		// Evasión (EVA)
+		int modEva = unidad.getEvaMod();
+		g2.setColor(modEva > 0 ? colorPositivo : (modEva < 0 ? colorNegativo : ventanaInteriorSombra));
+		g2.drawString(modEva > 0 ? "(+" + modEva + "%)" : (modEva < 0 ? "(" + modEva + "%)" : ""), posX + pdj.tamañoDeBaldosa * 4 + 122, posY + 152);
 
-	    if (metrics.stringWidth(nombreCompleto) > maxAnchoNombre) {
-	    	dobleLinea = true;
-	        int espacioIndex = nombreCompleto.lastIndexOf(' ');
-	        if (espacioIndex > 0) {
-	            nombre = nombreCompleto.substring(0, espacioIndex).trim();
-	            apellido = nombreCompleto.substring(espacioIndex + 1).trim();
+		// Tasa de Bloqueo (T.BLOQ)
+		int modBloq = unidad.getBloqMod();
+		g2.setColor(modBloq > 0 ? colorPositivo : (modBloq < 0 ? colorNegativo : ventanaInteriorSombra));
+		g2.drawString(modBloq > 0 ? "(+" + modBloq + "%)" : (modBloq < 0 ? "(" + modBloq + "%)" : ""), posX + pdj.tamañoDeBaldosa * 4 + 122, posY + 182);
 
-	            if (metrics.stringWidth(nombre) > maxAnchoNombre) {
-	                nombre = ajustarTexto(nombre, metrics, maxAnchoNombre);
-	            }
-	            if (metrics.stringWidth(apellido) > maxAnchoNombre) {
-	                apellido = ajustarTexto(apellido, metrics, maxAnchoNombre);
-	            }
-	        }
-	    }
-	    
-	    g2.setColor(Color.white);
-	    if(dobleLinea) {
-	    	g2.drawRoundRect(posX, posY-24, ancho, alto+24, 10, 10);
-	    }
-	    else {
-	    	g2.drawRoundRect(posX, posY, ancho, alto, 10, 10);
-	    }
-	    
-	    if (unidad.getGenero() == 1) {
-	        g2.setColor(Color.CYAN);
-	    } else {
-	        g2.setColor(Color.PINK);
-	    }
+		// Velocidad (VEL)
+		int modVel = unidad.getVelMod();
+		g2.setColor(modVel > 0 ? colorPositivo : (modVel < 0 ? colorNegativo : ventanaInteriorSombra));
+		g2.drawString(modVel > 0 ? "(+" + modVel + " KM)" : (modVel < 0 ? "(" + modVel + " KM)" : ""), posX + pdj.tamañoDeBaldosa * 4 + 126, posY + 212);
+		
+		// Prob. crit (P.CRT)
+		int modPCrt = unidad.getPcrtMod();
+		g2.setColor(modPCrt > 0 ? colorPositivo : (modPCrt < 0 ? colorNegativo : ventanaInteriorSombra));
+		g2.drawString(modPCrt > 0 ? "(+" + modPCrt + " %)" : (modPCrt < 0 ? "(" + modPCrt + " %)" : ""), posX + pdj.tamañoDeBaldosa * 4 + 122, posY + 242);
+		////////////////////////////////////////////////////////////////////////
 
-	    if(dobleLinea) {
-	    	g2.drawString(nombre, posX + 8, posY+ ajusteY + 24);
-	    }
-	    else {
-	    	g2.drawString(nombre, posX + 8, posY + 24);
-	    }
-	    if (!apellido.isEmpty()) {
-	        g2.drawString(apellido, posX + 8, posY+ ajusteY + 48);
-	    }
-	    g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18f));
-	    g2.setColor(Color.white);
-	    g2.drawString(unidad.getClase(), posX + 8, posY + ajusteY + 72);
-	    g2.drawString("HP: "+unidad.getHP()+"/"+unidad.getHPMax(), posX + 8, posY + ajusteY + 104);
-	    if(unidad.getSPMax() == 0) {
-	    	g2.drawString("SP: -/- ", posX + 8, posY + ajusteY + 128);
-	    }
-	    else {
-	    	g2.drawString("SP: "+unidad.getSP()+"/"+unidad.getSPMax(), posX + 8, posY + ajusteY + 128);
-	    }
-	    g2.drawString("ATQ: "+unidad.getAtq(), posX + 8, posY + ajusteY + 152); 
-	    g2.drawString("DEF: "+unidad.getDef(), posX + 8, posY + ajusteY + 176);
-	    
-	    g2.setColor(Color.yellow);
-	    if(unidad.getAtqMod() != 0) {
-	    	if(unidad.getAtqMod() < 0) {
-	    		g2.setColor(Color.RED);
-	    		g2.drawString(""+unidad.getAtqMod(), posX + 60, posY + ajusteY + 152);
-		    }
-		    else {
-		    	g2.drawString("+"+unidad.getAtqMod(), posX + 60, posY + ajusteY + 152);
-		    }
-	    }
-	    if(unidad.getDefMod() != 0) {
-	    	if(unidad.getDefMod() < 0){
-	    		g2.setColor(Color.RED);
-	    		g2.drawString(""+unidad.getDefMod(), posX + 60, posY + ajusteY + 176);
-	    	}
-	    	else {
-	    		g2.drawString("+"+unidad.getDefMod(), posX + 60, posY + ajusteY + 176);
-	    	}
-	    }  
-	    if((unidad.getPCRT()+unidad.getPcrtMod()) > 0) {
-	    	if(unidad.getPcrtMod() != 0) {
-	    		g2.setColor(Color.yellow);
-	    		double d = unidad.getPCRT()+unidad.getPcrtMod();
-	    		g2.drawString("P.CRT: "+(d)+"%", posX + 8, posY + ajusteY + 200);
-	    	}
-	    	else {
-	    		g2.setColor(Color.white);
-	    		g2.drawString("P.CRT: "+(unidad.getPCRT())+"%", posX + 8, posY + ajusteY + 200);
-	    	}
-	    }
-	    else {
-	    	g2.setColor(Color.white);
-	    	g2.drawString("P.CRT: ---", posX + 8, posY + ajusteY + 200);
-	    }
-	    
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
 	}
-
-	private String ajustarTexto(String texto, FontMetrics metrics, int maxAncho) {
-	    while (metrics.stringWidth(texto + "...") > maxAncho && texto.length() > 0) {
-	        texto = texto.substring(0, texto.length() - 1);
-	    }
-	    return texto + "...";
+	
+	public String nombreDeFaccion(Unidad unidad) {
+		if(unidad.getIdFaccion() == 1) {
+			return "Nietos de la Patria Perdida";
+		}
+		else if(unidad.getIdFaccion() == 2) {
+			return "Dragon-Ate-Sun";
+		}
+		else if(unidad.getIdFaccion() == 3) {
+			return "El Piño y El Dragon";
+		}
+		else if(unidad.getIdFaccion() == 4) {
+			return "Mei Hua Jie";
+		}
+		else {
+			return "Unknown";
+		}
 	}
 	
 	public void dibujarResaltadorDeUnidad() {
