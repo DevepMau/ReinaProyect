@@ -22,6 +22,10 @@ public class InicializadorDeRecursos {
 	public Image bleed = null;
 	public Image burn = null;
 	public Image fragile = null;
+	public Image mateVerde = null;
+	public Image mateRojo = null;
+	public Image mateAzul = null;
+	public Image mateAmarillo = null;
 
 	public InicializadorDeRecursos(PanelDeJuego pdj) {
 		this.pdj = pdj;
@@ -43,6 +47,10 @@ public class InicializadorDeRecursos {
 		bleed = pdj.ui.configurarImagen("/estados/sangre", 4);
 		burn = pdj.ui.configurarImagen("/estados/fuego", 4);
 		fragile = pdj.ui.configurarImagen("/estados/quebrado", 4);
+		mateVerde = pdj.ui.configurarImagen("/efectos/mate-bota", 4);
+		mateRojo = pdj.ui.configurarImagen("/efectos/mate-espada", 4);
+		mateAzul = pdj.ui.configurarImagen("/efectos/mate-escudo", 4);
+		mateAmarillo = pdj.ui.configurarImagen("/efectos/mate-op", 4);
 	}
 
 	public void establecerObjetos() {
