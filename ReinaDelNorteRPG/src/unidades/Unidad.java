@@ -283,6 +283,11 @@ public class Unidad {
 	
 	public void realizarAtaque(Unidad unidad, ArrayList<Unidad> enemigos) {
 		Unidad defensor = getDefensor(enemigos);
+		if(defensor != null) {
+			if(defensor.equals(unidad)) {
+				defensor = null;
+			}
+		}
 		this.setNombreDeUltimoObjetivo(unidad.getClase());
 		boolean isCritical = Math.random() <= ((this.getPCRT() + this.getPcrtMod()) / 100.0);
 		if(unidad != null) {
@@ -293,6 +298,8 @@ public class Unidad {
 			if(defensor != null) {
 				if(defensor.elegirAleatorio(100) < (defensor.getBloq() + defensor.getBloqMod())) {
 					defensor.recibirDaño(daño, isCritical, this);
+					Habilidades.setearEfectoDeEstado(defensor, "COVER!", new Color(205, 205, 255));
+					pdj.ReproducirSE(9);
 				}
 				else {
 					unidad.recibirDaño(daño, isCritical, this);
@@ -311,6 +318,9 @@ public class Unidad {
 				if(unidad.getClase() == "Influencer") {
 					return unidad;
 				}
+				else if(unidad.getClase() == "Polluelo Entusiasta") {
+					return unidad;
+				}
 			}
 		}
 		return null;
@@ -319,6 +329,11 @@ public class Unidad {
 	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
 		Unidad defensor = getDefensor(unidades);
 		Unidad objetivo = elegirObjetivo(unidades);
+		if(defensor != null) {
+			if(objetivo.equals(defensor)) {
+				defensor = null;
+			}
+		}
 		if(!unidades.isEmpty()) {
 			this.setNombreDeUltimoObjetivo(objetivo.getClase());
 		}
@@ -331,6 +346,8 @@ public class Unidad {
 			if(defensor != null) {
 				if(defensor.elegirAleatorio(100) < (defensor.getBloq() + defensor.getBloqMod())) {
 					defensor.recibirDaño(daño, isCritical, this);
+					Habilidades.setearEfectoDeEstado(defensor, "COVER!", new Color(155, 155, 255));
+					pdj.ReproducirSE(9);
 				}
 				else {
 					objetivo.recibirDaño(daño, isCritical, this);
