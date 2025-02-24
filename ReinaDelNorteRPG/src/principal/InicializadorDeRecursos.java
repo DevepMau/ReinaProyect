@@ -75,7 +75,71 @@ public class InicializadorDeRecursos {
 	
 	public void cargarImagenesDeUnidad(Unidad unidad) {
 		unidad.definirIdTez();
-		if(unidad.getIdFaccion() == 1) {
+		if(unidad.getIdFaccion() == 0) {
+			unidad.imagenesBody[4] = pdj.ui.configurarImagen("/imagenes/accesorios/banda",3);
+			String color = unidad.elegirEquipo();
+			if(unidad.getGenero() == 1) {
+				//SI ES HOMBRE/////////////////////////////////////////////////////////////////////////
+				if(unidad.getClase() == "Heroe Federal") {
+					unidad.imagenesBody[3] = pdj.ui.configurarImagen("/imagenes/unisex/caballo-"+unidad.getIdTez(), 3);
+					unidad.imagenesBody[2] = pdj.ui.configurarImagen("/imagenes/hombre/bici-boy", 3);
+					unidad.imagenesBody[1] = pdj.ui.configurarImagen("/imagenes/unisex/cuerpo-heroe", 3);
+					unidad.imagenesBody[0] = pdj.ui.configurarImagen("/imagenes/hombre/cabeza-boy-"+unidad.getIdTez(), 3);
+					unidad.setAlturaPorClase(-10);
+				}
+				else if(unidad.getClase() == "Polluelo Entusiasta") {
+					unidad.imagenesBody[3] = pdj.ui.configurarImagen("/imagenes/unisex/latas-"+unidad.getIdTez(), 3);
+					unidad.imagenesBody[2] = pdj.ui.configurarImagen("/imagenes/hombre/pantalon-1",3);
+					unidad.imagenesBody[1] = pdj.ui.configurarImagen("/imagenes/unisex/cuerpo"+unidad.getIdTez(), 3);
+					unidad.imagenesBody[0] = pdj.ui.configurarImagen("/imagenes/hombre/cabeza-boy-"+unidad.getIdTez(), 3);
+				}
+				else if(unidad.getClase() == "Pluma Blanca") {
+					unidad.imagenesBody[3] = pdj.ui.configurarImagen("/imagenes/unisex/manos-"+unidad.getIdTez(), 3);
+					unidad.imagenesBody[2] = pdj.ui.configurarImagen("/imagenes/hombre/pantalon-1",3);
+					unidad.imagenesBody[1] = pdj.ui.configurarImagen("/imagenes/unisex/cuerpo-tapado-"+unidad.getIdTez(), 3);
+					unidad.imagenesBody[0] = pdj.ui.configurarImagen("/imagenes/hombre/cabeza-boy-"+unidad.getIdTez(), 3);
+				}
+				else if(unidad.getClase() == "Pluma Negra") {
+					unidad.setAlturaDeAccesorio(3);
+					unidad.imagenesBody[4] = pdj.ui.configurarImagen("/imagenes/accesorios/banda-negra-barbijo-hombre",3);
+					//unidad.imagenesBody[3] = pdj.ui.configurarImagen("/imagenes/hombre/cutter-"+unidad.getIdTez(),3);
+					unidad.imagenesBody[2] = pdj.ui.configurarImagen("/imagenes/hombre/pantalon-1",3);
+					unidad.imagenesBody[1] = pdj.ui.configurarImagen("/imagenes/unisex/cuerpo-tapado-negro-"+unidad.getIdTez(), 3);
+					unidad.imagenesBody[0] = pdj.ui.configurarImagen("/imagenes/hombre/cabeza-boy-"+unidad.getIdTez(), 3);
+				}
+			}
+			//SI ES MUJER////////////////////////////////////////////////////////////////////////////
+			else {
+				if(unidad.getClase() == "Heroe Federal") {
+					unidad.imagenesBody[3] = pdj.ui.configurarImagen("/imagenes/unisex/caballo-"+unidad.getIdTez(), 3);
+					unidad.imagenesBody[2] = pdj.ui.configurarImagen("/imagenes/mujer/bici-girl-"+unidad.getIdTez(), 3);
+					unidad.imagenesBody[1] = pdj.ui.configurarImagen("/imagenes/unisex/cuerpo-heroe", 3);
+					unidad.imagenesBody[0] = pdj.ui.configurarImagen("/imagenes/mujer/cabeza-girl-"+unidad.getIdTez(), 3);
+					unidad.setAlturaPorClase(-10);
+				}
+				if(unidad.getClase() == "Polluelo Entusiasta") {
+					unidad.imagenesBody[3] = pdj.ui.configurarImagen("/imagenes/unisex/latas-"+unidad.getIdTez(), 3);
+					unidad.imagenesBody[2] = pdj.ui.configurarImagen("/imagenes/mujer/falda-"+unidad.getIdTez(),3);
+					unidad.imagenesBody[1] = pdj.ui.configurarImagen("/imagenes/unisex/cuerpo"+unidad.getIdTez(), 3);
+					unidad.imagenesBody[0] = pdj.ui.configurarImagen("/imagenes/mujer/cabeza-girl-"+unidad.getIdTez(), 3);
+				}
+				else if(unidad.getClase() == "Pluma Blanca") {
+					unidad.imagenesBody[3] = pdj.ui.configurarImagen("/imagenes/unisex/manos-"+unidad.getIdTez(), 3);
+					unidad.imagenesBody[2] = pdj.ui.configurarImagen("/imagenes/mujer/falda-"+unidad.getIdTez(),3);
+					unidad.imagenesBody[1] = pdj.ui.configurarImagen("/imagenes/unisex/cuerpo-tapado-"+unidad.getIdTez(), 3);
+					unidad.imagenesBody[0] = pdj.ui.configurarImagen("/imagenes/mujer/cabeza-girl-"+unidad.getIdTez(), 3);
+				}
+				else if(unidad.getClase() == "Pluma Negra") {
+					unidad.setAlturaDeAccesorio(3);
+					unidad.imagenesBody[4] = pdj.ui.configurarImagen("/imagenes/accesorios/banda-negra-barbijo-mujer",3);
+					//unidad.imagenesBody[3] = pdj.ui.configurarImagen("/imagenes/hombre/cutter-"+unidad.getIdTez(),3);
+					unidad.imagenesBody[2] = pdj.ui.configurarImagen("/imagenes/mujer/falda-"+unidad.getIdTez(),3);
+					unidad.imagenesBody[1] = pdj.ui.configurarImagen("/imagenes/unisex/cuerpo-tapado-negro-"+unidad.getIdTez(), 3);
+					unidad.imagenesBody[0] = pdj.ui.configurarImagen("/imagenes/mujer/cabeza-girl-"+unidad.getIdTez(), 3);
+				}
+			}
+		}
+		else if(unidad.getIdFaccion() == 1) {
 			unidad.imagenesBody[4] = pdj.ui.configurarImagen("/imagenes/accesorios/boina1",3);
 			String color = unidad.elegirEquipo();
 			if(unidad.getGenero() == 1) {
@@ -84,7 +148,7 @@ public class InicializadorDeRecursos {
 					unidad.imagenesBody[3] = pdj.ui.configurarImagen("/imagenes/unisex/caballo-"+unidad.getIdTez(), 3);
 					unidad.imagenesBody[2] = pdj.ui.configurarImagen("/imagenes/hombre/bici-boy", 3);
 					unidad.imagenesBody[1] = pdj.ui.configurarImagen("/imagenes/unisex/cuerpo-heroe", 3);
-					//imagenesBody[0] = configurarImagen("/imagenes/hombre/cabeza-boy-"+this.idTez, 3);
+					unidad.imagenesBody[0] = pdj.ui.configurarImagen("/imagenes/hombre/cabeza-boy-"+unidad.getIdTez(), 3);
 					unidad.setAlturaPorClase(-10);
 				}
 				else if(unidad.getClase() == "Cebador De Mate") {
