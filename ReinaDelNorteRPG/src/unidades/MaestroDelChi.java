@@ -62,10 +62,13 @@ public class MaestroDelChi extends Unidad {
 		else {
 			if(!enemigos.isEmpty()) {
 				for(Unidad unidadObjetivo : enemigos) {
-					Habilidades.desmarcarUnidad(unidadObjetivo);
-					super.usarHabilidadOfensiva(unidadObjetivo, false, false, this.getSPMax()/10,() -> Habilidades.explotarMarca(this, unidadObjetivo));
+					if(unidadObjetivo.isMarcado()) {
+						Habilidades.desmarcarUnidad(unidadObjetivo);
+						super.usarHabilidadOfensiva(unidadObjetivo, false, false, this.getSPMax()/10,() -> Habilidades.explotarMarca(this, unidadObjetivo));
+					}
 					this.cargas = 0;
 				}
+				pdj.ReproducirSE(3);
 			}
 		}
 	}
@@ -76,10 +79,13 @@ public class MaestroDelChi extends Unidad {
 		}
 		else {
 			for(Unidad unidadObjetivo : unidades) {
-				Habilidades.desmarcarUnidad(unidadObjetivo);
-				super.usarHabilidadOfensiva(unidadObjetivo, false, false, this.getSPMax()/10,() -> Habilidades.explotarMarca(this, unidadObjetivo));
+				if(unidadObjetivo.isMarcado()) {
+					Habilidades.desmarcarUnidad(unidadObjetivo);
+					super.usarHabilidadOfensiva(unidadObjetivo, false, false, this.getSPMax()/10,() -> Habilidades.explotarMarca(this, unidadObjetivo));
+				}
 				this.cargas = 0;
 			}
+			pdj.ReproducirSE(3);
 		}
 	}
 	//HABILIDADES////////////////////////////////////////////////////////////////////////
