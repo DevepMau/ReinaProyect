@@ -55,7 +55,7 @@ public class PayadorPicante extends Unidad {
 		if(this.getHabilidadElegida() == 0) {
 			if(!enemigos.isEmpty()) {
 				Unidad unidad = elegirObjetivo(enemigos);
-				super.usarHabilidadOfensiva(unidad, true, true, 0,() -> Habilidades.oxidarArmadura(unidad));
+				super.usarHabilidadOfensiva(unidad, true, false, 0,() -> Habilidades.oxidarArmadura(unidad));
 				this.setCdHabilidad1(1);
 				this.setHabilidad1(false);
 			}
@@ -66,7 +66,7 @@ public class PayadorPicante extends Unidad {
 				for(Unidad unidad : aliados) {
 					motivar(unidad);
 				}
-				this.setCdHabilidad2(10);
+				this.setCdHabilidad2(8);
 				this.setHabilidad2(false);
 			}	
 		}
@@ -74,7 +74,7 @@ public class PayadorPicante extends Unidad {
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {	
 		if(this.getHabilidadElegida() == 0) {
-			super.usarHabilidadOfensiva(unidad, true, true, this.getSPMax()/10,() -> Habilidades.oxidarArmadura(unidad));
+			super.usarHabilidadOfensiva(unidad, true, false, this.getSPMax()/10,() -> Habilidades.oxidarArmadura(unidad));
 			this.setCdHabilidad1(1);
 			this.setHabilidad1(false);
 		}
@@ -83,7 +83,7 @@ public class PayadorPicante extends Unidad {
 			for(Unidad unidadObjetivo : unidades) {
 				motivar(unidadObjetivo);
 			}	
-			this.setCdHabilidad2(10);
+			this.setCdHabilidad2(8);
 			this.setHabilidad2(false);
 		}
 		
