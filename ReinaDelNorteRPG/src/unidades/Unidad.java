@@ -52,6 +52,7 @@ public class Unidad {
 	private boolean estaActivo = true;
 	private boolean estaVivo = true;
 	private boolean mostrarFaltas = false;
+	private boolean usoHabilidadOfensiva = false;
 	private boolean estaStun;
 	private boolean estaEnamorado;
 	private boolean marcado;
@@ -60,6 +61,7 @@ public class Unidad {
 	//ACCIONES//////////////////////////////////////////////////////
 	private boolean realizaUnCritico;
 	//TIMERS DE ESTADOS/////////////////////////////////////////////
+	private int timerCastigo = 0;
 	private int timerPrecavido = -1;
 	private int timerAgresivo = -1;
 	private int timerAcelerado = -1;
@@ -101,6 +103,7 @@ public class Unidad {
 	private int cantEnemigas;
 	//IMAGENES DE LA UNIDAD////////////////////////////////////////
 	Image piso = configurarImagen("/efectos/floor", 4);
+	Image modoSombra = configurarImagen("/efectos/modo-sombra", 3);
 	//ACUMULADORES DE LA UNIDAD////////////////////////////////////
 	private int escudos = 0;
 	private int faltasCometidas = 0;
@@ -185,6 +188,9 @@ public class Unidad {
         int dibujarY = getPosY() + desplazamientoSacudidaY;
         g2.drawImage(piso, posX, posY+16, null);
         if(isAlive()) {
+        	if(this.getTimerCastigo() == 0 && this.getClase() == "Pluma Negra") {
+        		g2.drawImage(modoSombra, posX + 8, posY + (imageMov*2) - 28, null);
+        	}
         	dibujarVida();
         	mostrarImagenes(g2, dibujarX+10, dibujarY-20+getAlturaPorClase(), imageMov);
         	dibujarEscudos(g2);
@@ -424,8 +430,17 @@ public class Unidad {
 		if(!enemigos.isEmpty()) {
 			for(Unidad unidad : enemigos) {
 				if(unidad.getClase() == "Delegada") {
-					System.out.println();
 					this.setMostrarFaltas(true);
+				}
+				if(unidad.getClase() == "Pluma Negra") {
+					if(this.isUsoHabilidadOfensiva() && unidad.getTimerCastigo() == 0) {
+						if(unidad.getSP() >= 15) {
+							unidad.usarHabilidadOfensiva(this, false, false, unidad.getVelMod(), () -> Habilidades.castigarUnidad(this, pdj));
+							unidad.setSP(unidad.getSP() - 15);
+							unidad.setTimerCastigo(1);
+						}
+						this.setUsoHabilidadOfensiva(false);
+					}
 				}
 			}
 		}
@@ -469,7 +484,8 @@ public class Unidad {
 	}
 	
 	public void usarHabilidadOfensiva(Unidad unidad, boolean puedeEsquivar, boolean puedeBloquear, int dañoAdicional, Runnable habilidad) { 
-	    int daño = this.getAtq() + this.getAtqMod() + dañoAdicional;
+		this.setUsoHabilidadOfensiva(true);
+		int daño = this.getAtq() + this.getAtqMod() + dañoAdicional;
 	    if(unidad.getDef() + unidad.getDefMod() < 0) {
 			daño += daño;
 		}
@@ -853,6 +869,8 @@ public class Unidad {
 	public void setEstaActivo(boolean estaActivo) {this.estaActivo = estaActivo;}
 	public boolean getEstaStun() {return estaStun;}
 	public void setEstaStun(boolean estaKO) {this.estaStun = estaKO;}
+	public boolean isUsoHabilidadOfensiva() {return usoHabilidadOfensiva;}
+	public void setUsoHabilidadOfensiva(boolean boo) {this.usoHabilidadOfensiva = boo;}
 	public boolean isEstaEnamorado() {return estaEnamorado;}
 	public void setEstaEnamorado(boolean estaEnamorado) {this.estaEnamorado = estaEnamorado;}
 	public boolean isMarcado() {return marcado;}
@@ -898,6 +916,12 @@ public class Unidad {
 	public void setDcrtMod(double dcrtMod) { this.dcrtMod = dcrtMod;}
 	public int getBloqMod() {return bloqMod;}
 	public void setBloqMod(int blockMod) {this.bloqMod = blockMod;}
+	public int getTimerCastigo() {
+		return timerCastigo;
+	}
+	public void setTimerCastigo(int timerCastigo) {
+		this.timerCastigo = timerCastigo;
+	}
 	//G&S TIMERS///////////////////////////////////////////////////////////////
 	public int getTimerPrecavido() {return timerPrecavido;}
 	public void setTimerPrecavido(int timerPrecavido) {this.timerPrecavido = timerPrecavido;}
