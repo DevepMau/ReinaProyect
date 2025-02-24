@@ -180,25 +180,25 @@ public class Unidad {
     }	
 	//DIBUJAR////////////////////////////////////////////////////////////////////////////////
 	public void dibujar(Graphics2D g2) {
-        this.g2 = g2; 
-        g2.drawImage(piso, posX, posY+16, null);
-        dibujarVida();
-        if(isEstaEnamorado()) {dibujarCorazon(g2);}
-        dibujarEscudos(g2);
-        if(getMostrarFaltas()) {dibujarFaltas(g2);}
+        this.g2 = g2;
         int dibujarX = getPosX() + desplazamientoSacudidaX;
         int dibujarY = getPosY() + desplazamientoSacudidaY;
+        g2.drawImage(piso, posX, posY+16, null);
         if(isAlive()) {
+        	dibujarVida();
         	mostrarImagenes(g2, dibujarX+10, dibujarY-20+getAlturaPorClase(), imageMov);
+        	dibujarEscudos(g2);
+            if(getMostrarFaltas()) {dibujarFaltas(g2);}
+            if(this.getEstaStun()) {
+            	Image KO = configurarImagen("/efectos/stun", 3);
+            	g2.drawImage(KO, dibujarX+10, dibujarY, null);
+            }  
+            efectosVisualesPersonalizados(g2);
         } 
         else {
         	mostrarMuerte(g2, dibujarX+10, dibujarY-20, imageMov);
         }
         //MOSTRAR DAÑO RECIBIDO Y EFECTOS////////////////////////////
-        if(this.getTimerMarcado() > 0) {
-        	Image marca = configurarImagen("/efectos/mark", 4);
-        	g2.drawImage(marca, dibujarX, dibujarY, null);
-        }
         if(this.isEfectoDeEstado()) {
         	g2.setColor(colorDeMensaje);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20f));
@@ -219,11 +219,6 @@ public class Unidad {
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
             g2.drawString(this.getTextoDañoRecibido(), getPosX()+84, desplazarDañoRecibido-48);
         }
-        if(this.getEstaStun()) {
-        	Image KO = configurarImagen("/efectos/stun", 3);
-        	g2.drawImage(KO, dibujarX+10, dibujarY, null);
-        }  
-        efectosVisualesPersonalizados(g2);
     }
 	//METODOS DE ACCION///////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
@@ -242,40 +237,37 @@ public class Unidad {
 		if(this.getHPMax() > unidad.getHPMax() && unidad.getClase() == "Puño Furioso") {
 			daño += (this.getHPMax()-unidad.getHPMax())/4;
 		}
+		if(this.getDef() + this.getDefMod() < 0) {
+			daño += damage;
+		}
 	    int SEId = 2;
 	    int reduccion = (int) (daño * ((this.getDef() + this.getDefMod()) / 100.0));
         int dañoFinal = Math.max(1, daño - reduccion);
-        String textoMostrado = "";
 	    if (this.elegirAleatorio(100) < (this.getEva() + this.getEvaMod()) && unidad.getClase() != "Dragon Pirotecnico") {
 	    	pdj.ReproducirSE(6);
-	        textoMostrado = "MISS!";
-	        Habilidades.setearEfectoDeEstado(this, textoMostrado, Color.white);
+	        Habilidades.setearEfectoDeEstado(this, "MISS!", Color.DARK_GRAY);
 	        Habilidades.ganarNeoCreditos(this, 10);
 	    }
 	    else {
 	    	if(this.elegirAleatorio(100) < (this.getBloq() + this.getBloqMod())) {
 	    		pdj.ReproducirSE(9);
 	    		this.setHP(this.getHP() - (dañoFinal/4));
-		        textoMostrado = "BLOCK!";
-		        Habilidades.setearEfectoDeEstado(this, textoMostrado, Color.white);
+		        Habilidades.setearEfectoDeEstado(this, "BLOCK!", Color.white);
 		        Habilidades.ganarNeoCreditos(this, 12);
 	    	}
 	    	else if (this.escudos > 0) {
 		        escudos--;
 		        pdj.ReproducirSE(9);
-		        textoMostrado = "BREAK!";
-		        Habilidades.setearEfectoDeEstado(this, textoMostrado, Color.white);
+		        Habilidades.setearEfectoDeEstado(this, "BREAK!", Color.GRAY);
 		        Habilidades.ganarNeoCreditos(unidad, 7);
 		        contarFaltas(unidad, 1);
 		    } else {
 		    	if (isCritical) {
 			    	SEId = 3;
 			    	this.realizaUnCritico = true;
-			        textoMostrado = "CRITICAL " + dañoFinal + "!";
-			        Habilidades.setearDaño(this, textoMostrado, Color.yellow);
+			        Habilidades.setearDaño(this, "CRITICAL " + dañoFinal + "!", Color.yellow);
 			    } else {
-			        textoMostrado = "" + dañoFinal;
-			        Habilidades.setearDaño(this, textoMostrado, Color.white);
+			        Habilidades.setearDaño(this, "" + dañoFinal, Color.white);
 			    }
 		        this.setHP(this.getHP() - dañoFinal);
 		        pdj.ReproducirSE(SEId);
@@ -461,23 +453,35 @@ public class Unidad {
 	
 	public void usarHabilidadOfensiva(Unidad unidad, boolean puedeEsquivar, boolean puedeBloquear, int dañoAdicional, Runnable habilidad) { 
 	    int daño = this.getAtq() + this.getAtqMod() + dañoAdicional;
+	    if(unidad.getDef() + unidad.getDefMod() < 0) {
+			daño += daño;
+		}
 	    int reduccion = (int) (daño * ((unidad.getDef() + unidad.getDefMod()) / 100.0));
 	    int dañoFinal = Math.max(1, daño - reduccion);
 	    if (puedeEsquivar && unidad.elegirAleatorio(100) < (unidad.getEva() + unidad.getEvaMod())) {
 	        pdj.ReproducirSE(6);
-	        Habilidades.setearEfectoDeEstado(unidad, "MISS!", Color.white);
+	        Habilidades.setearEfectoDeEstado(unidad, "MISS!", Color.DARK_GRAY);
 	    } else {
 	        if (puedeBloquear && this.elegirAleatorio(100) < (unidad.getBloq() + unidad.getBloqMod())) {
 	            pdj.ReproducirSE(9);
 	            unidad.setHP(unidad.getHP() - (dañoFinal / 4));
 	            Habilidades.setearEfectoDeEstado(unidad, "BLOCK!", Color.white);
 	        } else if (unidad.getEscudos() > 0) {
-	            unidad.setEscudos(unidad.getEscudos() - 1);
-	            pdj.ReproducirSE(9);
-	            Habilidades.setearEfectoDeEstado(unidad, "BREAK!", Color.white);
+	        	if(this.getClase() == "Heroe Federal") {
+	        		unidad.setEscudos(0);
+	        		pdj.ReproducirSE(9);
+		            Habilidades.setearEfectoDeEstado(unidad, "STOMP!", Color.DARK_GRAY);
+	        	}
+	        	else {
+	        		unidad.setEscudos(unidad.getEscudos() - 1);
+	        		pdj.ReproducirSE(9);
+		            Habilidades.setearEfectoDeEstado(unidad, "BREAK!", Color.GRAY);
+	        	}
 	        } else {
 	            unidad.setHP(unidad.getHP() - dañoFinal);
-	            pdj.ReproducirSE(3);
+	            if(this.getClase() != "Maestro Del Chi") {
+	            	pdj.ReproducirSE(3);
+	            }
 	            habilidad.run();
 	        }
 	    }
@@ -501,7 +505,12 @@ public class Unidad {
 	//METODOS VISUALES/////////////////////////////////////////////////////////
 	public void dibujarVida() {
 	    g2.setFont(g2.getFont().deriveFont(Font.BOLD, 15f));
-	    g2.setColor(Color.white);
+	    if(this.getTimerMarcado() > 0) {
+	    	g2.setColor(Color.yellow);
+	    }
+	    else {
+	    	g2.setColor(Color.white);
+	    }
 	    
 	    String nombreCompleto = getClase();
 	    int hp = calcularBarraHP();
