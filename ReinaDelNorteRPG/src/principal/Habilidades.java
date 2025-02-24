@@ -29,14 +29,14 @@ public class Habilidades {
 	public static void oxidarArmadura(Unidad unidad) {
 		Color color = new Color(181, 101, 29);
 		if(unidad.getRdcDefAcc() < 3) {
-			Estadisticas.reducirDefensa(unidad, 5);
+			Estadisticas.reducirDefensa(unidad, 10);
 			unidad.setRdcDefAcc(unidad.getRdcDefAcc() + 1);
 		}
 		Habilidades.setearEfectoDeEstado(unidad, "RUST!", color);		
 	}
 	
 	public static void cancelarOxidarArmadura(Unidad unidad) {
-		Estadisticas.aumentarDefensa(unidad, 5 * unidad.getRdcDefAcc());
+		Estadisticas.aumentarDefensa(unidad, 10 * unidad.getRdcDefAcc());
 	}
 	
 	//HABILIDADES DE MARCA//////////////////////////////////////////////////
@@ -213,6 +213,19 @@ public class Habilidades {
 		    pdj.ReproducirSE(4);
 		    Estadisticas.aumentarEscudos(unidad, valor);
 		    Habilidades.setearEfectoDeEstado(unidad, "GUARD!", color);
+		}).start();	
+	}
+	
+	public static void castigarUnidad(Unidad unidad, PanelDeJuego pdj) {
+		Color color = new Color(205, 130, 180);
+		new Thread(() -> {
+		    try {
+		        Thread.sleep(300);
+		    } catch (InterruptedException e) {
+		        e.printStackTrace();
+		    }
+		    pdj.ReproducirSE(3);
+		    Habilidades.setearEfectoDeEstado(unidad, "PUNISH!", color);
 		}).start();	
 	}
 	
