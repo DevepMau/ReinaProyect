@@ -42,7 +42,7 @@ public class Habilidades {
 	//HABILIDADES DE MARCA//////////////////////////////////////////////////
 	
 	public static void marcarUnidad(Unidad unidad) {
-		Color color = new Color(0, 255, 200);
+		Color color = new Color(255, 255, 0);
 		if(unidad.getTimerMarcado() == -1) {
 			Estadisticas.reducirTasaBloqueo(unidad, 15);
 			Estadisticas.reducirEvasion(unidad, 15);
@@ -324,6 +324,22 @@ public class Habilidades {
 		
 	//HABILIDADES COMPUESTAS/////////////////////////////////////////////////
 	
+	public static void darBonificacionAleatorio(ArrayList<Unidad> unidades) {
+		if(!unidades.isEmpty()) {
+			Unidad objetivo = unidades.get(elegirAleatorio(unidades.size()));
+			int opcion = elegirAleatorio(4);
+			if(opcion == 0) {
+				Habilidades.aumentarAgilidad(objetivo);
+			}
+			else if(opcion == 1) {
+				Habilidades.aumentarAgresividad(objetivo);
+			}
+			else if(opcion == 2) {
+				Habilidades.aumentarProteccion(objetivo);
+			}
+		}
+	}
+	
 	public static void aumentarAgresividad(Unidad unidad) {
 		Color color = new Color(255, 0, 0);
 		if(unidad.getTimerAgresivo() == -1) {
@@ -416,8 +432,8 @@ public class Habilidades {
 			Estadisticas.reducirEvasion(unidad, 100);
 		}
 		Habilidades.setearEfectoDeEstado(unidad, "OUT!", color);
+		unidad.setTimerLisiado(5);
 		stunearUnidad(unidad);
-		unidad.setTimerLisiado(3);
 	}
 	
 	public static void cancelarDestruirMovilidad(Unidad unidad) {
