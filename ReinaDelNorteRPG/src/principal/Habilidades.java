@@ -224,7 +224,7 @@ public class Habilidades {
 		    } catch (InterruptedException e) {
 		        e.printStackTrace();
 		    }
-		    pdj.ReproducirSE(3);
+		    pdj.ReproducirSE(1);
 		    Habilidades.setearEfectoDeEstado(unidad, "PUNISH!", color);
 		}).start();	
 	}
