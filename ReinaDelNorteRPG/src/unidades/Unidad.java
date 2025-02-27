@@ -103,7 +103,8 @@ public class Unidad {
 	private int cantEnemigas;
 	//IMAGENES DE LA UNIDAD////////////////////////////////////////
 	Image piso = configurarImagen("/efectos/floor", 4);
-	Image modoSombra = configurarImagen("/efectos/modo-sombra", 3);
+	Image piedra = configurarImagen("/efectos/stone", 3);
+	Image estandarteHalcon = configurarImagen("/imagenes/accesorios/estandarte-halcon", 3);
 	//ACUMULADORES DE LA UNIDAD////////////////////////////////////
 	private int escudos = 0;
 	private int faltasCometidas = 0;
@@ -188,11 +189,14 @@ public class Unidad {
         int dibujarY = getPosY() + desplazamientoSacudidaY;
         g2.drawImage(piso, posX, posY+16, null);
         if(isAlive()) {
-        	if(this.getTimerCastigo() == 0 && this.getClase() == "Pluma Negra") {
-        		g2.drawImage(modoSombra, posX + 8, posY + (imageMov*2) - 28, null);
+        	if(this.getClase() == "Guardian Del Halcon") {
+        		g2.drawImage(estandarteHalcon, posX - 8, posY + (imageMov*2) - 56, null);
         	}
         	dibujarVida();
         	mostrarImagenes(g2, dibujarX+10, dibujarY-20+getAlturaPorClase(), imageMov);
+        	if(this.getTimerCastigo() == 0 && this.getClase() == "Pluma Negra") {
+        		g2.drawImage(piedra, posX + 64, posY + (imageMov*4) + 16, null);
+        	}
         	dibujarEscudos(g2);
             if(getMostrarFaltas()) {dibujarFaltas(g2);}
             if(this.getEstaStun()) {
@@ -731,6 +735,21 @@ public class Unidad {
 		}
 		else {
 			equipo = "arg";
+		}
+		return equipo;
+	}
+	
+	public String elegirMotivo() {
+		int i = elegirAleatorio(3);
+		String equipo = "";
+		if(i == 0) {
+			equipo = "arg";
+		}
+		else if(i == 1) {
+			equipo = "china";
+		}
+		else {
+			equipo = "madera";
 		}
 		return equipo;
 	}
