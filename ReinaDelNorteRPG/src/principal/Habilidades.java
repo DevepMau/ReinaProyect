@@ -116,6 +116,7 @@ public class Habilidades {
 		}
 	}
 	
+	
 	public static void ganarNeoCreditos(Unidad unidad, int cant) {
 		if(unidad.getIdFaccion() == 2) {
 			if(unidad.getNeocreditos() + cant >= 100 || unidad.getNeocreditos() + cant*3 >= 100) {
@@ -304,6 +305,17 @@ public class Habilidades {
 		else {
 			Estadisticas.aumentarFaltas(objetivo, 1);
 			Habilidades.setearEfectoDeEstado(objetivo, "WARN!", color);
+		}
+	}
+	
+	public static void ejecutarUnidad(Unidad unidad) {
+		Color color = new Color(205, 0, 55);
+		if(unidad.getHP() < unidad.getHPMax()/6) {
+			unidad.setHP(0);
+			Habilidades.setearEfectoDeEstado(unidad, "KILL!", color);
+		}
+		else {
+			destruirMovilidad(unidad);
 		}
 	}
 	
