@@ -80,7 +80,7 @@ public class InicializadorDeRecursos {
 			String color = unidad.elegirMotivo();
 			if(unidad.getGenero() == 1) {
 				//SI ES HOMBRE/////////////////////////////////////////////////////////////////////////
-				if(unidad.getClase() == "Guardian Del Halcon") {
+				if(unidad.getClase() == "Lider De Parvada") {
 					unidad.imagenesBody[3] = pdj.ui.configurarImagen("/imagenes/unisex/hockey-"+color, 3);
 					unidad.imagenesBody[2] = pdj.ui.configurarImagen("/imagenes/hombre/pantalon-1",3);
 					unidad.imagenesBody[1] = pdj.ui.configurarImagen("/imagenes/unisex/cuerpo-tapado-"+unidad.getIdTez(), 3);
@@ -109,7 +109,7 @@ public class InicializadorDeRecursos {
 			}
 			//SI ES MUJER////////////////////////////////////////////////////////////////////////////
 			else {
-				if(unidad.getClase() == "Guardian Del Halcon") {
+				if(unidad.getClase() == "Lider De Parvada") {
 					unidad.imagenesBody[3] = pdj.ui.configurarImagen("/imagenes/unisex/hockey-"+color, 3);
 					unidad.imagenesBody[2] = pdj.ui.configurarImagen("/imagenes/mujer/falda-"+unidad.getIdTez(),3);
 					unidad.imagenesBody[1] = pdj.ui.configurarImagen("/imagenes/mujer/cuerpo-guardian-girl-"+unidad.getIdTez(), 3);
