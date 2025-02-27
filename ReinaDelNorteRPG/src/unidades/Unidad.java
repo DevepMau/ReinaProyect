@@ -191,7 +191,7 @@ public class Unidad {
         int dibujarY = getPosY() + desplazamientoSacudidaY;
         g2.drawImage(piso, posX, posY+16, null);
         if(isAlive()) {
-        	if(this.getClase() == "Guardian Del Halcon") {
+        	if(this.getClase() == "Lider De Parvada") {
         		g2.drawImage(estandarteHalcon, posX - 8, posY + (imageMov*2) - 56, null);
         	}
         	dibujarVida();
@@ -424,6 +424,15 @@ public class Unidad {
 		}
 	}
 	
+	private boolean hayLiderDeParvada(ArrayList<Unidad> unidades) {
+		for(Unidad unidad : unidades) {
+			if(unidad.getClase() == "Lider De Parvada") {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
 		iniciarTimersDeEstado();
 		actualizarTimer(this::getTimerJuzgado, this::setTimerJuzgado, () -> Habilidades.cancelarPenalizarUnidad(this, aliados, enemigos));
@@ -492,6 +501,7 @@ public class Unidad {
 	public void usarHabilidadOfensiva(Unidad unidad, boolean puedeEsquivar, boolean puedeBloquear, int dañoAdicional, Runnable habilidad) { 
 		this.setUsoHabilidadOfensiva(true);
 		int daño = this.getAtq() + this.getAtqMod() + dañoAdicional;
+		daño += (daño/2);
 	    if(unidad.getDef() + unidad.getDefMod() < 0) {
 			daño += daño;
 		}
