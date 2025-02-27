@@ -10,7 +10,6 @@ import principal.Zona;
 public class PlumaBlanca extends Unidad {
 	
 	private String[] listaDeHabilidades = new String[1];
-	private boolean primeraMuerte = true;
 
 	public PlumaBlanca(Zona zona, boolean aliado, PanelDeJuego pdj) {
 		super(zona, aliado, pdj);
@@ -39,12 +38,7 @@ public class PlumaBlanca extends Unidad {
 	}
 	public void recibirDaño(int daño, boolean isCritical, Unidad unidad) {
 		super.recibirDaño(daño, isCritical, unidad);
-		if(this.getHP() <= 0 && this.primeraMuerte) {
-			this.setHP(1);
-			Estadisticas.aumentarEscudos(this, 3);
-			Estadisticas.aumentarAtaque(this, this.getAtq());
-			this.primeraMuerte = !this.primeraMuerte;
-		}
+		Habilidades.activarDeterminacion(this);
 	}
 	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
@@ -71,6 +65,9 @@ public class PlumaBlanca extends Unidad {
 		}
 	}
 	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
+		if(this.isDeterminado()) {
+			this.setHP(this.getHP() - (this.getHPMax()/20));
+		}
 		super.pasivaDeClase(aliados, enemigos);
 	}
 	public String[] getListaDeHabilidades() {return listaDeHabilidades;}

@@ -53,6 +53,8 @@ public class Unidad {
 	private boolean estaVivo = true;
 	private boolean mostrarFaltas = false;
 	private boolean usoHabilidadOfensiva = false;
+	private boolean determinado = false;
+	private boolean primeraMuerte = true;
 	private boolean estaStun;
 	private boolean estaEnamorado;
 	private boolean marcado;
@@ -516,6 +518,9 @@ public class Unidad {
 	        	}
 	        } else {
 	            unidad.setHP(unidad.getHP() - dañoFinal);
+	            if(unidad.getClase() == "Pluma Blanca") {
+	            	Habilidades.activarDeterminacion(unidad);
+	            }
 	            if(this.getClase() != "Maestro Del Chi") {
 	            	pdj.ReproducirSE(3);
 	            }
@@ -578,7 +583,12 @@ public class Unidad {
 	    g2.setColor(c);
 	    g2.fillRoundRect(posX, getPosY() + altura + this.getAlturaDeBarraHP(), barraHP, pdj.tamañoDeBaldosa / 5, 5, 5);
 
-	    g2.setColor(Color.red);
+	    if(this.isDeterminado()) {
+	    	g2.setColor(Color.yellow);
+	    }
+	    else {
+	    	g2.setColor(Color.red);
+	    }
 	    g2.fillRoundRect(posX, getPosY() + altura + this.getAlturaDeBarraHP(), hp, pdj.tamañoDeBaldosa / 5, 5, 5);
 
 	    c = new Color(255, 255, 255);
@@ -886,6 +896,10 @@ public class Unidad {
 	public void setAlive(boolean vivo) {this.estaVivo = vivo;}
 	public boolean isEstaActivo() {return estaActivo;}
 	public void setEstaActivo(boolean estaActivo) {this.estaActivo = estaActivo;}
+	public boolean isDeterminado() {return determinado;}
+	public void setDeterminado(boolean determinado) {this.determinado = determinado;}
+	public boolean isPrimeraMuerte() {return primeraMuerte;}
+	public void setPrimeraMuerte(boolean boo) {this.primeraMuerte = boo;}
 	public boolean getEstaStun() {return estaStun;}
 	public void setEstaStun(boolean estaKO) {this.estaStun = estaKO;}
 	public boolean isUsoHabilidadOfensiva() {return usoHabilidadOfensiva;}
