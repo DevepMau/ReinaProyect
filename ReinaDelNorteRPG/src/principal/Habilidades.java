@@ -104,6 +104,18 @@ public class Habilidades {
 	
 	//HABILIDADES ESPECIALES/////////////////////////////////////////////////
 	
+	public static void activarDeterminacion(Unidad unidad) {
+		if(unidad.getHP() <= 0 && unidad.isPrimeraMuerte()) {
+			Color color = new Color(205, 205, 0);
+			unidad.setDeterminado(true);
+			unidad.setHP(unidad.getHPMax()/2);
+			Estadisticas.aumentarAtaque(unidad, unidad.getAtq() + unidad.getAtqMod());
+			Estadisticas.aumentarProbCrit(unidad, unidad.getPCRT() + unidad.getPcrtMod());
+			unidad.setPrimeraMuerte(!unidad.isPrimeraMuerte());
+			Habilidades.setearEfectoDeEstado(unidad, "BERZERK!", color);
+		}
+	}
+	
 	public static void ganarNeoCreditos(Unidad unidad, int cant) {
 		if(unidad.getIdFaccion() == 2) {
 			if(unidad.getNeocreditos() + cant >= 100 || unidad.getNeocreditos() + cant*3 >= 100) {
