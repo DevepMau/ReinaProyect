@@ -7,6 +7,7 @@ import unidades.Unidad;
 public class InicializadorDeRecursos {
 
 	PanelDeJuego pdj;
+	//ESTADOS
 	public Image shieldUp = null;
 	public Image swordUp = null;
 	public Image bootUp = null;
@@ -26,6 +27,17 @@ public class InicializadorDeRecursos {
 	public Image mateRojo = null;
 	public Image mateAzul = null;
 	public Image mateAmarillo = null;
+	//IMPACTOS
+	public Image corte1 = null;
+	public Image corte2 = null;
+	public Image corte3 = null;
+	public Image corte4 = null;
+	public Image corte5 = null;
+	public Image golpe1 = null;
+	public Image golpe2 = null;
+	public Image golpe3 = null;
+	public Image golpe4 = null;
+	public Image golpe5 = null;
 
 	public InicializadorDeRecursos(PanelDeJuego pdj) {
 		this.pdj = pdj;
@@ -51,6 +63,16 @@ public class InicializadorDeRecursos {
 		mateRojo = pdj.ui.configurarImagen("/efectos/mate-espada", 4);
 		mateAzul = pdj.ui.configurarImagen("/efectos/mate-escudo", 4);
 		mateAmarillo = pdj.ui.configurarImagen("/efectos/mate-op", 4);
+		corte1 = pdj.ui.configurarImagen("/impacto/corte-1", 3);
+		corte2 = pdj.ui.configurarImagen("/impacto/corte-2", 3);
+		corte3 = pdj.ui.configurarImagen("/impacto/corte-3", 3);
+		corte4 = pdj.ui.configurarImagen("/impacto/corte-4", 3);
+		corte5 = pdj.ui.configurarImagen("/impacto/corte-5", 3);
+		golpe1 = pdj.ui.configurarImagen("/impacto/golpe-1", 3);
+		golpe2 = pdj.ui.configurarImagen("/impacto/golpe-2", 3);
+		golpe3 = pdj.ui.configurarImagen("/impacto/golpe-3", 3);
+		golpe4 = pdj.ui.configurarImagen("/impacto/golpe-4", 3);
+		golpe5 = pdj.ui.configurarImagen("/impacto/golpe-5", 3);
 	}
 
 	public void establecerObjetos() {
