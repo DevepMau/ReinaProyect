@@ -105,6 +105,7 @@ public class Unidad {
 	private int cantEnemigas;
 	//IMAGENES DE LA UNIDAD////////////////////////////////////////
 	Image piso = configurarImagen("/efectos/floor", 4);
+	Image flash = configurarImagen("/efectos/flash", 3);
 	Image piedra = configurarImagen("/efectos/stone", 3);
 	Image estandarteHalcon = configurarImagen("/imagenes/accesorios/estandarte-halcon", 3);
 	//ACUMULADORES DE LA UNIDAD////////////////////////////////////
@@ -205,6 +206,9 @@ public class Unidad {
             	Image KO = configurarImagen("/efectos/stun", 3);
             	g2.drawImage(KO, dibujarX+10, dibujarY, null);
             }  
+            if(getDuracionSacudida()%3 == 0 && getDuracionSacudida() != 0) {
+            	g2.drawImage(flash, dibujarX, dibujarY-16, null);
+            }
             efectosVisualesPersonalizados(g2);
         } 
         else {
@@ -515,7 +519,8 @@ public class Unidad {
 	            pdj.ReproducirSE(9);
 	            unidad.setHP(unidad.getHP() - (dañoFinal / 4));
 	            Habilidades.setearEfectoDeEstado(unidad, "BLOCK!", Color.white);
-	        } else if (unidad.getEscudos() > 0) {
+	        } 
+	        else if (unidad.getEscudos() > 0) {
 	        	if(this.getClase() == "Heroe Federal") {
 	        		unidad.setEscudos(0);
 	        		pdj.ReproducirSE(9);
@@ -526,7 +531,8 @@ public class Unidad {
 	        		pdj.ReproducirSE(9);
 		            Habilidades.setearEfectoDeEstado(unidad, "BREAK!", Color.GRAY);
 	        	}
-	        } else {
+	        } 
+	        else {
 	            unidad.setHP(unidad.getHP() - dañoFinal);
 	            if(unidad.getClase() == "Pluma Blanca") {
 	            	Habilidades.activarDeterminacion(unidad);
