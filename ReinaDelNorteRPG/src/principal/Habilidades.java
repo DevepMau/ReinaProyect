@@ -230,7 +230,7 @@ public class Habilidades {
 	}
 	
 	public static void castigarUnidad(Unidad unidad, PanelDeJuego pdj) {
-		Color color = new Color(205, 130, 180);
+		Color color = new Color(155, 155, 155);
 		new Thread(() -> {
 		    try {
 		        Thread.sleep(300);
@@ -238,7 +238,7 @@ public class Habilidades {
 		        e.printStackTrace();
 		    }
 		    pdj.ReproducirSE(1);
-		    Habilidades.setearEfectoDeEstado(unidad, "PUNISH!", color);
+		    Habilidades.setearEfectoDeEstado(unidad, "STONE!", color);
 		}).start();	
 	}
 	
@@ -465,8 +465,8 @@ public class Habilidades {
 	public static void destruirMovilidad(Unidad unidad) {
 		Color color = new Color(75, 0, 130);
 		if(unidad.getTimerLisiado() == -1) {
-			Estadisticas.reducirVelocidad(unidad, 100);
-			Estadisticas.reducirEvasion(unidad, 100);
+			Estadisticas.reducirVelocidad(unidad, unidad.getVel());
+			Estadisticas.reducirEvasion(unidad, unidad.getEva());
 		}
 		Habilidades.setearEfectoDeEstado(unidad, "OUT!", color);
 		unidad.setTimerLisiado(5);
@@ -474,8 +474,8 @@ public class Habilidades {
 	}
 	
 	public static void cancelarDestruirMovilidad(Unidad unidad) {
-		Estadisticas.aumentarVelocidad(unidad, 100);
-		Estadisticas.aumentarEvasion(unidad, 100);
+		Estadisticas.aumentarVelocidad(unidad, unidad.getVel());
+		Estadisticas.aumentarEvasion(unidad, unidad.getEva());
 	}
 	
 	//METODOS VARIOS/////////////////////////////////////////////////////////////////
