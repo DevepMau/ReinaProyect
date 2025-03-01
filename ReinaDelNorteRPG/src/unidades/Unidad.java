@@ -91,8 +91,7 @@ public class Unidad {
 	private int tiempoMov = 20;
 	private int imageMov = 0;
     //ELEMENTOS DE LA UNIDAD////////////////////////////////////////
-	public BufferedImage[] imagenesBody = new BufferedImage[5];
-	public BufferedImage[] imagenesDead = new BufferedImage[5];
+	private BufferedImage[] imagenesBody = new BufferedImage[5];
 	private int idFaccion;
 	private int genero;
 	private int idTez = 0;
@@ -103,11 +102,6 @@ public class Unidad {
 	private String nombreDeUltimoObjetivo = "";
 	private int cantAliadas;
 	private int cantEnemigas;
-	//IMAGENES DE LA UNIDAD////////////////////////////////////////
-	Image piso = configurarImagen("/efectos/floor", 4);
-	Image flash = configurarImagen("/efectos/flash", 3);
-	Image piedra = configurarImagen("/efectos/stone", 3);
-	Image estandarteHalcon = configurarImagen("/imagenes/accesorios/estandarte-halcon", 3);
 	//ACUMULADORES DE LA UNIDAD////////////////////////////////////
 	private int escudos = 0;
 	private int faltasCometidas = 0;
@@ -149,8 +143,6 @@ public class Unidad {
 		this.setAliado(aliado);
 		this.genero = elegirAleatorio(2);
 		this.desplazarDañoRecibido = aliado ? 384 : 96;
-		this.generarCuerpo();
-		this.cargarDummyMuerto();
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////
 	public void actualizar() {
@@ -190,24 +182,40 @@ public class Unidad {
         this.g2 = g2;
         int dibujarX = getPosX() + desplazamientoSacudidaX;
         int dibujarY = getPosY() + desplazamientoSacudidaY;
-        g2.drawImage(piso, posX, posY+16, null);
+        g2.drawImage(pdj.img.piso, posX, posY+16, null);
         if(isAlive()) {
         	if(this.getClase() == "Lider De Parvada") {
-        		g2.drawImage(estandarteHalcon, posX - 8, posY + (imageMov*2) - 56, null);
+        		g2.drawImage(pdj.img.estandarteHalcon, posX - 8, posY + (imageMov*2) - 56, null);
         	}
         	dibujarVida();
         	mostrarImagenes(g2, dibujarX+10, dibujarY-20+getAlturaPorClase(), imageMov);
         	if(this.getTimerCastigo() == 0 && this.getClase() == "Pluma Negra") {
-        		g2.drawImage(piedra, posX + 64, posY + (imageMov*4) + 16, null);
+        		g2.drawImage(pdj.img.piedra, posX + 64, posY + (imageMov*4) + 16, null);
         	}
         	dibujarEscudos(g2);
             if(getMostrarFaltas()) {dibujarFaltas(g2);}
             if(this.getEstaStun()) {
-            	Image KO = configurarImagen("/efectos/stun", 3);
-            	g2.drawImage(KO, dibujarX+10, dibujarY, null);
+            	g2.drawImage(pdj.img.anular, dibujarX+10, dibujarY, null);
             }  
-            if(getDuracionSacudida()%3 == 0 && getDuracionSacudida() != 0) {
-            	g2.drawImage(flash, dibujarX, dibujarY-16, null);
+           //if(getDuracionSacudida()%3 == 0 && getDuracionSacudida() != 0) {
+           // 	g2.drawImage(flash, dibujarX, dibujarY-16, null);
+           // }
+            switch(getDuracionSacudida()) {
+            case 15,14,13:
+            	g2.drawImage(pdj.img.golpe1, dibujarX, dibujarY-16, null);
+            	break;
+            case 12,11,10:
+            	g2.drawImage(pdj.img.golpe2, dibujarX, dibujarY-16, null);
+            	break;
+            case 9,8,7:
+            	g2.drawImage(pdj.img.golpe3, dibujarX, dibujarY-16, null);
+            	break;
+            case 6,5,4:
+            	g2.drawImage(pdj.img.golpe4, dibujarX, dibujarY-16, null);
+            	break;
+            case 3,2,1:
+            	g2.drawImage(pdj.img.golpe5, dibujarX, dibujarY-16, null);
+            	break;
             }
             efectosVisualesPersonalizados(g2);
         } 
@@ -328,20 +336,6 @@ public class Unidad {
 		}
 	}
 	
-	public Unidad getDefensor(ArrayList<Unidad> unidades) {
-		if(!unidades.isEmpty()) {
-			for(Unidad unidad : unidades) {
-				if(unidad.getClase() == "Influencer") {
-					return unidad;
-				}
-				else if(unidad.getClase() == "Polluelo Entusiasta") {
-					return unidad;
-				}
-			}
-		}
-		return null;
-	}
-
 	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
 		Unidad defensor = getDefensor(unidades);
 		Unidad objetivo = elegirObjetivo(unidades);
@@ -378,19 +372,7 @@ public class Unidad {
 			}
 		}
 	}
-	
-	public void reflejarDaño(Unidad unidad, int daño) {
-		if(unidad.getClase() == "Shaolin Escolar" || unidad.getClase() == "Aspirante A Dragon") {
-			int i = (daño/2);
-			if(i > 1) {
-				this.recibirDaño(i, false, this);
-			}
-			else {
-				this.recibirDaño(1, false, this);
-			}
-		}
-	}
-	
+		
 	public void recibirGolpesMúltiples(int daño,int cant, boolean isCritical, Unidad unidad) {
 	    int numGolpes = cant;
 	    new Thread(() -> {
@@ -412,94 +394,6 @@ public class Unidad {
 	            this.recibirDaño(dañoActual, golpeCritico, unidad);
 	        }
 	    }).start();
-	}
-	
-	public void robarVida(int daño, Unidad unidad) {
-		Color c = new Color(255, 255, 0);
-		if(unidad.getTimerMarcado() > 0) {
-			Habilidades.restaurarHPPlano(this, daño/2);
-			Habilidades.setearEfectoDeEstado(this, "+" + daño/2, c);
-		}
-	}
-	
-	public void contarFaltas(Unidad unidad, int cant) {
-		if(this.getGenero() == 0) {
-			Estadisticas.aumentarFaltas(unidad, cant);
-		}
-	}
-	
-	private boolean hayLiderDeParvada(ArrayList<Unidad> unidades) {
-		for(Unidad unidad : unidades) {
-			if(unidad.getClase() == "Lider De Parvada") {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
-		iniciarTimersDeEstado();
-		actualizarTimer(this::getTimerJuzgado, this::setTimerJuzgado, () -> Habilidades.cancelarPenalizarUnidad(this, aliados, enemigos));
-		if(this.getNombreDeUltimoObjetivo() == "Novata Timida") {
-			Habilidades.penalizarUnidad(this, aliados, enemigos);
-			this.setNombreDeUltimoObjetivo("");
-		}
-		Habilidades.restaurarSP(this, 5);
-		Habilidades.repartirNeoCreditos(aliados, this);
-		if(!enemigos.isEmpty()) {
-			for(Unidad unidad : enemigos) {
-				if(unidad.getClase() == "Delegada") {
-					this.setMostrarFaltas(true);
-				}
-				if(unidad.getClase() == "Pluma Negra") {
-					if(this.isUsoHabilidadOfensiva() && unidad.getTimerCastigo() == 0) {
-						if(unidad.getSP() >= 15) {
-							unidad.usarHabilidadOfensiva(this, false, false, unidad.getVelMod(), () -> Habilidades.castigarUnidad(this, pdj));
-							unidad.setSP(unidad.getSP() - 15);
-							unidad.setTimerCastigo(1);
-						}
-						this.setUsoHabilidadOfensiva(false);
-					}
-				}
-			}
-		}
-	}
-	
-	public void iniciarTimersDeEstado() {
-		actualizarHemorragia();
-		actualizarIncendiar();
-	    actualizarTimer(this::getTimerPrecavido, this::setTimerPrecavido, () -> Habilidades.cancelarAumentarProteccion(this));
-	    actualizarTimer(this::getTimerAgresivo, this::setTimerAgresivo, () -> Habilidades.cancelarAumentarAgresividad(this));
-	    actualizarTimer(this::getTimerAcelerado, this::setTimerAcelerado, () -> Habilidades.cancelarAumentarAgilidad(this));
-	    actualizarTimer(this::getTimerPotenciado, this::setTimerPotenciado, () -> Habilidades.cancelarPotenciarUnidad(this));
-	    actualizarTimer(this::getTimerMotivado, this::setTimerMotivado, () -> Habilidades.cancelarMotivarUnidad(this));
-	    actualizarTimer(this::getTimerLisiado, this::setTimerLisiado, () -> Habilidades.cancelarDestruirMovilidad(this));
-	    actualizarTimer(this::getTimerMarcado, this::setTimerMarcado, () -> Habilidades.desmarcarUnidad(this));
-	    actualizarTimer(this::getTimerTendencia, this::setTimerTendencia, () -> Habilidades.cancelarTendencia(this));
-	    actualizarTimer(this::getTimerDesmoralizar, this::setTimerDesmoralizar, () -> Habilidades.cancelarDesmoralizarUnidad(this));
-	}
-
-	private void actualizarTimer(Supplier<Integer> getter, Consumer<Integer> setter, Runnable habilidad) {
-	    if (getter.get() > 0) {
-	        setter.accept(getter.get() - 1);
-	    } else if (getter.get() == 0) {
-	        habilidad.run();
-	        setter.accept(-1);
-	    }
-	}
-	
-	private void actualizarHemorragia() {
-		if(this.getTimerSangrando() > 0) {
-			this.setTimerSangrando(this.getTimerSangrando() - 1);
-			Habilidades.provocarHemorragia(this, pdj);
-		}
-	}
-	
-	private void actualizarIncendiar() {
-		if(this.getTimerIncendiado() > 0) {
-			this.setTimerIncendiado(this.getTimerIncendiado() - 1);
-			Habilidades.provocarIncendiar(this, pdj);
-		}
 	}
 	
 	public void usarHabilidadOfensiva(Unidad unidad, boolean puedeEsquivar, boolean puedeBloquear, int dañoAdicional, Runnable habilidad) { 
@@ -545,22 +439,94 @@ public class Unidad {
 	    }
 	}
 	
+	public void robarVida(int daño, Unidad unidad) {
+		Color c = new Color(255, 255, 0);
+		if(unidad.getTimerMarcado() > 0) {
+			Habilidades.restaurarHPPlano(this, daño/2);
+			Habilidades.setearEfectoDeEstado(this, "+" + daño/2, c);
+		}
+	}
+	
+	public Unidad getDefensor(ArrayList<Unidad> unidades) {
+		if(!unidades.isEmpty()) {
+			for(Unidad unidad : unidades) {
+				if(unidad.getClase() == "Influencer") {
+					return unidad;
+				}
+				else if(unidad.getClase() == "Polluelo Entusiasta") {
+					return unidad;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public void reflejarDaño(Unidad unidad, int daño) {
+		if(unidad.getClase() == "Shaolin Escolar" || unidad.getClase() == "Aspirante A Dragon") {
+			int i = (daño/2);
+			if(i > 1) {
+				this.recibirDaño(i, false, this);
+			}
+			else {
+				this.recibirDaño(1, false, this);
+			}
+		}
+	}
+	
+	public void contarFaltas(Unidad unidad, int cant) {
+		if(this.getGenero() == 0) {
+			Estadisticas.aumentarFaltas(unidad, cant);
+		}
+	}
+	
+	public void pasivaDeClase(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
+		iniciarTimersDeEstado();
+		actualizarTimer(this::getTimerJuzgado, this::setTimerJuzgado, () -> Habilidades.cancelarPenalizarUnidad(this, aliados, enemigos));
+		if(this.getNombreDeUltimoObjetivo() == "Novata Timida") {
+			Habilidades.penalizarUnidad(this, aliados, enemigos);
+			this.setNombreDeUltimoObjetivo("");
+		}
+		Habilidades.restaurarSP(this, 5);
+		Habilidades.repartirNeoCreditos(aliados, this);
+		if(!enemigos.isEmpty()) {
+			for(Unidad unidad : enemigos) {
+				if(unidad.getClase() == "Delegada") {
+					this.setMostrarFaltas(true);
+				}
+				if(unidad.getClase() == "Pluma Negra") {
+					if(this.isUsoHabilidadOfensiva() && unidad.getTimerCastigo() == 0) {
+						if(unidad.getSP() >= 15) {
+							unidad.usarHabilidadOfensiva(this, false, false, unidad.getVelMod(), () -> Habilidades.castigarUnidad(this, pdj));
+							unidad.setSP(unidad.getSP() - 15);
+							unidad.setTimerCastigo(1);
+						}
+						this.setUsoHabilidadOfensiva(false);
+					}
+				}
+			}
+		}
+	}
+	
+	public void iniciarTimersDeEstado() {
+		actualizarHemorragia();
+		actualizarIncendiar();
+	    actualizarTimer(this::getTimerPrecavido, this::setTimerPrecavido, () -> Habilidades.cancelarAumentarProteccion(this));
+	    actualizarTimer(this::getTimerAgresivo, this::setTimerAgresivo, () -> Habilidades.cancelarAumentarAgresividad(this));
+	    actualizarTimer(this::getTimerAcelerado, this::setTimerAcelerado, () -> Habilidades.cancelarAumentarAgilidad(this));
+	    actualizarTimer(this::getTimerPotenciado, this::setTimerPotenciado, () -> Habilidades.cancelarPotenciarUnidad(this));
+	    actualizarTimer(this::getTimerMotivado, this::setTimerMotivado, () -> Habilidades.cancelarMotivarUnidad(this));
+	    actualizarTimer(this::getTimerLisiado, this::setTimerLisiado, () -> Habilidades.cancelarDestruirMovilidad(this));
+	    actualizarTimer(this::getTimerMarcado, this::setTimerMarcado, () -> Habilidades.desmarcarUnidad(this));
+	    actualizarTimer(this::getTimerTendencia, this::setTimerTendencia, () -> Habilidades.cancelarTendencia(this));
+	    actualizarTimer(this::getTimerDesmoralizar, this::setTimerDesmoralizar, () -> Habilidades.cancelarDesmoralizarUnidad(this));
+	}
+
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {}	
+	
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {}
-	//METODOS VARIOS///////////////////////////////////////////////////////
-	public void cancelarTextoDeEfectos() {
-		this.setEfectoDeEstado(false);
-		this.setDañoEspecial(false);
-	}
 	
-	public int porcentajeHP(int valor) {
-	    return ((valor / this.getHPMax()) * 100);
-	}
-	
-	public int porcentajeSP(int valor) {
-	    return ((valor / this.getSPMax()) * 100);
-	}
 	//METODOS VISUALES/////////////////////////////////////////////////////////
+	
 	public void dibujarVida() {
 	    g2.setFont(g2.getFont().deriveFont(Font.BOLD, 15f));
 	    if(this.getTimerMarcado() > 0) {
@@ -653,14 +619,6 @@ public class Unidad {
 	    }
 	}
 	
-	public void dibujarCorazon(Graphics2D g2) {
-		int altura = -pdj.tamañoDeBaldosa - (pdj.tamañoDeBaldosa / 8) + 16;
-	    int posX = getPosX();
-	    int posY = getPosY() + altura + this.getAlturaDeBarraHP();
-	    Image corazon = configurarImagen("/efectos/heart", 4);
-	    g2.drawImage(corazon, posX, posY+this.getAlturaDeAccesorio()-20+imageMov*2, null);
-	}	
-	
 	public void efectosVisualesPersonalizados(Graphics2D g2){}
 	
 	//METODOS DE ELECCION/////////////////////////////////////////////////////
@@ -711,6 +669,42 @@ public class Unidad {
 	
 	//METODOS AUXILIARES//////////////////////////////////////////////////////
 	
+	public void cancelarTextoDeEfectos() {
+		this.setEfectoDeEstado(false);
+		this.setDañoEspecial(false);
+	}
+	
+	public int porcentajeHP(int valor) {
+	    return ((valor / this.getHPMax()) * 100);
+	}
+	
+	public int porcentajeSP(int valor) {
+	    return ((valor / this.getSPMax()) * 100);
+	}
+	
+	private void actualizarTimer(Supplier<Integer> getter, Consumer<Integer> setter, Runnable habilidad) {
+	    if (getter.get() > 0) {
+	        setter.accept(getter.get() - 1);
+	    } else if (getter.get() == 0) {
+	        habilidad.run();
+	        setter.accept(-1);
+	    }
+	}
+	
+	private void actualizarHemorragia() {
+		if(this.getTimerSangrando() > 0) {
+			this.setTimerSangrando(this.getTimerSangrando() - 1);
+			Habilidades.provocarHemorragia(this, pdj);
+		}
+	}
+	
+	private void actualizarIncendiar() {
+		if(this.getTimerIncendiado() > 0) {
+			this.setTimerIncendiado(this.getTimerIncendiado() - 1);
+			Habilidades.provocarIncendiar(this, pdj);
+		}
+	}
+	
 	public void posicionar(Zona zona) {
 		setPosX(zona.x);
 		setPosY(zona.y);
@@ -718,19 +712,6 @@ public class Unidad {
 	
 	public int calcularBarraHP() {
 		return (getHP()*barraHP)/getHPMax();
-	}
-	
-	public BufferedImage configurarImagen(String rutaImagen, int escala) {
-	    Utilidades uTool = new Utilidades();
-	    BufferedImage imagen = null;
-	    try {
-	        imagen = ImageIO.read(getClass().getResourceAsStream(rutaImagen + ".png"));
-	        imagen = uTool.escalarImagen(imagen, imagen.getWidth()/2*escala, imagen.getHeight()/2*escala);
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
-	    return imagen;
-
 	}
 	
 	public void definirIdTez() {
@@ -750,7 +731,7 @@ public class Unidad {
 		}
 	}
 	
-	public String elegirEquipo() {
+	public String elegirDiseñoMate() {
 		int i = elegirAleatorio(3);
 		String equipo = "";
 		if(i == 0) {
@@ -765,7 +746,7 @@ public class Unidad {
 		return equipo;
 	}
 	
-	public String elegirMotivo() {
+	public String elegirDiseñoPaloHockey() {
 		int i = elegirAleatorio(3);
 		String equipo = "";
 		if(i == 0) {
@@ -780,7 +761,7 @@ public class Unidad {
 		return equipo;
 	}
 	
-	public String elegirColor() {
+	public String elegirDiseñoNunchaku() {
 		int i = elegirAleatorio(2);
 		String equipo = "";
 		if(i == 0) {
@@ -792,15 +773,7 @@ public class Unidad {
 		return equipo;
 	}
 	
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	public void generarCuerpo() {
-		pdj.idr.cargarImagenesDeUnidad(this);
-	}
-	
-	public void cargarDummyMuerto() {
-		pdj.idr.cargarImagenesDeDummyMuerto(this);
-	}
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	
 	public void mostrarImagenes(Graphics2D g2, int posX, int posY, int dezplazamiento) {
 		g2.drawImage(imagenesBody[2], posX, posY+46, null);
@@ -811,17 +784,21 @@ public class Unidad {
 	}
 	
 	public void mostrarMuerte(Graphics2D g2, int posX, int posY, int dezplazamiento) {
-		g2.drawImage(imagenesDead[2], posX, posY+46, null);
-		g2.drawImage(imagenesDead[1], posX, posY+28+dezplazamiento, null);
-		g2.drawImage(imagenesDead[0], posX, posY+dezplazamiento*2, null);
-		g2.drawImage(imagenesDead[3], posX, posY+24+dezplazamiento, null);
+		g2.drawImage(pdj.img.piernasDD, posX, posY+46, null);
+		g2.drawImage(pdj.img.cuerpoDD, posX, posY+28+dezplazamiento, null);
+		g2.drawImage(pdj.img.cabezaDD, posX, posY+dezplazamiento*2, null);
+		g2.drawImage(pdj.img.manosDD, posX, posY+24+dezplazamiento, null);
 	}
 	
 	public boolean cumpleReqDeHab1() {return false;}
+	
 	public boolean cumpleReqDeHab2() {return false;}
+	
 	public void configurarTipoDeaccion() {}
 	
 	//GETTERS & SETTERS////////////////////////////////////////////////////////
+	public void asignarImagen(int i, String path, int size) {this.imagenesBody[i] = pdj.ui.configurarImagen(path, size);}
+	public BufferedImage obtenerImagen(int i) {return this.imagenesBody[i];}
 	public Zona getZona() {return zona;}
 	public void setZona(Zona zona) {this.zona = zona;}
 	public int getPosX() {return posX;}
@@ -887,24 +864,12 @@ public class Unidad {
 	public void setAlturaDeAccesorio(int alturaDeAccesorio) {this.alturaDeAccesorio = alturaDeAccesorio;}
 	public int getAlturaDeBarraHP() {return alturaDeBarraHP;}
 	public void setAlturaDeBarraHP(int alturaDeBarraHP) {this.alturaDeBarraHP = alturaDeBarraHP;}
-	public String getNombreDeUltimoObjetivo() {
-		return nombreDeUltimoObjetivo;
-	}
-	public void setNombreDeUltimoObjetivo(String nombreDeUltimoObjetivo) {
-		this.nombreDeUltimoObjetivo = nombreDeUltimoObjetivo;
-	}
-	public int getCantEnemigas() {
-		return cantEnemigas;
-	}
-	public void setCantEnemigas(int cantEnemigas) {
-		this.cantEnemigas = cantEnemigas;
-	}
-	public int getCantAliadas() {
-		return cantAliadas;
-	}
-	public void setCantAliadas(int cantAliadas) {
-		this.cantAliadas = cantAliadas;
-	}
+	public String getNombreDeUltimoObjetivo() {return nombreDeUltimoObjetivo;}
+	public void setNombreDeUltimoObjetivo(String nombreDeUltimoObjetivo) {this.nombreDeUltimoObjetivo = nombreDeUltimoObjetivo;}
+	public int getCantEnemigas() {return cantEnemigas;}
+	public void setCantEnemigas(int cantEnemigas) {this.cantEnemigas = cantEnemigas;}
+	public int getCantAliadas() {return cantAliadas;}
+	public void setCantAliadas(int cantAliadas) {this.cantAliadas = cantAliadas;}
 	//G&S DE ESTADOS///////////////////////////////////////////////////////////
 	public boolean isAliado() {return esAliado;}
 	public void setAliado(boolean aliado) {this.esAliado = aliado;}
@@ -965,12 +930,8 @@ public class Unidad {
 	public void setDcrtMod(double dcrtMod) { this.dcrtMod = dcrtMod;}
 	public int getBloqMod() {return bloqMod;}
 	public void setBloqMod(int blockMod) {this.bloqMod = blockMod;}
-	public int getTimerCastigo() {
-		return timerCastigo;
-	}
-	public void setTimerCastigo(int timerCastigo) {
-		this.timerCastigo = timerCastigo;
-	}
+	public int getTimerCastigo() {return timerCastigo;}
+	public void setTimerCastigo(int timerCastigo) {this.timerCastigo = timerCastigo;}
 	//G&S TIMERS///////////////////////////////////////////////////////////////
 	public int getTimerPrecavido() {return timerPrecavido;}
 	public void setTimerPrecavido(int timerPrecavido) {this.timerPrecavido = timerPrecavido;}
@@ -993,24 +954,12 @@ public class Unidad {
 	public void setTimerIncendiado(int timerIncendiado) {this.timerIncendiado = timerIncendiado;}
 	public int getTimerMarcado() {return timerMarcado;}
 	public void setTimerMarcado(int timerMarcado) {this.timerMarcado = timerMarcado;}
-	public int getTimerJuzgado() {
-		return timerJuzgado;
-	}
-	public void setTimerJuzgado(int timerJuzgado) {
-		this.timerJuzgado = timerJuzgado;
-	}
-	public int getTimerTendencia() {
-		return timerTendencia;
-	}
-	public void setTimerTendencia(int timerTendencia) {
-		this.timerTendencia = timerTendencia;
-	}
-	public int getTimerDesmoralizar() {
-		return timerDesmoralizar;
-	}
-	public void setTimerDesmoralizar(int timerDesmoralizar) {
-		this.timerDesmoralizar = timerDesmoralizar;
-	}
+	public int getTimerJuzgado() {return timerJuzgado;}
+	public void setTimerJuzgado(int timerJuzgado) {this.timerJuzgado = timerJuzgado;}
+	public int getTimerTendencia() {return timerTendencia;}
+	public void setTimerTendencia(int timerTendencia) {this.timerTendencia = timerTendencia;}
+	public int getTimerDesmoralizar() {return timerDesmoralizar;}
+	public void setTimerDesmoralizar(int timerDesmoralizar) {this.timerDesmoralizar = timerDesmoralizar;}
 	//G&S ACUMULADORES/////////////////////////////////////////////////////////
 	public int getEscudos() {return this.escudos;}
 	public void setEscudos(int cant) {this.escudos = cant;}
