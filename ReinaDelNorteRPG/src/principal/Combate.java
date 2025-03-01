@@ -18,6 +18,9 @@ import javax.imageio.ImageIO;
 import javax.swing.Timer;
 
 import unidades.PayadorPicante;
+import unidades.PlumaBlanca;
+import unidades.PlumaNegra;
+import unidades.PollueloEntusiasta;
 import unidades.PuñoFurioso;
 import unidades.AlumnoModelo;
 import unidades.AspiranteADragon;
@@ -26,6 +29,7 @@ import unidades.CebadorDeMate;
 import unidades.MaestroDelChi;
 import unidades.DragonPirotecnico;
 import unidades.GauchoModerno;
+import unidades.LiderDeParvada;
 import unidades.Delegada;
 import unidades.HeroeFederal;
 import unidades.DoncellaDelCiruelo;
@@ -87,6 +91,15 @@ public class Combate {
 		acciones[0] = "ATACAR";
 		acciones[1] = "HABILIDAD";
 		acciones[2] = "USAR OBJETO";
+		//La Orden//////////////////////////////////////////////////////
+		//unidades.put(0, new PollueloEntusiasta(zonas.get(0), true, pdj));
+		//unidades.put(1, new PlumaBlanca(zonas.get(0), true, pdj));
+		//unidades.put(2, new PlumaNegra(zonas.get(0), true, pdj));
+		//unidades.put(3, new LiderDeParvada(zonas.get(0), true, pdj));
+		//unidades.put(4, new PollueloEntusiasta(zonas.get(0), false, pdj));
+		//unidades.put(5, new PlumaBlanca(zonas.get(0), false, pdj));
+		//unidades.put(6, new PlumaNegra(zonas.get(0), false, pdj));
+		//unidades.put(7, new LiderDeParvada(zonas.get(0), false, pdj));
 		//Nietos////////////////////////////////////////////////////////
 		unidades.put(0, new CebadorDeMate(zonas.get(0), true, pdj));
 		unidades.put(1, new GauchoModerno(zonas.get(0), true, pdj));
@@ -106,9 +119,9 @@ public class Combate {
 		//unidades.put(6, new MedicoTradicionalista(zonas.get(0), false, pdj));
 		//unidades.put(7, new DragonPirotecnico(zonas.get(0), false, pdj));
 		//Puño/////////////////////////////////////////////////////////
-		//unidades.put(0, new NiñoCheung(zonas.get(0), true, pdj));
+		//unidades.put(1, new NiñoCheung(zonas.get(0), true, pdj));
 		//unidades.put(1, new PuñoFurioso(zonas.get(0), true, pdj));
-		//unidades.put(2, new MaestroDelChi(zonas.get(0), true, pdj));
+		//unidades.put(3, new MaestroDelChi(zonas.get(0), true, pdj));
 		//unidades.put(3, new AspiranteADragon(zonas.get(0), true, pdj));
 		//unidades.put(4, new NiñoCheung(zonas.get(0), false, pdj));
 		//unidades.put(5, new PuñoFurioso(zonas.get(0), false, pdj));
@@ -191,7 +204,6 @@ public class Combate {
 		}
 		if(unidadSeleccionada != null && abrirLibreta) {
 			dibujarLibretaEscolar(unidadSeleccionada);
-			//dibujarTriangulo(pdj.anchoDePantalla-pdj.tamañoDeBaldosa*4+(-4), pdj.altoDePantalla-pdj.tamañoDeBaldosa*4+(-32));
 		}
 	}
 	//METODOS PARA JUGAR//////////////////////////////////////////////////////
@@ -484,6 +496,7 @@ public class Combate {
     return -1;
 	}
 	//METODOS DE MENU/////////////////////////////////////////////////////////	
+	
 	public void menuDeAcciones() {
 		int posX = 8;
 		int posY = pdj.altoDePantalla - pdj.tamañoDeBaldosa*3 - 8;
@@ -701,23 +714,23 @@ public class Combate {
 	    //ESTADOS///////////////////////////////////////////////////////////////
 	    ArrayList<Image> iconos = new ArrayList<>();
 	    if (unidad.getDef() + unidad.getDefMod() < 1) {
-	        iconos.add(pdj.idr.fragile);
+	        iconos.add(pdj.img.fragile);
 	    } else {
-	        if (unidad.getDefMod() > 0) iconos.add(pdj.idr.shieldUp);
-	        if (unidad.getDefMod() < 0) iconos.add(pdj.idr.shieldDown);
+	        if (unidad.getDefMod() > 0) iconos.add(pdj.img.shieldUp);
+	        if (unidad.getDefMod() < 0) iconos.add(pdj.img.shieldDown);
 	    }
-	    if (unidad.getAtqMod() > 0) iconos.add(pdj.idr.swordUp);
-	    if (unidad.getAtqMod() < 0) iconos.add(pdj.idr.swordDown);
-	    if (unidad.getVelMod() > 0) iconos.add(pdj.idr.bootUp);
-	    if (unidad.getVelMod() < 0) iconos.add(pdj.idr.bootDown);
-	    if (unidad.getEvaMod() > 0) iconos.add(pdj.idr.dashUp);
-	    if (unidad.getEvaMod() < 0) iconos.add(pdj.idr.dashDown);  
-	    if (unidad.getBloqMod() > 0) iconos.add(pdj.idr.blockUp);
-	    if (unidad.getBloqMod() < 0) iconos.add(pdj.idr.blockDown);
-	    if (unidad.getPcrtMod() > 0) iconos.add(pdj.idr.bulleyeUp);
-	    if (unidad.getPcrtMod() < 0) iconos.add(pdj.idr.bulleyeDown);
-	    if (unidad.getTimerSangrando() > 0) iconos.add(pdj.idr.bleed);
-	    if (unidad.getTimerIncendiado() > 0) iconos.add(pdj.idr.burn);
+	    if (unidad.getAtqMod() > 0) iconos.add(pdj.img.swordUp);
+	    if (unidad.getAtqMod() < 0) iconos.add(pdj.img.swordDown);
+	    if (unidad.getVelMod() > 0) iconos.add(pdj.img.bootUp);
+	    if (unidad.getVelMod() < 0) iconos.add(pdj.img.bootDown);
+	    if (unidad.getEvaMod() > 0) iconos.add(pdj.img.dashUp);
+	    if (unidad.getEvaMod() < 0) iconos.add(pdj.img.dashDown);  
+	    if (unidad.getBloqMod() > 0) iconos.add(pdj.img.blockUp);
+	    if (unidad.getBloqMod() < 0) iconos.add(pdj.img.blockDown);
+	    if (unidad.getPcrtMod() > 0) iconos.add(pdj.img.bulleyeUp);
+	    if (unidad.getPcrtMod() < 0) iconos.add(pdj.img.bulleyeDown);
+	    if (unidad.getTimerSangrando() > 0) iconos.add(pdj.img.bleed);
+	    if (unidad.getTimerIncendiado() > 0) iconos.add(pdj.img.burn);
 
 	    for (Image icono : iconos) {
 	        g2.drawImage(icono, posX + offsetX, posY + offsetY + pdj.tamañoDeBaldosa*2 + 16, null);
@@ -726,7 +739,7 @@ public class Combate {
 
 	        if (contadorEstados == 4) {
 	            offsetX = 0;  
-	            offsetY += pdj.idr.shieldUp.getHeight(null) + 5; 
+	            offsetY += pdj.img.shieldUp.getHeight(null) + 5; 
 	        }
 	    }
 	    //DATOS///////////////////////////////////////////////////////////////
@@ -813,7 +826,7 @@ public class Combate {
 		g2.drawRoundRect( posX, posY, ancho/2, alto, 15, 15);
 		g2.drawRoundRect( posX + ancho/2, posY, ancho/2, alto, 15, 15);
 		
-		g2.drawImage(unidad.imagenesBody[0], posY + pdj.tamañoDeBaldosa + 12, posY + 8, null);
+		g2.drawImage(unidad.obtenerImagen(0), posY + pdj.tamañoDeBaldosa + 12, posY + 8, null);
 		
 		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18f));
 		g2.setColor(new Color(150, 100, 50));
@@ -823,7 +836,7 @@ public class Combate {
 		g2.drawString("Male:", posX + 96, posY + 32);
 		g2.drawString("Female:", posX + 96, posY + 72);
 		g2.setColor(ventanaInteriorSombra);
-		if(unidades.get(0).getGenero() == 1) {
+		if(unidad.getGenero() == 1) {
 			g2.drawString("X", posX + 152, posY + 32);
 		}
 		else {
@@ -845,7 +858,7 @@ public class Combate {
 		g2.drawString("D.CRT: ", posX + pdj.tamañoDeBaldosa * 4 + 24, posY + 272);
 		g2.setColor(ventanaInteriorSombra);
 		g2.drawString(""+unidad.getHP()+"/"+unidad.getHPMax(), posX + pdj.tamañoDeBaldosa * 4 + 64, posY + 32);
-		if(unidades.get(0).getHPMax() > 0) {
+		if(unidad.getHPMax() > 0) {
 			g2.drawString(""+unidad.getSP()+"/"+unidad.getSPMax(), posX + pdj.tamañoDeBaldosa * 4 + 64, posY + 62);
 		}
 		else {
