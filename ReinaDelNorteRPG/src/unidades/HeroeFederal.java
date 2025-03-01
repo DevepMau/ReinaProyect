@@ -62,14 +62,14 @@ public class HeroeFederal extends Unidad{
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
 		if(this.getHabilidadElegida() == 0) {
 			Unidad unidad = elegirObjetivoMasFuerte(unidades);
-			super.usarHabilidadOfensiva(unidad, false, true, this.getVelMod() ,() -> Habilidades.destruirMovilidad(unidad));
+			super.usarHabilidadOfensiva(unidad, () -> Habilidades.destruirMovilidad(unidad));
 			this.setCdHabilidad1(1);
 			this.setHabilidad1(false);	
 		}
 	}
 	//METODOS DE JUGADOR////////////////////////////////////////////////////////////
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {
-		super.usarHabilidadOfensiva(unidad, false, true, this.getVelMod() ,() -> Habilidades.destruirMovilidad(unidad));
+		super.usarHabilidadOfensiva(unidad, () -> Habilidades.destruirMovilidad(unidad));
 		this.setCdHabilidad1(1);
 		this.setHabilidad1(false);
 	}

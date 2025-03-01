@@ -67,7 +67,7 @@ public class DoncellaDelCiruelo extends Unidad{
 		if(this.getHabilidadElegida() == 0) {
 			if(!aliados.isEmpty()) {
 				Unidad unidad = elegirObjetivo(enemigos);
-				super.usarHabilidadOfensiva(unidad, false, true, 0,() -> Habilidades.desmoralizarUnidad(unidad));
+				super.usarHabilidadOfensiva(unidad,() -> Habilidades.desmoralizarUnidad(unidad));
 				this.setCdHabilidad1(1);
 				this.setHabilidad1(false);
 			}
@@ -86,7 +86,7 @@ public class DoncellaDelCiruelo extends Unidad{
 	}
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {	
 		if(this.getHabilidadElegida() == 0) {
-			super.usarHabilidadOfensiva(unidad, false, true, 0,() -> Habilidades.desmoralizarUnidad(unidad));
+			super.usarHabilidadOfensiva(unidad,() -> Habilidades.desmoralizarUnidad(unidad));
 			this.setCdHabilidad1(1);
 			if(this.getCdHabilidad2() > 0) {
 				this.setCdHabilidad2(this.getCdHabilidad2() - 1);

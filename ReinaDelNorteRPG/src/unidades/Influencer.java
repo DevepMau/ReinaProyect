@@ -59,7 +59,7 @@ public class Influencer extends Unidad {
 	public void usarHabilidadEnemigo(ArrayList<Unidad> aliados, ArrayList<Unidad> enemigos) {
 		if(this.getHabilidadElegida() == 0) {
 			Unidad unidad = elegirObjetivo(enemigos);
-			super.usarHabilidadOfensiva(unidad, true, true, this.getDefMod() ,() -> Habilidades.difamarUnidad(this, unidad));
+			super.usarHabilidadOfensiva(unidad,() -> Habilidades.difamarUnidad(this, unidad));
 			this.setCdHabilidad1(1);
 			this.setHabilidad1(false);
 		}
@@ -70,7 +70,7 @@ public class Influencer extends Unidad {
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {	
 		if(this.getHabilidadElegida() == 0) {
-			super.usarHabilidadOfensiva(unidad, true, true, this.getDefMod() ,() -> Habilidades.difamarUnidad(this, unidad));
+			super.usarHabilidadOfensiva(unidad ,() -> Habilidades.difamarUnidad(this, unidad));
 			this.setCdHabilidad1(1);
 			this.setHabilidad1(false);
 		}

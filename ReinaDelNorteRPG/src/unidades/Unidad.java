@@ -184,43 +184,16 @@ public class Unidad {
         int dibujarY = getPosY() + desplazamientoSacudidaY;
         g2.drawImage(pdj.img.piso, posX, posY+16, null);
         if(isAlive()) {
-        	if(this.getClase() == "Lider De Parvada") {
-        		g2.drawImage(pdj.img.estandarteHalcon, posX - 8, posY + (imageMov*2) - 56, null);
-        	}
+        	dibujarAlFondo();
         	dibujarVida();
-        	mostrarImagenes(g2, dibujarX+10, dibujarY-20+getAlturaPorClase(), imageMov);
-        	if(this.getTimerCastigo() == 0 && this.getClase() == "Pluma Negra") {
-        		g2.drawImage(pdj.img.piedra, posX + 64, posY + (imageMov*4) + 16, null);
-        	}
+        	dibujarUnidad(g2, dibujarX+10, dibujarY-20+getAlturaPorClase(), imageMov);
         	dibujarEscudos(g2);
-            if(getMostrarFaltas()) {dibujarFaltas(g2);}
-            if(this.getEstaStun()) {
-            	g2.drawImage(pdj.img.anular, dibujarX+10, dibujarY, null);
-            }  
-           //if(getDuracionSacudida()%3 == 0 && getDuracionSacudida() != 0) {
-           // 	g2.drawImage(flash, dibujarX, dibujarY-16, null);
-           // }
-            switch(getDuracionSacudida()) {
-            case 15,14,13:
-            	g2.drawImage(pdj.img.golpe1, dibujarX, dibujarY-16, null);
-            	break;
-            case 12,11,10:
-            	g2.drawImage(pdj.img.golpe2, dibujarX, dibujarY-16, null);
-            	break;
-            case 9,8,7:
-            	g2.drawImage(pdj.img.golpe3, dibujarX, dibujarY-16, null);
-            	break;
-            case 6,5,4:
-            	g2.drawImage(pdj.img.golpe4, dibujarX, dibujarY-16, null);
-            	break;
-            case 3,2,1:
-            	g2.drawImage(pdj.img.golpe5, dibujarX, dibujarY-16, null);
-            	break;
-            }
-            efectosVisualesPersonalizados(g2);
+            dibujarFaltas(g2);
+            dibujarAlFrente(); 
+            dibujarGolpe(dibujarX, dibujarY);
         } 
         else {
-        	mostrarMuerte(g2, dibujarX+10, dibujarY-20, imageMov);
+        	dibujarMuerte(g2, dibujarX+10, dibujarY-20, imageMov);
         }
         //MOSTRAR DAÑO RECIBIDO Y EFECTOS////////////////////////////
         if(this.isEfectoDeEstado()) {
@@ -255,191 +228,170 @@ public class Unidad {
 			realizarAtaqueEnemigo(enemigos);
 		}
 	}
-
-	public void recibirDaño(int damage, boolean isCritical, Unidad unidad) {
-		int daño = damage;
-		if(this.getHPMax() > unidad.getHPMax() && unidad.getClase() == "Puño Furioso") {
-			daño += (this.getHPMax()-unidad.getHPMax())/4;
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	private int calcularDañoBase(boolean critico, Unidad unidad) {
+		int daño = unidad.getAtq() + unidad.getAtqMod();
+		if (critico) {
+			daño *= (unidad.getDCRT() + unidad.getDcrtMod());
 		}
-		if(this.getDef() + this.getDefMod() < 0) {
-			daño += damage;
-		}
-	    int SEId = 2;
-	    int reduccion = (int) (daño * ((this.getDef() + this.getDefMod()) / 100.0));
-        int dañoFinal = Math.max(1, daño - reduccion);
-	    if (this.elegirAleatorio(100) < (this.getEva() + this.getEvaMod()) && unidad.getClase() != "Dragon Pirotecnico") {
-	    	pdj.ReproducirSE(6);
-	        Habilidades.setearEfectoDeEstado(this, "MISS!", Color.DARK_GRAY);
-	        Habilidades.ganarNeoCreditos(this, 10);
+	    if (this.getDef() + this.getDefMod() < 0) {
+	        daño += daño;
 	    }
-	    else {
-	    	if(this.elegirAleatorio(100) < (this.getBloq() + this.getBloqMod())) {
-	    		pdj.ReproducirSE(9);
-	    		this.setHP(this.getHP() - (dañoFinal/4));
-		        Habilidades.setearEfectoDeEstado(this, "BLOCK!", Color.white);
-		        Habilidades.ganarNeoCreditos(this, 12);
-	    	}
-	    	else if (this.escudos > 0) {
-		        escudos--;
-		        pdj.ReproducirSE(9);
-		        Habilidades.setearEfectoDeEstado(this, "BREAK!", Color.GRAY);
-		        Habilidades.ganarNeoCreditos(unidad, 7);
-		        contarFaltas(unidad, 1);
-		    } else {
-		    	if (isCritical) {
-			    	SEId = 3;
-			    	this.realizaUnCritico = true;
-			        Habilidades.setearDaño(this, "CRITICAL " + dañoFinal + "!", Color.yellow);
-			    } else {
-			        Habilidades.setearDaño(this, "" + dañoFinal, Color.white);
-			    }
-		        this.setHP(this.getHP() - dañoFinal);
-		        pdj.ReproducirSE(SEId);
-		        Habilidades.ganarNeoCreditos(unidad, 5);
-		        unidad.robarVida(dañoFinal, this);
-		        if(unidad.getClase() == "Novata Timida") {
-		        	Habilidades.maldicionAleatoria(this);
-		        }
-		        contarFaltas(unidad, 1);
-		    }
-	    }  
+	    return daño;
 	}
 	
-	public void realizarAtaque(Unidad unidad, ArrayList<Unidad> enemigos) {
-		Unidad defensor = getDefensor(enemigos);
-		if(defensor != null) {
-			if(defensor.equals(unidad)) {
-				defensor = null;
+	private int calcularDañoReducido(int daño) {
+	    int reduccion = (int) (daño * ((this.getDef() + this.getDefMod()) / 100.0));
+	    return Math.max(1, daño - reduccion);
+	}
+	
+	private boolean esquivaAtaque() {
+	    if (this.elegirAleatorio(100) < (this.getEva() + this.getEvaMod())) {
+	        pdj.ReproducirSE(6);
+	        Habilidades.setearEfectoDeEstado(this, "MISS!", Color.DARK_GRAY);
+	        Habilidades.ganarNeoCreditos(this, 10);
+	        return true;
+	    }
+	    return false;
+	}
+	
+	private boolean puedeSerCritico() {
+	    if (this.elegirAleatorio(100) < (this.getPCRT() + this.getPcrtMod())) {
+	        return true;
+	    }
+	    return false;
+	}
+
+	private boolean bloqueaAtaque(int dañoFinal) {
+	    if (this.elegirAleatorio(100) < (this.getBloq() + this.getBloqMod())) {
+	        pdj.ReproducirSE(9);
+	        this.setHP(this.getHP() - (dañoFinal / 4));
+	        Habilidades.setearEfectoDeEstado(this, "BLOCK!", Color.white);
+	        Habilidades.ganarNeoCreditos(this, 12);
+	        return true;
+	    }
+	    return false;
+	}
+
+	private boolean rompeEscudo() {
+	    if (this.escudos > 0) {
+	        escudos--;
+	        pdj.ReproducirSE(9);
+	        Habilidades.setearEfectoDeEstado(this, "BREAK!", Color.GRAY);
+	        return true;
+	    }
+	    return false;
+	}
+
+	private void aplicarDaño(Unidad atacante, int dañoFinal, boolean isCritical) {
+	    int SEId = isCritical ? 3 : 2;
+	    if (isCritical) {
+	        this.realizaUnCritico = true;
+	        Habilidades.setearDaño(this, "CRITICAL " + dañoFinal + "!", Color.yellow);
+	    } else {
+	        Habilidades.setearDaño(this, String.valueOf(dañoFinal), Color.white);
+	    }
+	    
+	    this.setHP(this.getHP() - dañoFinal);
+	    pdj.ReproducirSE(SEId);
+	    Habilidades.ganarNeoCreditos(atacante, 5);
+	    atacante.robarVida(dañoFinal, this);
+	    this.reflejarDaño(atacante, dañoFinal);
+	    
+	    contarFaltas(atacante, 1);
+	}
+	
+	private Unidad obtenerDefensor(Unidad unidad, ArrayList<Unidad> unidades) {
+		if(!unidades.isEmpty()) {
+			for(Unidad objetivo : unidades) {
+				if(objetivo.getClase() == "Influencer" && !unidad.equals(objetivo)) {
+					return objetivo;
+				}
+				else if(objetivo.getClase() == "Polluelo Entusiasta" && !unidad.equals(objetivo)) {
+					return objetivo;
+				}
 			}
 		}
+		return null;
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	public void recibirDaño(boolean puedeSerCritico, Unidad unidad) {
+		int dañoBase = calcularDañoBase(puedeSerCritico, unidad);
+		int dañoFinal = calcularDañoReducido(dañoBase);
+		
+		if (esquivaAtaque()) return;
+	    if (bloqueaAtaque(dañoFinal)) return;
+	    if (rompeEscudo()) return;
+
+	    aplicarDaño(unidad, dañoFinal, puedeSerCritico);
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	public void realizarAtaque(Unidad unidad, ArrayList<Unidad> enemigos) {
 		this.setNombreDeUltimoObjetivo(unidad.getClase());
-		boolean isCritical = Math.random() <= ((this.getPCRT() + this.getPcrtMod()) / 100.0);
+		Unidad defensor = obtenerDefensor(unidad, enemigos);
+		boolean esCritico = this.puedeSerCritico();
 		if(unidad != null) {
-			int daño = this.getAtq() + this.getAtqMod();
-			if (isCritical) {
-				daño *= (this.getDCRT() + this.getDcrtMod());
-			}
 			if(defensor != null) {
-				if(defensor.elegirAleatorio(100) < (defensor.getBloq() + defensor.getBloqMod())) {
-					defensor.recibirDaño(daño, isCritical, this);
+				if(defensor.bloqueaAtaque(0)) {
 					Habilidades.setearEfectoDeEstado(defensor, "COVER!", new Color(205, 205, 255));
 					pdj.ReproducirSE(9);
 				}
-				else {
-					unidad.recibirDaño(daño, isCritical, this);
-				}
+				else {unidad.recibirDaño(esCritico, this);}
 			}
-			else {
-				unidad.recibirDaño(daño, isCritical, this);
-			}
-			this.reflejarDaño(unidad, daño);
+			else {unidad.recibirDaño(esCritico, this);}
 		}
 	}
-	
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public void realizarAtaqueEnemigo(ArrayList<Unidad> unidades) {
-		Unidad defensor = getDefensor(unidades);
 		Unidad objetivo = elegirObjetivo(unidades);
-		if(defensor != null) {
-			if(objetivo.equals(defensor)) {
-				defensor = null;
-			}
-		}
-		if(!unidades.isEmpty()) {
-			this.setNombreDeUltimoObjetivo(objetivo.getClase());
-		}
-		boolean isCritical = Math.random() <= ((this.getPCRT() + this.getPcrtMod()) / 100.0);  
+		Unidad defensor = obtenerDefensor(objetivo, unidades);
+		this.setNombreDeUltimoObjetivo(objetivo.getClase());
+		boolean esCritico = this.puedeSerCritico();
 		if(objetivo != null) {
-			int daño = this.getAtq() + this.getAtqMod();
-			if (isCritical) {
-				daño *= (this.getDCRT() + this.getDcrtMod());
-			}
 			if(defensor != null) {
-				if(defensor.elegirAleatorio(100) < (defensor.getBloq() + defensor.getBloqMod())) {
-					defensor.recibirDaño(daño, isCritical, this);
-					Habilidades.setearEfectoDeEstado(defensor, "COVER!", new Color(155, 155, 255));
+				if(defensor.bloqueaAtaque(0)) {
+					Habilidades.setearEfectoDeEstado(defensor, "COVER!", new Color(205, 205, 255));
 					pdj.ReproducirSE(9);
 				}
-				else {
-					objetivo.recibirDaño(daño, isCritical, this);
-				}
+				else {objetivo.recibirDaño(esCritico, this);}
 			}
-			else {
-				objetivo.recibirDaño(daño, isCritical, this);
-			}
-			this.reflejarDaño(objetivo, daño);
+			else {objetivo.recibirDaño(esCritico, this);}
 			if(this.getClase() == "Dragon Pirotecnico") {
 				this.setUnidadObjetivoEnemigo(objetivo);
 			}
 		}
 	}
-		
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	public void recibirGolpesMúltiples(int daño,int cant, boolean isCritical, Unidad unidad) {
 	    int numGolpes = cant;
 	    new Thread(() -> {
 	        for (int i = 0; i < numGolpes; i++) {
-	            try {
-	                Thread.sleep(300);
-	            } catch (InterruptedException e) {
-	                e.printStackTrace();
-	            }
+	            try {Thread.sleep(300);
+	            } catch (InterruptedException e) {e.printStackTrace();}
 	            boolean golpeCritico = false;
-	            if (isCritical) {
-	                golpeCritico = elegirAleatorio(2) == 0; // 50% probabilidad de crítico
-	            }
-	            // Aplicar daño reducido para los golpes iniciales
+	            if (isCritical) {golpeCritico = elegirAleatorio(2) == 0;}
 	            int dañoActual = (i == numGolpes - 1) ? daño : (daño/2);
-	            if(dañoActual == 0) {
-	            	dañoActual = 1;
-	            }
-	            this.recibirDaño(dañoActual, golpeCritico, unidad);
+	            if(dañoActual == 0) {dañoActual = 1;}
+	            this.recibirDaño(golpeCritico, unidad);
 	        }
 	    }).start();
 	}
-	
-	public void usarHabilidadOfensiva(Unidad unidad, boolean puedeEsquivar, boolean puedeBloquear, int dañoAdicional, Runnable habilidad) { 
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	public void usarHabilidadOfensiva(Unidad unidad, Runnable habilidad) { 
 		this.setUsoHabilidadOfensiva(true);
-		int daño = this.getAtq() + this.getAtqMod() + dañoAdicional;
-		daño += (daño/2);
-	    if(unidad.getDef() + unidad.getDefMod() < 0) {
-			daño += daño;
-		}
-	    int reduccion = (int) (daño * ((unidad.getDef() + unidad.getDefMod()) / 100.0));
-	    int dañoFinal = Math.max(1, daño - reduccion);
-	    if (puedeEsquivar && unidad.elegirAleatorio(100) < (unidad.getEva() + unidad.getEvaMod())) {
-	        pdj.ReproducirSE(6);
-	        Habilidades.setearEfectoDeEstado(unidad, "MISS!", Color.DARK_GRAY);
-	    } else {
-	        if (puedeBloquear && this.elegirAleatorio(100) < (unidad.getBloq() + unidad.getBloqMod())) {
-	            pdj.ReproducirSE(9);
-	            unidad.setHP(unidad.getHP() - (dañoFinal / 4));
-	            Habilidades.setearEfectoDeEstado(unidad, "BLOCK!", Color.white);
-	        } 
-	        else if (unidad.getEscudos() > 0) {
-	        	if(this.getClase() == "Heroe Federal") {
-	        		unidad.setEscudos(0);
-	        		pdj.ReproducirSE(9);
-		            Habilidades.setearEfectoDeEstado(unidad, "STOMP!", Color.DARK_GRAY);
-	        	}
-	        	else {
-	        		unidad.setEscudos(unidad.getEscudos() - 1);
-	        		pdj.ReproducirSE(9);
-		            Habilidades.setearEfectoDeEstado(unidad, "BREAK!", Color.GRAY);
-	        	}
-	        } 
-	        else {
-	            unidad.setHP(unidad.getHP() - dañoFinal);
-	            if(unidad.getClase() == "Pluma Blanca") {
-	            	Habilidades.activarDeterminacion(unidad);
-	            }
-	            if(this.getClase() != "Maestro Del Chi") {
-	            	pdj.ReproducirSE(3);
-	            }
-	            habilidad.run();
-	        }
-	    }
+		int dañoBase = unidad.calcularDañoBase(true, this);
+		int dañoFinal = calcularDañoReducido(dañoBase);
+		
+		if (esquivaAtaque()) return;
+	    if (bloqueaAtaque(dañoFinal)) return;
+	    if (rompeEscudo()) return;
+
+	    unidad.setHP(unidad.getHP() - dañoFinal);
+		habilidad.run();
 	}
-	
-	public void robarVida(int daño, Unidad unidad) {
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	private void robarVida(int daño, Unidad unidad) {
 		Color c = new Color(255, 255, 0);
 		if(unidad.getTimerMarcado() > 0) {
 			Habilidades.restaurarHPPlano(this, daño/2);
@@ -447,29 +399,9 @@ public class Unidad {
 		}
 	}
 	
-	public Unidad getDefensor(ArrayList<Unidad> unidades) {
-		if(!unidades.isEmpty()) {
-			for(Unidad unidad : unidades) {
-				if(unidad.getClase() == "Influencer") {
-					return unidad;
-				}
-				else if(unidad.getClase() == "Polluelo Entusiasta") {
-					return unidad;
-				}
-			}
-		}
-		return null;
-	}
-	
 	public void reflejarDaño(Unidad unidad, int daño) {
 		if(unidad.getClase() == "Shaolin Escolar" || unidad.getClase() == "Aspirante A Dragon") {
-			int i = (daño/2);
-			if(i > 1) {
-				this.recibirDaño(i, false, this);
-			}
-			else {
-				this.recibirDaño(1, false, this);
-			}
+			unidad.setHP(unidad.getHP() - daño/2);
 		}
 	}
 	
@@ -496,7 +428,7 @@ public class Unidad {
 				if(unidad.getClase() == "Pluma Negra") {
 					if(this.isUsoHabilidadOfensiva() && unidad.getTimerCastigo() == 0) {
 						if(unidad.getSP() >= 15) {
-							unidad.usarHabilidadOfensiva(this, false, false, unidad.getVelMod(), () -> Habilidades.castigarUnidad(this, pdj));
+							unidad.usarHabilidadOfensiva(this, () -> Habilidades.castigarUnidad(this, pdj));
 							unidad.setSP(unidad.getSP() - 15);
 							unidad.setTimerCastigo(1);
 						}
@@ -601,22 +533,58 @@ public class Unidad {
 	}
 	
 	public void dibujarFaltas(Graphics2D g2) {
-		int altura = -pdj.tamañoDeBaldosa - (pdj.tamañoDeBaldosa / 8) + 16;
-	    int posX = getPosX() + 75;
-	    int posY = getPosY() + 25 + altura + this.getAlturaDeBarraHP();
-	    
-	    if(this.faltasCometidas == 1) {
-	    	g2.setColor(Color.ORANGE);
-	    	g2.drawString("X", posX, posY);
+		if(getMostrarFaltas()) {
+			int altura = -pdj.tamañoDeBaldosa - (pdj.tamañoDeBaldosa / 8) + 16;
+		    int posX = getPosX() + 75;
+		    int posY = getPosY() + 25 + altura + this.getAlturaDeBarraHP();
+		    
+	    	if(this.faltasCometidas == 1) {
+		    	g2.setColor(Color.ORANGE);
+		    	g2.drawString("X", posX, posY);
+		    }
+		    else if(this.faltasCometidas == 2) {
+		    	g2.setColor(Color.ORANGE);
+		    	g2.drawString("X X", posX-10, posY);
+		    }
+		    else if(this.faltasCometidas > 2) {
+		    	g2.setColor(Color.RED);
+		    	g2.drawString("X X X", posX-20, posY);
+		    }
 	    }
-	    else if(this.faltasCometidas == 2) {
-	    	g2.setColor(Color.ORANGE);
-	    	g2.drawString("X X", posX-10, posY);
+	}
+	
+	public void dibujarAlFondo() {
+		if(this.getClase() == "Lider De Parvada") {
+			g2.drawImage(pdj.img.estandarteHalcon, posX - 8, posY + (imageMov*2) - 56, null);
+		}
+	}
+	public void dibujarAlFrente() {
+		if(this.getTimerCastigo() == 0 && this.getClase() == "Pluma Negra") {
+			g2.drawImage(pdj.img.piedra, posX + 64, posY + (imageMov*4) + 16, null);
+		}
+		if(this.getEstaStun()) {
+	    	g2.drawImage(pdj.img.anular, posX+10, posY, null);
 	    }
-	    else if(this.faltasCometidas > 2) {
-	    	g2.setColor(Color.RED);
-	    	g2.drawString("X X X", posX-20, posY);
-	    }
+	}
+	
+	public void dibujarGolpe(int dibujarX, int dibujarY) {
+		switch(getDuracionSacudida()) {
+        case 15,14,13:
+        	g2.drawImage(pdj.img.golpe1, dibujarX, dibujarY-16, null);
+        	break;
+        case 12,11,10:
+        	g2.drawImage(pdj.img.golpe2, dibujarX, dibujarY-16, null);
+        	break;
+        case 9,8,7:
+        	g2.drawImage(pdj.img.golpe3, dibujarX, dibujarY-16, null);
+        	break;
+        case 6,5,4:
+        	g2.drawImage(pdj.img.golpe4, dibujarX, dibujarY-16, null);
+        	break;
+        case 3,2,1:
+        	g2.drawImage(pdj.img.golpe5, dibujarX, dibujarY-16, null);
+        	break;
+        }
 	}
 	
 	public void efectosVisualesPersonalizados(Graphics2D g2){}
@@ -775,7 +743,7 @@ public class Unidad {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	
-	public void mostrarImagenes(Graphics2D g2, int posX, int posY, int dezplazamiento) {
+	public void dibujarUnidad(Graphics2D g2, int posX, int posY, int dezplazamiento) {
 		g2.drawImage(imagenesBody[2], posX, posY+46, null);
 		g2.drawImage(imagenesBody[1], posX, posY+28+dezplazamiento, null);
 		g2.drawImage(imagenesBody[0], posX, posY+dezplazamiento*2, null);
@@ -783,7 +751,7 @@ public class Unidad {
 		g2.drawImage(imagenesBody[3], posX, posY+24+dezplazamiento, null);
 	}
 	
-	public void mostrarMuerte(Graphics2D g2, int posX, int posY, int dezplazamiento) {
+	public void dibujarMuerte(Graphics2D g2, int posX, int posY, int dezplazamiento) {
 		g2.drawImage(pdj.img.piernasDD, posX, posY+46, null);
 		g2.drawImage(pdj.img.cuerpoDD, posX, posY+28+dezplazamiento, null);
 		g2.drawImage(pdj.img.cabezaDD, posX, posY+dezplazamiento*2, null);

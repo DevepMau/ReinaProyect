@@ -54,7 +54,7 @@ public class PuñoFurioso extends Unidad {
 		this.pasivaDeClase(aliados, enemigos);
 	}
 	public void recibirDaño(int daño, boolean isCritical, Unidad unidad) {
-		super.recibirDaño(daño, isCritical, unidad);
+		super.recibirDaño(isCritical, unidad);
 		if(this.getPuñosAcumulados() < 2) {
 			this.setPuñosAcumulados(this.getPuñosAcumulados() + 1);
 		}

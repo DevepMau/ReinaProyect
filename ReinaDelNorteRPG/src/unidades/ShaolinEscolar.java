@@ -50,7 +50,7 @@ public class ShaolinEscolar extends Unidad {
 	public void recibirDaño(int daño, boolean isCritical, Unidad unidad) {
 		int valor = 5;
 	    int hpAnterior = this.getHP();
-	    super.recibirDaño(daño, isCritical, unidad);
+	    super.recibirDaño(isCritical, unidad);
 	    int hpPerdido = hpAnterior - this.getHP();
 	    this.acumuladorDeVidaPrdida += hpPerdido;
 	    if(acumuladorDeVidaPrdida >= valor) {

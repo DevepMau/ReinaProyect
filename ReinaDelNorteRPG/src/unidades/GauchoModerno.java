@@ -47,7 +47,7 @@ public class GauchoModerno extends Unidad {
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void recibirDaño(int daño, boolean isCritical, Unidad unidad) {
 	    int hpAnterior = this.getHP();
-	    super.recibirDaño(daño, isCritical, unidad);
+	    super.recibirDaño(isCritical, unidad);
 	    int hpPerdido = hpAnterior - this.getHP();
 	    this.acumuladorDeVidaPrdida += hpPerdido;
 	    if(acumuladorDeVidaPrdida >= 5) {
@@ -65,7 +65,7 @@ public class GauchoModerno extends Unidad {
 		if(this.getHabilidadElegida() == 0) {
 			if(!unidades.isEmpty()) {
 				Unidad unidad = elegirObjetivo(unidades);
-				super.usarHabilidadOfensiva(unidad, true, true, 0,() -> Habilidades.ataqueActivadorHemorragia(this, unidad));
+				super.usarHabilidadOfensiva(unidad, () -> Habilidades.ataqueActivadorHemorragia(this, unidad));
 				this.setCdHabilidad1(3);
 				this.setHabilidad1(false);
 			}
@@ -73,7 +73,7 @@ public class GauchoModerno extends Unidad {
 	}
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {	
-		super.usarHabilidadOfensiva(unidad, true, true, 0,() -> Habilidades.ataqueActivadorHemorragia(this, unidad));
+		super.usarHabilidadOfensiva(unidad, () -> Habilidades.ataqueActivadorHemorragia(this, unidad));
 		this.setCdHabilidad1(3);
 		this.setHabilidad1(false);
 	}

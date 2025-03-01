@@ -64,14 +64,14 @@ public class LiderDeParvada extends Unidad{
 	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
 		if(this.getHabilidadElegida() == 0) {
 			Unidad unidad = elegirObjetivoMasFuerte(unidades);
-			super.usarHabilidadOfensiva(unidad, true, true, this.getVelMod() ,() -> Habilidades.ejecutarUnidad(unidad));
+			super.usarHabilidadOfensiva(unidad ,() -> Habilidades.ejecutarUnidad(unidad));
 			this.setCdHabilidad1(2);
 			this.setHabilidad1(false);	
 		}
 	}
 	//METODOS DE JUGADOR////////////////////////////////////////////////////////////
 	public void usarHabilidad(Unidad unidad, ArrayList<Unidad> unidades) {
-		super.usarHabilidadOfensiva(unidad, true, true, this.getVelMod() ,() -> Habilidades.ejecutarUnidad(unidad));
+		super.usarHabilidadOfensiva(unidad ,() -> Habilidades.ejecutarUnidad(unidad));
 		this.setCdHabilidad1(2);
 		this.setHabilidad1(false);
 	}

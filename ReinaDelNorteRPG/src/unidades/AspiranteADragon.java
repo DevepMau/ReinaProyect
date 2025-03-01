@@ -58,7 +58,7 @@ public class AspiranteADragon extends Unidad{
 	}
 	
 	public void recibirDaño(int daño, boolean isCritical, Unidad unidad) {
-		super.recibirDaño(daño, isCritical, unidad);
+		super.recibirDaño(isCritical, unidad);
 		if(this.getPuñosAcumulados() < 5) {
 			this.setPuñosAcumulados(this.getPuñosAcumulados() + 1);
 		}

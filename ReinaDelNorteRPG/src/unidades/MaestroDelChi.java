@@ -76,7 +76,7 @@ public class MaestroDelChi extends Unidad {
 				for(Unidad unidadObjetivo : enemigos) {
 					if(unidadObjetivo.isMarcado()) {
 						Habilidades.desmarcarUnidad(unidadObjetivo);
-						super.usarHabilidadOfensiva(unidadObjetivo, false, false, this.getSPMax()/10,() -> Habilidades.explotarMarca(this, unidadObjetivo));
+						super.usarHabilidadOfensiva(unidadObjetivo,() -> Habilidades.explotarMarca(this, unidadObjetivo));
 					}
 					this.cargas = 0;
 				}
@@ -93,7 +93,7 @@ public class MaestroDelChi extends Unidad {
 			for(Unidad unidadObjetivo : unidades) {
 				if(unidadObjetivo.isMarcado()) {
 					Habilidades.desmarcarUnidad(unidadObjetivo);
-					super.usarHabilidadOfensiva(unidadObjetivo, false, false, this.getSPMax()/10,() -> Habilidades.explotarMarca(this, unidadObjetivo));
+					super.usarHabilidadOfensiva(unidadObjetivo,() -> Habilidades.explotarMarca(this, unidadObjetivo));
 				}
 				this.cargas = 0;
 			}

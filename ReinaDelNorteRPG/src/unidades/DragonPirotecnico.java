@@ -78,8 +78,7 @@ public class DragonPirotecnico extends Unidad{
 					int reduccion = (int) (daño * ((unidad.getDef() + unidad.getDefMod()) / 100.0));
 			        int dañoFinal = Math.max(1, daño - reduccion);
 			        unidad.setHP(unidad.getHP() - dañoFinal);
-			        Habilidades.setearDaño(unidad, ""+dañoFinal, new Color(255, 155, 0));
-			        this.robarVida(daño, unidad);	
+			        Habilidades.setearDaño(unidad, ""+dañoFinal, new Color(255, 155, 0));	
 				}	
 			}
 		}
@@ -100,7 +99,6 @@ public class DragonPirotecnico extends Unidad{
 			        int dañoFinal = Math.max(1, daño - reduccion);
 			        objetivo.setHP(objetivo.getHP() - dañoFinal);
 			        Habilidades.setearDaño(objetivo, ""+dañoFinal, new Color(255, 155, 0));
-			        this.robarVida(daño, objetivo);	
 				}
 			}
 		}

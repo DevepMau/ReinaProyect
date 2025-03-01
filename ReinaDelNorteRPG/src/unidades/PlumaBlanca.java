@@ -50,20 +50,10 @@ public class PlumaBlanca extends Unidad {
 		this.pasivaDeClase(aliados, enemigos);
 	}
 	public void recibirDaño(int daño, boolean isCritical, Unidad unidad) {
-		super.recibirDaño(daño, isCritical, unidad);
+		super.recibirDaño(isCritical, unidad);
 		Habilidades.activarDeterminacion(this);
 	}
 	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////
-	public void usarHabilidadEnemigo(ArrayList<Unidad> unidades) {
-		if(this.getHabilidadElegida() == 0) {
-			if(!unidades.isEmpty()) {
-				Unidad unidad = elegirObjetivo(unidades);
-				super.usarHabilidadOfensiva(unidad, true, true, 0,() -> Habilidades.ataqueActivadorHemorragia(this, unidad));
-				this.setCdHabilidad1(3);
-				this.setHabilidad1(false);
-			}
-		}
-	}
 	//METODOS JUGADOR////////////////////////////////////////////////////////////////////
 	//METODOS AUXILIARES/////////////////////////////////////////////////////////////////
 	public boolean cumpleReqDeHab1() {
