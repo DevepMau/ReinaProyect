@@ -32,7 +32,21 @@ public class LiderDeParvada extends Unidad{
 		this.setVel(obtenerValorEntre(20,30));
 		this.spHabilidad1 = 20;
 		this.listaDeHabilidades[0] = "CORTAR ALAS";
-		this.generarCuerpo();
+		this.definirIdTez();
+		if(this.getGenero() == 1) {
+			this.asignarImagen( 4, "/imagenes/accesorios/banda", 3);
+			this.asignarImagen( 3, "/imagenes/unisex/hockey-"+ this.elegirDiseñoPaloHockey(), 3);
+			this.asignarImagen( 2, "/imagenes/hombre/pantalon-1",3);
+			this.asignarImagen( 1, "/imagenes/unisex/cuerpo-tapado-"+this.getIdTez(), 3);
+			this.asignarImagen( 0, "/imagenes/hombre/cabeza-boy-"+this.getIdTez(), 3);
+		}
+		else {
+			this.asignarImagen( 4, "/imagenes/accesorios/banda", 3);
+			this.asignarImagen( 3, "/imagenes/unisex/hockey-"+ this.elegirDiseñoPaloHockey(), 3);
+			this.asignarImagen( 2, "/imagenes/mujer/falda-"+this.getIdTez(),3);
+			this.asignarImagen( 1, "/imagenes/mujer/cuerpo-guardian-girl-"+this.getIdTez(), 3);
+			this.asignarImagen( 0, "/imagenes/mujer/cabeza-girl-"+this.getIdTez(), 3);
+		}
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {

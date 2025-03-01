@@ -25,7 +25,19 @@ public class NiñoCheung extends Unidad {
 		this.setEva(25);
 		this.setVel(obtenerValorEntre(10,20));
 		this.listaDeHabilidades[0] = "...";
-		this.generarCuerpo();
+		this.definirIdTez();
+		if(this.getGenero() == 1) {
+			this.asignarImagen(3, "/imagenes/unisex/manos-pose-"+this.getIdTez(), 3); 
+			this.asignarImagen(2, "/imagenes/hombre/pantalon-pose", 3); 
+			this.asignarImagen(1, "/imagenes/hombre/cuerpo-chino-boy", 3); 
+			this.asignarImagen(0, "/imagenes/hombre/cabeza-boy-"+this.getIdTez(), 3); 
+		}
+		else {
+			this.asignarImagen(3, "/imagenes/unisex/manos-pose-"+this.getIdTez(), 3);
+			this.asignarImagen(2, "/imagenes/mujer/falda-pose-"+this.getIdTez(), 3);
+			this.asignarImagen(1, "/imagenes/mujer/cuerpo-chino-girl", 3); 
+			this.asignarImagen(0, "/imagenes/mujer/cabeza-girl-"+this.getIdTez(), 3);
+		}
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {

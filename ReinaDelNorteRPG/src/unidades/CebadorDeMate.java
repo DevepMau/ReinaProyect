@@ -1,6 +1,5 @@
 package unidades;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.util.ArrayList;
@@ -34,7 +33,21 @@ public class CebadorDeMate extends Unidad{
 		this.setVel(obtenerValorEntre(20,30));
 		this.costeHabilidad1 = 7;
 		this.listaDeHabilidades[0] = "CEBAR UN MATE";
-		this.generarCuerpo();
+		this.definirIdTez();
+		if(this.getGenero() == 1) {
+			this.asignarImagen( 4, "/imagenes/accesorios/boina1",3);
+			this.asignarImagen( 3, "/imagenes/unisex/mates-"+this.elegirDiseñoMate()+"-"+this.getIdTez(), 3);
+			this.asignarImagen( 2, "/imagenes/hombre/pantalon-1",3);
+			this.asignarImagen( 1, "/imagenes/unisex/cuerpo"+this.getIdTez(), 3);
+			this.asignarImagen( 0, "/imagenes/hombre/cabeza-boy-"+this.getIdTez(), 3);		
+		}
+		else {
+			this.asignarImagen( 4, "/imagenes/accesorios/boina1",3);
+			this.asignarImagen( 3, "/imagenes/unisex/mates-"+this.elegirDiseñoMate()+"-"+this.getIdTez(), 3);
+			this.asignarImagen( 2, "/imagenes/mujer/falda-"+this.getIdTez(), 3);
+			this.asignarImagen( 1, "/imagenes/unisex/cuerpo"+this.getIdTez(), 3);
+			this.asignarImagen( 0, "/imagenes/mujer/cabeza-girl-"+this.getIdTez(), 3);
+		}
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
@@ -104,16 +117,16 @@ public class CebadorDeMate extends Unidad{
 	}
 	public void efectosVisualesPersonalizados(Graphics2D g2) {
 		if(opcion == 0) {
-			imagen = pdj.idr.mateVerde;
+			imagen = pdj.img.mateVerde;
 		}
 		else if(opcion == 1) {
-			imagen = pdj.idr.mateAzul;
+			imagen = pdj.img.mateAzul;
 		}
 		else if(opcion == 2) {
-			imagen = pdj.idr.mateRojo;
+			imagen = pdj.img.mateRojo;
 		}
 		else {
-			imagen = pdj.idr.mateAmarillo;
+			imagen = pdj.img.mateAmarillo;
 		}
 		g2.drawImage(imagen, this.getPosX() - 8, this.getPosY() - 16, null);
 	}

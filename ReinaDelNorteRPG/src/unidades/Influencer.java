@@ -34,7 +34,11 @@ public class Influencer extends Unidad {
 		this.spHabilidad2 = 40;
 		this.habilidades[0] = "DIFAMAR";
 		this.habilidades[1] = "TENDENCIA";
-		this.generarCuerpo();
+		this.definirIdTez();
+		this.asignarImagen(3, "/imagenes/unisex/manos-celular-"+this.getIdTez(), 3); 
+		this.asignarImagen(2, "/imagenes/mujer/falda-"+this.getIdTez(), 3); 
+		this.asignarImagen(1, "/imagenes/unisex/cuerpo"+this.getIdTez(), 3); 
+		this.asignarImagen(0, "/imagenes/mujer/cabeza-influencer-"+this.getIdTez(), 3); 
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {

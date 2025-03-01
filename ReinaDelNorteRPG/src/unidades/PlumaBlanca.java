@@ -2,7 +2,6 @@ package unidades;
 
 import java.util.ArrayList;
 
-import principal.Estadisticas;
 import principal.Habilidades;
 import principal.PanelDeJuego;
 import principal.Zona;
@@ -29,7 +28,21 @@ public class PlumaBlanca extends Unidad {
 		this.setBloq(0);
 		this.setVel(obtenerValorEntre(10,20));
 		this.listaDeHabilidades[0] = "...";
-		this.generarCuerpo();
+		this.definirIdTez();
+		if(this.getGenero() == 1) {
+			this.asignarImagen( 4, "/imagenes/accesorios/banda", 3);
+			this.asignarImagen( 3, "/imagenes/unisex/manos-"+this.getIdTez(), 3);
+			this.asignarImagen( 2, "/imagenes/hombre/pantalon-1",3);
+			this.asignarImagen( 1, "/imagenes/unisex/cuerpo-tapado-"+this.getIdTez(), 3);
+			this.asignarImagen( 0, "/imagenes/hombre/cabeza-boy-"+this.getIdTez(), 3);
+		}
+		else {
+			this.asignarImagen( 4, "/imagenes/accesorios/banda", 3);
+			this.asignarImagen( 3, "/imagenes/unisex/manos-"+this.getIdTez(), 3);
+			this.asignarImagen( 2, "/imagenes/mujer/falda-"+this.getIdTez(),3);
+			this.asignarImagen( 1, "/imagenes/unisex/cuerpo-tapado-"+this.getIdTez(), 3);
+			this.asignarImagen( 0, "/imagenes/mujer/cabeza-girl-"+this.getIdTez(), 3);
+		}
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {

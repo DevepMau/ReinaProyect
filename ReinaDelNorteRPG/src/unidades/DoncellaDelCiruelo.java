@@ -35,7 +35,14 @@ public class DoncellaDelCiruelo extends Unidad{
 		this.spHabilidad2 = 40;
 		this.listaDeHabilidades[0] = "ABOFETEAR";
 		this.listaDeHabilidades[1] = "DAR DISCURSO";
-		this.generarCuerpo();
+		this.definirIdTez();
+		this.asignarImagen(4, "/imagenes/accesorios/horquilla", 3); 
+		this.asignarImagen(3, "/imagenes/mujer/manos-abanico-"+this.getIdTez(), 3); 
+		this.asignarImagen(2, "/imagenes/mujer/falda-olanes", 3); 
+		this.asignarImagen(1, "/imagenes/mujer/cuerpo-hanfu", 3); 
+		this.asignarImagen(0, "/imagenes/mujer/cabeza-coleta-"+this.getIdTez(), 3); 
+		this.setAlturaDeAccesorio(13);
+		
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {

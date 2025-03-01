@@ -33,7 +33,11 @@ public class NovataTimida extends Unidad{
 		this.setVel(obtenerValorEntre(10,20));
 		this.setEscudos(1);
 		this.listaDeHabilidades[0] = "...";
-		this.generarCuerpo();
+		this.definirIdTez();
+		this.asignarImagen(3, "/imagenes/unisex/manos-timida-"+this.getIdTez(), 3); 
+		this.asignarImagen(2, "/imagenes/mujer/falda-"+this.getIdTez(), 3); 
+		this.asignarImagen(1, "/imagenes/unisex/cuerpo"+this.getIdTez(), 3); 
+		this.asignarImagen(0, "/imagenes/mujer/cabeza-timida-"+this.getIdTez(), 3); 
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	//METODOS ENEMIGO////////////////////////////////////////////////////////////////////

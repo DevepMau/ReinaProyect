@@ -32,7 +32,23 @@ public class DragonPirotecnico extends Unidad{
 		this.setVel(obtenerValorEntre(5,10));
 		this.cargaExplosiva = elegirAleatorio(6);
 		this.listaDeHabilidades[0] = "AÑO NUEVO";
-		this.generarCuerpo();
+		this.definirIdTez();
+		if(this.getGenero() == 1) {
+			this.asignarImagen(4, "/imagenes/accesorios/dragon", 3); 
+			this.asignarImagen(3, "/imagenes/unisex/cañon-"+this.getIdTez(), 3); 
+			this.asignarImagen(2, "/imagenes/hombre/pantalon-dragon", 3); 
+			this.asignarImagen(1, "/imagenes/unisex/cuerpo"+this.getIdTez(), 3); 
+			this.asignarImagen(0, "/imagenes/hombre/cabeza-boy-"+this.getIdTez(), 3); 
+		}
+		else {
+			this.asignarImagen(4, "/imagenes/accesorios/dragon", 3); 
+			this.asignarImagen(3, "/imagenes/unisex/cañon-"+this.getIdTez(), 3); 
+			this.asignarImagen(2, "/imagenes/mujer/falda-dragon-"+this.getIdTez(), 3);
+			this.asignarImagen(1, "/imagenes/unisex/cuerpo"+this.getIdTez(), 3); 
+			this.asignarImagen(0, "/imagenes/mujer/cabeza-girl-"+this.getIdTez(), 3);
+		}
+		this.setAlturaDeAccesorio(5);
+		this.setAlturaDeBarraHP(-20);
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {

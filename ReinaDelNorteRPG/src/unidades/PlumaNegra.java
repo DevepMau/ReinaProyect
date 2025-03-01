@@ -29,7 +29,22 @@ public class PlumaNegra extends Unidad {
 		this.setEva(0);
 		this.spHabilidad1 = 15;
 		this.habilidades[0] = "GOLPE SOMBRIO";
-		this.generarCuerpo();
+		this.definirIdTez();
+		if(this.getGenero() == 1) {
+			this.asignarImagen( 4, "/imagenes/accesorios/banda-negra-barbijo-hombre",3);
+			this.asignarImagen( 3, "/imagenes/unisex/mano-sola-"+this.getIdTez(),3);
+			this.asignarImagen( 2, "/imagenes/hombre/pantalon-1",3);
+			this.asignarImagen( 1, "/imagenes/unisex/cuerpo-tapado-negro-"+this.getIdTez(), 3);
+			this.asignarImagen( 0, "/imagenes/hombre/cabeza-boy-"+this.getIdTez(), 3);
+		}
+		else {
+			this.asignarImagen( 4, "/imagenes/accesorios/banda-negra-barbijo-mujer",3);
+			this.asignarImagen( 3, "/imagenes/unisex/manos-"+this.getIdTez(), 3);
+			this.asignarImagen( 2, "/imagenes/mujer/falda-"+this.getIdTez(),3);
+			this.asignarImagen( 1, "/imagenes/unisex/cuerpo-tapado-"+this.getIdTez(), 3);
+			this.asignarImagen( 0, "/imagenes/mujer/cabeza-girl-"+this.getIdTez(), 3);
+		}
+		this.setAlturaDeAccesorio(3);
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {

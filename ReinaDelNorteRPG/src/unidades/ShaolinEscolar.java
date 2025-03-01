@@ -34,7 +34,13 @@ public class ShaolinEscolar extends Unidad {
 		this.setVel(obtenerValorEntre(10,20));
 		this.setNeocreditos(0);
 		this.listaDeHabilidades[0] = "...";
-		this.generarCuerpo();
+		this.definirIdTez();
+		if(this.getGenero() == 1) {
+			this.asignarImagen(3, "/imagenes/unisex/manos-shaolin-"+this.getIdTez(), 3); 
+			this.asignarImagen(2, "/imagenes/hombre/pantalon-shaolin", 3); 
+			this.asignarImagen(1, "/imagenes/unisex/cuerpo"+this.getIdTez(), 3); 
+			this.asignarImagen(0, "/imagenes/hombre/cabeza-shaolin-"+this.getIdTez(), 3); 
+		}
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {

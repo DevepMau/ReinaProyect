@@ -28,7 +28,21 @@ public class GauchoModerno extends Unidad {
 		this.setBloq(0);
 		this.setVel(obtenerValorEntre(10,20));
 		this.listaDeHabilidades[0] = "APUÑALAR";
-		this.generarCuerpo();
+		this.definirIdTez();
+		if(this.getGenero() == 1) {
+			this.asignarImagen( 4, "/imagenes/accesorios/boina1",3);
+			this.asignarImagen( 3, "/imagenes/hombre/cutter-"+this.getIdTez(),3);
+			this.asignarImagen( 2, "/imagenes/hombre/pantalon-subido-"+this.getIdTez(),3);
+			this.asignarImagen( 1, "/imagenes/unisex/cuerpo-gaucho", 3);
+			this.asignarImagen( 0, "/imagenes/hombre/cabeza-boy-"+this.getIdTez(), 3);		
+		}
+		else {
+			this.asignarImagen( 4, "/imagenes/accesorios/boina1",3);
+			this.asignarImagen( 3, "/imagenes/hombre/cutter-"+this.getIdTez(),3);
+			this.asignarImagen( 2, "/imagenes/mujer/falda-"+this.getIdTez(), 3);
+			this.asignarImagen( 1, "/imagenes/unisex/cuerpo-gaucho", 3);
+			this.asignarImagen( 0, "/imagenes/mujer/cabeza-girl-"+this.getIdTez(), 3);
+		}
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void recibirDaño(int daño, boolean isCritical, Unidad unidad) {

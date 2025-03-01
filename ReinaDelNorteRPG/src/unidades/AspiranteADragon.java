@@ -31,7 +31,19 @@ public class AspiranteADragon extends Unidad{
 		this.setVel(obtenerValorEntre(20,30));
 		this.setPuñosAcumulados(1);
 		this.listaDeHabilidades[0] = "COMBO LETAL";
-		this.generarCuerpo();
+		this.definirIdTez();
+		if(this.getGenero() == 1) {
+			this.asignarImagen(3, "/imagenes/unisex/nunchaku-rojo-"+this.getIdTez(), 3); 
+			this.asignarImagen(2, "/imagenes/unisex/piernas-amarillo", 3); 
+			this.asignarImagen(1, "/imagenes/unisex/cuerpo-amarillo", 3); 
+			this.asignarImagen(0, "/imagenes/hombre/cabeza-boy-"+this.getIdTez(), 3); 
+		}
+		else {
+			this.asignarImagen(3, "/imagenes/unisex/nunchaku-rojo-"+this.getIdTez(), 3); 
+			this.asignarImagen(2, "/imagenes/unisex/piernas-amarillo", 3); 
+			this.asignarImagen(1, "/imagenes/unisex/cuerpo-amarillo", 3); 
+			this.asignarImagen(0, "/imagenes/mujer/cabeza-bollos-"+this.getIdTez(), 3);
+		}
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {

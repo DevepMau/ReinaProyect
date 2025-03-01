@@ -32,7 +32,19 @@ public class MaestroDelChi extends Unidad {
 		this.cargas = 0;
 		this.habilidades[0] = "MARCAR";
 		this.habilidades[1] = "EXPLOTAR";
-		this.generarCuerpo();
+		this.definirIdTez();
+		if(this.getGenero() == 1) {
+			this.asignarImagen(3, "/imagenes/unisex/manos-pose-"+this.getIdTez(), 3); 
+			this.asignarImagen(2, "/imagenes/hombre/piernas-maestro-boy", 3); 
+			this.asignarImagen(1, "/imagenes/hombre/cuerpo-maestro-boy", 3); 
+			this.asignarImagen(0, "/imagenes/hombre/cabeza-boy-"+this.getIdTez(), 3); 
+		}
+		else {
+			this.asignarImagen(3, "/imagenes/unisex/manos-pose-"+this.getIdTez(), 3); 
+			this.asignarImagen(2, "/imagenes/mujer/piernas-maestro-girl-"+this.getIdTez(),3);
+			this.asignarImagen(1, "/imagenes/mujer/cuerpo-maestro-girl", 3); 
+			this.asignarImagen(0, "/imagenes/mujer/cabeza-girl-"+this.getIdTez(), 3);
+		}
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {

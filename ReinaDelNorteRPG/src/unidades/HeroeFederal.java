@@ -29,7 +29,22 @@ public class HeroeFederal extends Unidad{
 		this.setVel(obtenerValorEntre(30,50));
 		this.spHabilidad1 = 15;
 		this.listaDeHabilidades[0] = "EXPULSAR";
-		this.generarCuerpo();
+		this.definirIdTez();
+		if(this.getGenero() == 1) {
+			this.asignarImagen( 4, "/imagenes/accesorios/boina1",3);
+			this.asignarImagen( 3, "/imagenes/unisex/caballo-"+this.getIdTez(), 3);
+			this.asignarImagen( 2, "/imagenes/hombre/bici-boy", 3);
+			this.asignarImagen( 1, "/imagenes/unisex/cuerpo-heroe", 3);
+			this.asignarImagen( 0, "/imagenes/hombre/cabeza-boy-"+this.getIdTez(), 3);		
+		}
+		else {
+			this.asignarImagen( 4, "/imagenes/accesorios/boina1",3);
+			this.asignarImagen( 3, "/imagenes/unisex/caballo-"+this.getIdTez(), 3);
+			this.asignarImagen( 2, "/imagenes/mujer/bici-girl-"+this.getIdTez(), 3);
+			this.asignarImagen( 1, "/imagenes/unisex/cuerpo-heroe", 3);
+			this.asignarImagen( 0, "/imagenes/mujer/cabeza-girl-"+this.getIdTez(), 3);
+		}
+		this.setAlturaPorClase(-10);
 	}
 	//METODOS PRINCIPALES///////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {

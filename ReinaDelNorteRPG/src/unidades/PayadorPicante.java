@@ -29,7 +29,21 @@ public class PayadorPicante extends Unidad {
 		this.spHabilidad2 = 50;
 		this.habilidades[0] = "CHICANEAR";
 		this.habilidades[1] = "MOTIVAR";
-		this.generarCuerpo();
+		this.definirIdTez();
+		if(this.getGenero() == 1) {
+			this.asignarImagen(4, "/imagenes/accesorios/boina1", 3); 
+			this.asignarImagen(3, "/imagenes/unisex/guitarra-"+this.getIdTez(), 3); 
+			this.asignarImagen(2, "/imagenes/hombre/pantalon-1", 3); 
+			this.asignarImagen(1, "/imagenes/unisex/cuerpo"+this.getIdTez(), 3); 
+			this.asignarImagen(0, "/imagenes/hombre/cabeza-boy-"+this.getIdTez(), 3); 	
+		}
+		else {
+			this.asignarImagen(4, "/imagenes/accesorios/boina1",3);
+			this.asignarImagen(3, "/imagenes/unisex/guitarra-"+this.getIdTez(), 3); 
+			this.asignarImagen(2, "/imagenes/mujer/falda-"+this.getIdTez(), 3);
+			this.asignarImagen(1, "/imagenes/unisex/cuerpo"+this.getIdTez(), 3); 
+			this.asignarImagen(0, "/imagenes/mujer/cabeza-girl-"+this.getIdTez(), 3);
+		}
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {

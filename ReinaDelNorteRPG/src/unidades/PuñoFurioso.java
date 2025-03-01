@@ -28,7 +28,19 @@ public class PuñoFurioso extends Unidad {
 		this.setEva(25);
 		this.setVel(obtenerValorEntre(10,20));
 		this.listaDeHabilidades[0] = "DOBLE IMPACTO";
-		this.generarCuerpo();
+		this.definirIdTez();
+		if(this.getGenero() == 1) {
+			this.asignarImagen(3, "/imagenes/unisex/nunchaku-"+this.elegirDiseñoNunchaku()+"-"+this.getIdTez(), 3); 
+			this.asignarImagen(2, "/imagenes/unisex/cortos-pose-"+this.getIdTez(), 3); 
+			this.asignarImagen(1, "/imagenes/unisex/cuerpo-chaqueta", 3); 
+			this.asignarImagen(0, "/imagenes/hombre/cabeza-boy-"+this.getIdTez(), 3); 
+		}
+		else {
+			this.asignarImagen(3, "/imagenes/unisex/nunchaku-"+this.elegirDiseñoNunchaku()+"-"+this.getIdTez(), 3);
+			this.asignarImagen(2, "/imagenes/unisex/cortos-pose-"+this.getIdTez(), 3); 
+			this.asignarImagen(1, "/imagenes/unisex/cuerpo-chaqueta", 3); 
+			this.asignarImagen(0, "/imagenes/mujer/cabeza-coleta-"+this.getIdTez(), 3);
+		}
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {

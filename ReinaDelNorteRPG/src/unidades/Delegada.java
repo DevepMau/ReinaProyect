@@ -28,7 +28,12 @@ public class Delegada extends Unidad {
 		this.setEva(0);
 		this.setVel(obtenerValorEntre(10,20));
 		this.listaDeHabilidades[0] = "REGAÑAR";
-		this.generarCuerpo();
+		this.definirIdTez();
+		this.asignarImagen(4, "/imagenes/accesorios/mano-de-lente-"+this.getIdTez(), 3); 
+		this.asignarImagen(3, "/imagenes/unisex/manos-libreta-"+this.getIdTez(), 3); 
+		this.asignarImagen(2, "/imagenes/mujer/falda-"+this.getIdTez(), 3); 
+		this.asignarImagen(1, "/imagenes/unisex/cuerpo"+this.getIdTez(), 3); 
+		this.asignarImagen(0, "/imagenes/mujer/cabeza-delegada-"+this.getIdTez(), 3); 
 	}
 	//METODO PRINCIPAL//////////////////////////////////////////////////////////////////
 	public void realizarAccion(ArrayList<Unidad> enemigos, ArrayList<Unidad> aliados) {
